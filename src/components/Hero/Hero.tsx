@@ -59,7 +59,7 @@ export function Hero() {
         >
           {/* Production-ready загрузка Hero изображения */}
           <Image
-            src="/beye.jpg.jpeg"
+            src="/Corona3.jpg.jpeg"
             alt="Панорама V-Village"
             fill
             priority // Критически важно для LCP — грузит картинку мгновенно
