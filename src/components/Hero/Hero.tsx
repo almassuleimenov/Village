@@ -1,49 +1,43 @@
-// D:\Project\react_projects\v-village-brochure\src\components\Hero\Hero.tsx
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { springSlow, textRevealVariant } from "@/lib/motion";
 import styles from "./Hero.module.css";
 
 export function Hero() {
-  const containerRef = useRef<HTMLDivElement>(null);
-
   // Motion-значения для трекинга сырых координат курсора без ререндера React
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  // Физика пружины для плавности движения мыши (Emil Kowalski style)
+  // Физика пружины для плавности движения мыши
   const smoothConfig = { damping: 30, stiffness: 100, mass: 2 };
   const smoothX = useSpring(mouseX, smoothConfig);
   const smoothY = useSpring(mouseY, smoothConfig);
 
   // Интерполяция: превращаем координаты от -1 до 1 в градусы вращения (от -8 до 8)
-  // Обрати внимание: оси инвертированы для естественного 3D-наклона
   const rotateX = useTransform(smoothY, [-1, 1], [8, -8]);
   const rotateY = useTransform(smoothX, [-1, 1], [-8, 8]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
-    if (!containerRef.current) return;
-    const { left, top, width, height } = containerRef.current.getBoundingClientRect();
+    // Чтение window.innerWidth/innerHeight не вызывает Layout Thrashing, 
+    // в отличие от getBoundingClientRect()
+    const x = e.clientX / window.innerWidth;
+    const y = e.clientY / window.innerHeight;
     
     // Нормализуем координаты в диапазон от -1 до 1
-    const x = (e.clientX - left) / width;
-    const y = (e.clientY - top) / height;
-    
     mouseX.set(x * 2 - 1);
     mouseY.set(y * 2 - 1);
   };
 
   const handleMouseLeave = () => {
-    // Плавно возвращаем композицию в центр при уходе курсора с экрана
     mouseX.set(0);
     mouseY.set(0);
   };
 
   return (
     <section 
-      ref={containerRef}
       className={styles.hero}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -62,7 +56,18 @@ export function Hero() {
           initial={{ scale: 1.2, z: -80 }}
           animate={{ scale: 1.05, z: -80 }}
           transition={springSlow}
-        />
+        >
+          {/* Production-ready загрузка Hero изображения */}
+          <Image
+            src="/beye.jpg.jpeg"
+            alt="Панорама V-Village"
+            fill
+            priority // Критически важно для LCP — грузит картинку мгновенно
+            quality={90}
+            sizes="100vw"
+            style={{ objectFit: "cover" }}
+          />
+        </motion.div>
         
         {/* Контент (приближен в Z-пространстве) */}
         <motion.div 
@@ -72,7 +77,7 @@ export function Hero() {
             animate: { transition: { staggerChildren: 0.2 } }
           }}
           className={styles.content}
-          style={{ z: 80 }} // Выдвигаем текст ближе к зрителю
+          style={{ z: 80 }} 
         >
           <motion.div variants={textRevealVariant}>
             <h1 className={styles.logo}>V</h1>

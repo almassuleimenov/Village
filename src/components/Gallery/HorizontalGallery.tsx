@@ -1,14 +1,16 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import styles from "./HorizontalGallery.module.css";
 
 const images = [
-  "/image 400.png",
-  "/image 402.png",
-  "/image 401.png",
-  "/image 404.png",
+  "/Corona1.jpg.jpeg",
+  "/Corona3.jpg.jpeg",
+  "/Corona4.jpg.jpeg",
+  "/Corona5.jpg.jpeg",
+  "/Corona6.jpg.jpeg",
 ];
 
 export function HorizontalGallery() {
@@ -25,9 +27,6 @@ export function HorizontalGallery() {
     restDelta: 0.001,
   });
 
-  // ИСПРАВЛЕНИЕ 1: Используем callback-функцию.
-  // Это гарантирует, что Framer Motion передает чистое число в CSS, 
-  // а браузер сам вычисляет calc() без конфликтов парсера строк.
   const x = useTransform(smoothProgress, (p) => `calc(-${p * 100}% + ${p * 100}vw)`);
 
   return (
@@ -39,13 +38,21 @@ export function HorizontalGallery() {
         >
           {images.map((src, index) => (
             <div key={src} className={styles.cardWrapper}>
+              {/* Родитель ДОЛЖЕН иметь position: relative в CSS модуле */}
               <div className={styles.imageContainer}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img 
+                <Image 
                   src={src} 
-                  alt={`Gallery image ${index + 1}`} 
-                  className={styles.image}
-                  loading={index < 2 ? "eager" : "lazy"} 
+                  alt={`Презентация V-Village, ракурс ${index + 1}`}
+                  fill
+                  style={{ objectFit: "cover" }}
+                  // Атрибут sizes критически важен: он говорит Next.js, 
+                  // какие версии картинки генерировать для разных экранов
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 50vw"
+                  // Первые две картинки грузятся немедленно с высоким приоритетом для LCP,
+                  // остальные — лениво по мере скролла
+                  priority={index < 2}
+                  // quality={85} — золотая середина между весом и качеством для рендеров
+                  quality={85}
                 />
               </div>
               <div className={styles.cardBackdrop} />

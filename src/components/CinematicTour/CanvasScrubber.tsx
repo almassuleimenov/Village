@@ -7,26 +7,52 @@ interface CanvasScrubberProps {
   sequenceName: string;
   frameCount: number;
   progress: MotionValue<number>;
+  priority?: boolean; 
 }
 
-export function CanvasScrubber({ sequenceName, frameCount, progress }: CanvasScrubberProps) {
+export function CanvasScrubber({ 
+  sequenceName, 
+  frameCount, 
+  progress, 
+  priority = false 
+}: CanvasScrubberProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imagesRef = useRef<HTMLImageElement[]>([]);
-  // Трекаем актуальный индекс, чтобы загрузившиеся старые кадры не перекрывали новые
+  
   const currentIndexRef = useRef<number>(0); 
+  const lastDrawnIndexRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const images: HTMLImageElement[] = [];
-    for (let i = 1; i <= frameCount; i++) {
-      const img = new Image();
-      const frameStr = i.toString().padStart(4, "0");
-      img.src = `/frames/${sequenceName}/${frameStr}.webp`;
-      images.push(img);
-    }
-    imagesRef.current = images;
+    let isMounted = true;
 
-    images[0].onload = () => drawImage(0);
-  }, [frameCount, sequenceName]);
+    const loadSequence = () => {
+      if (!isMounted) return;
+      const images: HTMLImageElement[] = [];
+      
+      for (let i = 1; i <= frameCount; i++) {
+        const img = new Image();
+        const frameStr = i.toString().padStart(4, "0");
+        // Изменено на .jpg (как было сгенерировано FFmpeg)
+        img.src = `/frames/${sequenceName}/frame_${frameStr}.jpg`;
+        images.push(img);
+      }
+      imagesRef.current = images;
+
+      images[0].onload = () => drawImage(0);
+    };
+
+    if (priority) {
+      loadSequence();
+    } else {
+      const timer = setTimeout(loadSequence, 1000);
+      return () => {
+        isMounted = false;
+        clearTimeout(timer);
+      };
+    }
+
+    return () => { isMounted = false; };
+  }, [frameCount, sequenceName, priority]);
 
   const drawImage = (index: number) => {
     currentIndexRef.current = index;
@@ -34,10 +60,9 @@ export function CanvasScrubber({ sequenceName, frameCount, progress }: CanvasScr
     if (!canvasRef.current || !imagesRef.current[index]) return;
     
     const img = imagesRef.current[index];
-    const ctx = canvasRef.current.getContext("2d", { alpha: false }); // alpha: false дает буст FPS
+    const ctx = canvasRef.current.getContext("2d", { alpha: false }); 
     
     const render = () => {
-      // Защита: рисуем только если пользователь всё ещё на этом кадре
       if (currentIndexRef.current !== index || !ctx) return;
       
       const { width, height } = canvasRef.current!;
@@ -46,6 +71,7 @@ export function CanvasScrubber({ sequenceName, frameCount, progress }: CanvasScr
       const y = (height / 2) - (img.height / 2) * scale;
       
       ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+      lastDrawnIndexRef.current = index;
     };
 
     if (img.complete) {
@@ -56,11 +82,10 @@ export function CanvasScrubber({ sequenceName, frameCount, progress }: CanvasScr
   };
 
   useMotionValueEvent(progress, "change", (latest) => {
-    // Жестко зажимаем лимиты, чтобы индекс никогда не вылетел за пределы
     const clamped = Math.max(0, Math.min(1, latest));
     const frameIndex = Math.min(frameCount - 1, Math.floor(clamped * frameCount));
     
-    // Синхронизируем с частотой обновления монитора для идеальной плавности
+    if (frameIndex === lastDrawnIndexRef.current) return;
     requestAnimationFrame(() => drawImage(frameIndex));
   });
 
@@ -73,7 +98,7 @@ export function CanvasScrubber({ sequenceName, frameCount, progress }: CanvasScr
         width: "100%",
         height: "100%",
         objectFit: "cover",
-        transform: "translateZ(0)", // Включаем аппаратное ускорение
+        transform: "translateZ(0)", 
       }}
     />
   );
