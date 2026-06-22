@@ -1,0 +1,92 @@
+.container {
+  position: relative;
+  /* Увеличиваем высоту! 800vh даст плавный элитарный темп, планировка не будет "срываться" */
+  height: 800vh; 
+  background-color: #050505;
+}
+
+.stickyArea {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #000;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.canvasWrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  will-change: transform, opacity, filter;
+  background-color: #000;
+}
+
+/* Прокачанное стекло (Apple style) */
+.glassPanel {
+  position: relative;
+  z-index: 10;
+  width: 90%;
+  max-width: 480px; /* Чуть шире для дороговизны */
+  padding: 3.5rem 3rem;
+  background: rgba(15, 15, 15, 0.65); 
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.18); /* Легкий верхний блик */
+  border-radius: 16px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 
+              0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+  color: var(--color-text-main);
+  will-change: transform, opacity;
+  pointer-events: auto;
+}
+
+.panelRight { margin-left: auto; margin-right: 8%; }
+.panelLeft { margin-right: auto; margin-left: 8%; }
+
+.panelTitle {
+  font-family: var(--font-serif);
+  font-size: var(--font-size-h2);
+  color: var(--color-accent, #fff);
+  margin-bottom: 1.25rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+.panelText {
+  font-family: var(--font-sans);
+  font-size: 1.1rem; 
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.85); /* Более чистый контраст */
+  font-weight: 400;
+}
+
+.planirovkaWrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.planirovka {
+  width: 85%;
+  height: 85%;
+  object-fit: contain;
+  /* Мягкий эмбиент-свет + жесткая тень = 3D глубина */
+  filter: drop-shadow(0 40px 80px rgba(0, 0, 0, 0.9)) 
+          drop-shadow(0 0 20px rgba(255, 255, 255, 0.05));
+}

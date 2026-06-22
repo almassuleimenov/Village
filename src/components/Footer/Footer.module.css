@@ -1,0 +1,145 @@
+/* src/components/Footer/Footer.module.css */
+
+.footer {
+  position: relative;
+  background-color: #020202;
+  padding: 8rem 2rem 2rem;
+  overflow: hidden;
+  /* Убираем жесткий бордер, если он есть, и добавляем тень-растушевку наверх */
+  border-top: none; 
+  box-shadow: 0 -80px 100px -20px #020202; /* Мягко наезжает на #050505 */
+  font-family: var(--font-sans);
+}
+
+/* === Интерактивный свет (Linear Spotlight) === */
+.spotlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  /* Градиент реагирует на CSS-переменные, которые мы меняем в JS */
+  background: radial-gradient(
+    800px circle at var(--mouse-x, 50vw) var(--mouse-y, -20vh),
+    rgba(255, 255, 255, 0.04),
+    transparent 40%
+  );
+  transition: opacity 0.5s ease;
+}
+
+.content {
+  position: relative;
+  z-index: 10;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8rem;
+}
+
+/* === Сетка ссылок === */
+.topSection {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4rem;
+}
+
+.brand {
+  max-width: 300px;
+}
+
+.brandDesc {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-top: 1rem;
+}
+
+.grid {
+  display: flex;
+  gap: 6rem;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.colHeading {
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.link {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+  width: fit-content;
+}
+
+.link:hover {
+  color: #fff;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+}
+
+/* === Гигантский Typography внизу === */
+.bottomSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 4rem;
+}
+
+.massiveLogoWrapper {
+  overflow: hidden; /* Скрываем текст, пока он не выедет снизу */
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.massiveLogo {
+  font-family: var(--font-serif);
+  font-size: clamp(4rem, 15vw, 18rem);
+  font-weight: 300;
+  line-height: 0.8;
+  letter-spacing: -0.02em;
+  color: #fff;
+  /* Мягкий градиент на самом тексте для объема */
+  background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.2) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  will-change: transform, opacity;
+}
+
+/* === Копирайт и мелкие детали === */
+.legalBar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 3rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.8rem;
+}
+
+.legalLinks {
+  display: flex;
+  gap: 2rem;
+}
+
+.legalLinks a {
+  color: rgba(255, 255, 255, 0.3);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.legalLinks a:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
