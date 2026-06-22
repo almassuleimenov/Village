@@ -17,8 +17,7 @@ export function CinematicTour() {
     offset: ["start start", "end end"],
   });
 
-  // 1. ВАЖНО: Виртуальная пружина. Она сделает скраббинг видео идеально плавным
-  // даже если человек крутит колесико старой мышки рывками.
+  // Виртуальная пружина для идеальной плавности скраббинга
   const scrollYProgress = useSpring(rawProgress, {
     stiffness: 80,
     damping: 25,
@@ -28,7 +27,7 @@ export function CinematicTour() {
   /* ================= ФАЗА 1: Въезд (0.0 -> 0.25) ================= */
   const seq1Progress = useTransform(scrollYProgress, [0, 0.25], [0, 1], { clamp: true });
   const seq1Opacity = useTransform(scrollYProgress, [0, 0.20, 0.25], [1, 1, 0], { clamp: true });
-  const seq1Scale = useTransform(scrollYProgress, [0, 0.25], [1, 1.15], { clamp: true }); // Эффект наезда
+  const seq1Scale = useTransform(scrollYProgress, [0, 0.25], [1, 1.15], { clamp: true });
   const seq1Filter = useTransform(scrollYProgress, [0.20, 0.25], ["blur(0px)", "blur(24px)"], { clamp: true });
 
   const panel1Opacity = useTransform(scrollYProgress, [0.02, 0.05, 0.15, 0.18], [0, 1, 1, 0], { clamp: true });
@@ -45,19 +44,21 @@ export function CinematicTour() {
 
   /* ================= ФАЗА 3: Архитектура (0.50 -> 0.75) ================= */
   const seq3Progress = useTransform(scrollYProgress, [0.45, 0.75], [0, 1], { clamp: true });
-  // Видео 3 гаснет, но оставляет красивый темный фон (0.15) для планировки
-  const seq3Opacity = useTransform(scrollYProgress, [0.45, 0.50, 0.70, 0.75], [0, 1, 1, 0.15], { clamp: true });
+  // Видео 3 почти гаснет к финалу, оставляя лишь призрачный фон для титров
+  const seq3Opacity = useTransform(scrollYProgress, [0.45, 0.50, 0.75, 0.90], [0, 1, 1, 0.1], { clamp: true });
   const seq3Scale = useTransform(scrollYProgress, [0.45, 0.75], [0.95, 1.10], { clamp: true });
-  const seq3Filter = useTransform(scrollYProgress, [0.45, 0.50, 0.70, 0.75], ["blur(24px)", "blur(0px)", "blur(0px)", "blur(30px)"], { clamp: true });
+  const seq3Filter = useTransform(scrollYProgress, [0.45, 0.50, 0.70, 0.85], ["blur(24px)", "blur(0px)", "blur(0px)", "blur(30px)"], { clamp: true });
 
   const panel3Opacity = useTransform(scrollYProgress, [0.52, 0.55, 0.65, 0.68], [0, 1, 1, 0], { clamp: true });
   const panel3Y = useTransform(scrollYProgress, [0.52, 0.68], ["40px", "-40px"], { clamp: true });
 
-  /* ================= ФИНАЛ: ПЛАНИРОВКА (0.75 -> 1.0) ================= */
-  // Планировка уверенно появляется и ОСТАЕТСЯ (значение 1 до самого 1.0)
-  const planOpacity = useTransform(scrollYProgress, [0.70, 0.78], [0, 1], { clamp: true });
-  const planScale = useTransform(scrollYProgress, [0.70, 1.0], [0.9, 1.02], { clamp: true });
-  const planY = useTransform(scrollYProgress, [0.70, 0.85], ["60px", "0px"], { clamp: true });
+  /* ================= ФИНАЛ: КИНЕМАТОГРАФИЧНОЕ ЗАТЕМНЕНИЕ (0.75 -> 1.0) ================= */
+  // Плавный черный градиент, который накрывает сцену
+  const finalOverlayOpacity = useTransform(scrollYProgress, [0.75, 0.85], [0, 1], { clamp: true });
+  
+  // Элегантный текст, выплывающий из темноты
+  const finalContentOpacity = useTransform(scrollYProgress, [0.82, 0.92], [0, 1], { clamp: true });
+  const finalContentY = useTransform(scrollYProgress, [0.82, 0.92], ["40px", "0px"], { clamp: true });
 
   return (
     <section ref={containerRef} className={styles.container}>
@@ -123,17 +124,21 @@ export function CinematicTour() {
           </motion.div>
         </div>
 
-        {/* === ПЛАНИРОВКА === */}
+        {/* === ФИНАЛ: ЗАТЕМНЕНИЕ === */}
         <motion.div 
-          className={styles.planirovkaWrapper}
-          style={{ opacity: planOpacity, scale: planScale, y: planY }}
+          className={styles.finalOverlay}
+          style={{ opacity: finalOverlayOpacity }}
+        />
+        
+        <motion.div 
+          className={styles.finalContentWrapper}
+          style={{ opacity: finalContentOpacity, y: finalContentY }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img 
-            src="/forsecond/planirovka.png" 
-            alt="Планировка V Club Village"
-            className={styles.planirovka}
-          />
+          <h2 className={styles.finalTitle}>Истинная привилегия — это пространство.</h2>
+          <p className={styles.finalSubtitle}>
+            Откройте для себя новый стандарт жизни в V Club Village. 
+            Безупречная эстетика и абсолютный комфорт.
+          </p>
         </motion.div>
 
       </div>

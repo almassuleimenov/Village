@@ -1,0 +1,131 @@
+.ctaSection {
+  width: 100%;
+  /* Используем спейсинг из твоей системы для больших отступов сверху и снизу */
+  padding: var(--space-xl) var(--space-md);
+  background-color: var(--color-bg);
+  /* Тонкая линия сверху и снизу для структурности, 20% прозрачности золота */
+  border-top: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-lg);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  max-width: 800px;
+}
+
+.title {
+  font-size: var(--font-size-h2);
+  color: var(--color-text-main);
+  /* Балансировка текста, чтобы вдовы (одиночные слова) не оставались на последней строке */
+  text-wrap: balance;
+  margin: 0;
+}
+
+.description {
+  font-size: var(--font-size-body);
+  color: var(--color-text-muted);
+  text-wrap: balance;
+  max-width: 600px;
+  margin: 0;
+}
+
+.actionWrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Стилизация премиальной кнопки */
+.button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: transparent;
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  padding: 1rem 2rem;
+  border-radius: 2px; /* Почти острые углы для строгости (архитектурный стиль) */
+  font-family: inherit;
+  font-size: var(--font-size-body);
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Псевдоэлемент для заливки кнопки золотом при наведении */
+.button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 0;
+}
+
+.buttonText,
+.buttonIcon {
+  position: relative;
+  z-index: 1;
+}
+
+.buttonIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(0);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Ховер эффекты */
+@media (hover: hover) and (pointer: fine) {
+  .button:hover {
+    color: var(--color-bg); /* Текст становится темным на золотом фоне */
+  }
+
+  .button:hover::before {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* Стрелка слегка уезжает вправо при наведении */
+  .button:hover .buttonIcon {
+    transform: translateX(4px);
+  }
+}
+
+/* Адаптив для мобильных устройств */
+@media (max-width: 768px) {
+  .ctaSection {
+    padding: var(--space-lg) var(--space-sm);
+  }
+
+  .button {
+    width: 100%;
+    justify-content: center;
+  }
+}

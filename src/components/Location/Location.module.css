@@ -1,0 +1,156 @@
+.section {
+  --bg-primary: #050505;
+  --text-main: #F7F8F8;
+  --text-muted: #8A8F98;
+  --border-color: rgba(255, 255, 255, 0.08);
+
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  padding: 140px 24px;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  margin-bottom: 64px;
+  max-width: 720px;
+}
+
+.title {
+  font-size: clamp(2.5rem, 4vw, 4rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin: 0 0 24px 0;
+  background: linear-gradient(180deg, #FFFFFF 0%, #A1A1AA 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  font-size: 1.125rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Map Wrapper */
+.mapWrapper {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  border-radius: 24px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  background-color: #111; /* Fallback color */
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Iframe Container & CSS Filter Magic */
+.iframeContainer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* 
+    Хак для темной темы Я.Карт:
+    1. invert(90%) - инвертируем цвета (светлое становится темным).
+    2. hue-rotate(180deg) - возвращаем правильные оттенки (вода снова синяя, зелень зеленая).
+    3. grayscale(20%) - приглушаем кричащие цвета Яндекса.
+    4. contrast(85%) - смягчаем контраст для премиального вида.
+  */
+  filter: invert(90%) hue-rotate(180deg) grayscale(20%) contrast(85%);
+  transition: filter 0.5s ease;
+}
+
+.mapIframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  /* Увеличиваем размер iframe и смещаем его, чтобы скрыть логотип и элементы управления Яндекса по краям */
+  width: calc(100% + 10px);
+  height: calc(100% + 50px);
+  margin-top: -40px;
+  margin-left: -5px;
+}
+
+/* Виньетка (внутренняя тень), чтобы карта плавно уходила в фон блока */
+.mapVignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 24px;
+  box-shadow: inset 0 0 100px rgba(5, 5, 5, 0.8),
+              inset 0 0 40px rgba(5, 5, 5, 0.5);
+  z-index: 2;
+}
+
+/* Плавающий UI поверх карты */
+.floatingUI {
+  position: absolute;
+  top: 32px;
+  left: 32px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.glassBadge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 20px;
+  background: rgba(15, 15, 15, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  width: fit-content;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.badgeTitle {
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.badgeTime {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #FFFFFF;
+  font-family: monospace;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .section {
+    padding: 80px 16px;
+  }
+
+  .mapWrapper {
+    height: 450px;
+    border-radius: 16px;
+  }
+
+  .floatingUI {
+    top: auto;
+    bottom: 24px;
+    left: 16px;
+    right: 16px;
+    gap: 8px;
+  }
+
+  .glassBadge {
+    width: 100%;
+    padding: 12px 16px;
+  }
+}
