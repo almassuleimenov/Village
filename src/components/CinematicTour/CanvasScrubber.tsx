@@ -32,7 +32,6 @@ export function CanvasScrubber({
       for (let i = 1; i <= frameCount; i++) {
         const img = new Image();
         const frameStr = i.toString().padStart(4, "0");
-        // Изменено на .jpg (как было сгенерировано FFmpeg)
         img.src = `/frames/${sequenceName}/frame_${frameStr}.jpg`;
         images.push(img);
       }
