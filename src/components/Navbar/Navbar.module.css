@@ -19,32 +19,38 @@
 
 /* === Стили динамического контейнера (Nav) === */
 
+/* === Стили динамического контейнера (Nav) === */
+
 .navContainerTop {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* Отрываем панель от краев экрана для эффекта "воздуха" */
+  
+  /* КРИТИЧНОЕ ИСПРАВЛЕНИЕ: Возвращаем реакцию на клики */
+  pointer-events: auto; 
+  
   width: calc(100% - 3rem); 
-  max-width: 1440px; /* В начальном состоянии она шире, чем при скролле */
+  max-width: 1440px;
   height: 4.5rem;
-  margin-top: 1.5rem; /* Отступ от самого верха */
+  margin-top: 1.5rem;
   background: rgba(15, 15, 15, 0.6);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  /* Рамка теперь идет по всему периметру, а не только снизу */
   border: 1px solid rgba(255, 255, 255, 0.05); 
-  /* Элегантное архитектурное скругление (Squircle) */
   border-radius: 24px; 
   padding: 0 3rem;
 }
 
-/* Оставляем ваш класс для скролла без изменений (он идеален) */
 .navContainerScrolled {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  
+  /* КРИТИЧНОЕ ИСПРАВЛЕНИЕ: Возвращаем реакцию на клики */
+  pointer-events: auto; 
+  
   width: 100%;
   max-width: 1200px;
   height: 3.5rem;
@@ -52,7 +58,7 @@
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 100px; /* Таблетка */
+  border-radius: 100px;
   padding: 0 1.5rem;
   margin-top: 1rem; 
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);

@@ -93,7 +93,7 @@ export function CinematicTour() {
             priority={false} 
           />
         </motion.div>
-
+      <div className={styles.cinematicOverlay} aria-hidden="true" />
       </div>
     </section>
   );

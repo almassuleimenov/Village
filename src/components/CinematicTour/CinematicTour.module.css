@@ -1,7 +1,7 @@
 .container {
   position: relative;
   height: 400vh; 
-  background-color: #000;
+  background-color: #050505; /* Заменил чисто черный на фирменный из твоей палитры */
 }
 
 .stickyArea {
@@ -11,7 +11,7 @@
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background-color: #000;
+  background-color: #050505;
 }
 
 .canvasWrapper {
@@ -19,5 +19,22 @@
   inset: 0;
   z-index: 1;
   will-change: opacity;
-  background-color: #000;
+  background-color: #050505;
+}
+
+/* ДОБАВИТЬ ЭТОТ КЛАСС */
+.cinematicOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none; /* Пропускаем клики */
+  /* 1. Радиальный градиент: сохраняем центр прозрачным на 40%, к краям уходим в полутень.
+    2. Линейный градиент: сильное затемнение сверху и снизу (для читаемости текста или UI).
+  */
+  background: 
+    radial-gradient(circle at center, transparent 40%, rgba(5, 5, 5, 0.4) 100%),
+    linear-gradient(to bottom, rgba(5, 5, 5, 0.8) 0%, transparent 15%, transparent 85%, rgba(5, 5, 5, 0.8) 100%);
+  
+  /* Режим наложения multiply делает тени глубже, не делая светлые участки "серыми" */
+  mix-blend-mode: multiply;
 }
