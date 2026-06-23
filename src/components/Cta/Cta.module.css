@@ -1,131 +1,233 @@
-.ctaSection {
-  width: 100%;
-  /* Используем спейсинг из твоей системы для больших отступов сверху и снизу */
-  padding: var(--space-xl) var(--space-md);
-  background-color: var(--color-bg);
-  /* Тонкая линия сверху и снизу для структурности, 20% прозрачности золота */
-  border-top: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
-  border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
-  display: flex;
-  justify-content: center;
+.section {
+  --bg-primary: #050505;
+  --text-main: #F7F8F8;
+  --text-muted: #8A8F98;
+  --color-accent: #e5d3b3;
+  --input-bg: rgba(255, 255, 255, 0.03);
+  --input-border: rgba(255, 255, 255, 0.08);
+  
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  padding: 120px 24px;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+  position: relative;
+  overflow: hidden;
 }
 
 .container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  background: radial-gradient(circle at 100% 50%, rgba(229, 211, 179, 0.03) 0%, transparent 50%);
+  border-radius: 32px;
+  border: 1px solid var(--input-border);
+  padding: 80px;
+}
+
+.textContent {
+  max-width: 540px;
+}
+
+.title {
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 24px 0;
+}
+
+.subtitle {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* === Форма === */
+.formWrapper {
   width: 100%;
-  max-width: 1200px;
+  max-width: 480px;
+  margin-left: auto;
+  position: relative;
+  min-height: 300px; /* Предотвращает прыжки при смене стейта */
+  display: flex;
+  align-items: center;
+}
+
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Floating Label Inputs */
+.inputGroup {
+  position: relative;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  height: 64px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 16px;
+  padding: 24px 20px 8px; /* Место для floating label */
+  font-size: 1rem;
+  color: var(--text-main);
+  outline: none;
+  transition: border-color 0.3s ease, background 0.3s ease;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.label {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 1rem;
+  pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), font-size 0.3s ease, color 0.3s ease;
+}
+
+/* Анимация Label при фокусе или если инпут не пустой */
+.input:focus,
+.input:not(:placeholder-shown) {
+  border-color: rgba(229, 211, 179, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.input:focus ~ .label,
+.input:not(:placeholder-shown) ~ .label {
+  transform: translateY(-20px);
+  font-size: 0.75rem;
+  color: var(--color-accent);
+}
+
+/* Кнопка с пружиной */
+.submitBtn {
+  height: 64px;
+  width: 100%;
+  background: var(--color-accent);
+  color: #050505;
+  border: none;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+  outline: none;
+}
+
+.submitBtn:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+/* Spinner для состояния Loading */
+.loader {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(5, 5, 5, 0.3);
+  border-bottom-color: #050505;
+  border-radius: 50%;
+  display: inline-block;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.disclaimer {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.3);
+  text-align: center;
+  margin: 0;
+}
+
+/* === Состояние успеха === */
+.successState {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: var(--space-lg);
+  padding: 40px;
+  background: rgba(229, 211, 179, 0.05);
+  border: 1px solid rgba(229, 211, 179, 0.1);
+  border-radius: 24px;
 }
 
-.content {
+.successIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: #050505;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: var(--space-sm);
-  max-width: 800px;
-}
-
-.title {
-  font-size: var(--font-size-h2);
-  color: var(--color-text-main);
-  /* Балансировка текста, чтобы вдовы (одиночные слова) не оставались на последней строке */
-  text-wrap: balance;
-  margin: 0;
-}
-
-.description {
-  font-size: var(--font-size-body);
-  color: var(--color-text-muted);
-  text-wrap: balance;
-  max-width: 600px;
-  margin: 0;
-}
-
-.actionWrapper {
-  display: flex;
   justify-content: center;
-  width: 100%;
+  margin-bottom: 24px;
 }
 
-/* Стилизация премиальной кнопки */
-.button {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  background: transparent;
+.successIcon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.successState h3 {
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: 1.5rem;
   color: var(--color-accent);
-  border: 1px solid var(--color-accent);
-  padding: 1rem 2rem;
-  border-radius: 2px; /* Почти острые углы для строгости (архитектурный стиль) */
-  font-family: inherit;
-  font-size: var(--font-size-body);
-  font-weight: 500;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  margin: 0 0 8px 0;
 }
 
-/* Псевдоэлемент для заливки кнопки золотом при наведении */
-.button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: var(--color-accent);
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 0;
+.successState p {
+  color: var(--text-muted);
+  margin: 0;
 }
 
-.buttonText,
-.buttonIcon {
-  position: relative;
-  z-index: 1;
-}
-
-.buttonIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform: translateX(0);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Ховер эффекты */
-@media (hover: hover) and (pointer: fine) {
-  .button:hover {
-    color: var(--color-bg); /* Текст становится темным на золотом фоне */
+/* === Responsive === */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    padding: 60px 40px;
+    background: radial-gradient(circle at 50% 100%, rgba(229, 211, 179, 0.03) 0%, transparent 50%);
   }
-
-  .button:hover::before {
-    transform: scaleX(1);
-    transform-origin: left;
-  }
-
-  /* Стрелка слегка уезжает вправо при наведении */
-  .button:hover .buttonIcon {
-    transform: translateX(4px);
+  
+  .formWrapper {
+    max-width: 100%;
+    margin-left: 0;
   }
 }
 
-/* Адаптив для мобильных устройств */
 @media (max-width: 768px) {
-  .ctaSection {
-    padding: var(--space-lg) var(--space-sm);
+  .section {
+    padding: 80px 16px;
   }
 
-  .button {
-    width: 100%;
-    justify-content: center;
+  .grid {
+    padding: 40px 24px;
+    border-radius: 24px;
+  }
+
+  .title {
+    font-size: 2rem;
   }
 }

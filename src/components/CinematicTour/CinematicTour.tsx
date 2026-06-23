@@ -10,62 +10,59 @@ const FRAMES_COUNT = 121;
 export function CinematicTour() {
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Реальный скролл пользователя
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
   });
 
-  // Изолированное значение прогресса, которым мы управляем программно
   const animatingProgress = useMotionValue(0);
-  
-  // Храним текущую зону, чтобы не перезапускать анимацию внутри одной и той же зоны
   const currentZoneRef = useRef<number>(0);
 
-  /* Разбиваем скролл на 3 дискретные зоны:
-    - От 0.0 до 0.25: Зона 0 (Начало первого видео, прогресс 0.0)
-    - От 0.25 до 0.75: Зона 1 (Фиксация на старте второго видео, прогресс 0.5)
-    - От 0.75 до 1.0:  Зона 2 (Конец второго видео, прогресс 1.0)
-  */
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     let targetZone = 0;
     let targetProgress = 0;
 
-    if (latest >= 0.25 && latest < 0.75) {
+    // Оптимизированы пороги срабатывания для более чуткого отклика на скролл
+    if (latest >= 0.20 && latest < 0.70) {
       targetZone = 1;
-      targetProgress = 0.5; // Конец первого видео / старт второго
-    } else if (latest >= 0.75) {
+      targetProgress = 0.5; 
+    } else if (latest >= 0.70) {
       targetZone = 2;
-      targetProgress = 1.0; // Финал
+      targetProgress = 1.0; 
     }
 
-    // Если зона изменилась — запускаем плавное автономное проигрывание до точки
     if (targetZone !== currentZoneRef.current) {
       currentZoneRef.current = targetZone;
 
+      // Уменьшена длительность (duration) до 1.1s и выставлен плавный выезд easeOut
+      // Это убирает ощущение "задержки" и делает старт видео моментальным
       animate(animatingProgress, targetProgress, {
         type: "tween",
-        ease: "easeInOut",
-        duration: 1.5 // Скорость автоматического проигрывания видео (в секундах)
+        ease: "easeOut",
+        duration: 1.1 
       });
     }
   });
 
-  // Синхронизируем уничтожение анимаций, если компонент размонтируется во время воспроизведения
   useEffect(() => {
     return () => {
       animatingProgress.stop();
     };
   }, [animatingProgress]);
 
-  /* ================= МАРШРУТИЗАЦИЯ КАДРОВ ================= */
-  // Первая секвенция берет диапазон прогресса от 0.0 до 0.5 и разворачивает в свои 0.0 -> 1.0
+  /* ================= МАРШРУТИЗАЦИЯ И МИКРО-КРОССФЕЙД ================= */
+  
+  // Поток 1: Изменение кадров от 0.0 до 0.5 значения animatingProgress
   const firsttProgress = useTransform(animatingProgress, [0, 0.5], [0, 1], { clamp: true });
-  const firsttOpacity = useTransform(animatingProgress, [0.4999, 0.5], [1, 0], { clamp: true });
+  
+  // Плавное исчезновение первого видео начинается чуть заранее (на прогрессе 0.42) и завершается ровно в 0.50
+  const firsttOpacity = useTransform(animatingProgress, [0, 0.42, 0.50], [1, 1, 0], { clamp: true });
 
-  // Вторая секвенция берет диапазон прогресса от 0.5 до 1.0 и разворачивает в свои 0.0 -> 1.0
+  // Поток 2: Изменение кадров начнется только ПОСЛЕ достижения 0.5 прогресса
   const seconddProgress = useTransform(animatingProgress, [0.5, 1.0], [0, 1], { clamp: true });
-  const seconddOpacity = useTransform(animatingProgress, [0.4999, 0.5], [0, 1], { clamp: true });
+  
+  // Плавное появление второго видео (на его статической 1-й картинке) происходит синхронно с угасанием первого
+  const seconddOpacity = useTransform(animatingProgress, [0.42, 0.50, 1.0], [0, 1, 1], { clamp: true });
 
   return (
     <section ref={containerRef} className={styles.container}>

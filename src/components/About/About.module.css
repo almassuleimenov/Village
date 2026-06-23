@@ -1,172 +1,192 @@
-/* Базовые переменные для соблюдения консистентности (Quiet Luxury / Linear aesthetic) */
 .aboutSection {
-  --bg-primary: #000000;
-  --bg-secondary: rgba(255, 255, 255, 0.03);
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(255, 255, 255, 0.15);
-  --text-primary: #F7F8F8;
-  --text-secondary: #8A8F98;
-  --glow-color: rgba(255, 255, 255, 0.06);
-  
+  --bg-primary: #050505;
+  --text-main: #F7F8F8;
+  --text-muted: #8A8F98;
+  --color-accent: #e5d3b3;
+  --border-color: rgba(255, 255, 255, 0.05);
+
   background-color: var(--bg-primary);
-  color: var(--text-primary);
-  padding: 120px 24px;
-  min-height: 100vh;
+  color: var(--text-main);
+  padding: 160px 24px;
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
-  overflow: hidden;
+  position: relative;
 }
 
-.container {
-  max-width: 1024px;
+.wrapper {
+  max-width: 1280px;
   margin: 0 auto;
 }
 
-/* Hero Section */
-.hero {
-  text-align: center;
-  max-width: 720px;
-  margin: 0 auto 80px auto;
-  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.title {
-  font-size: clamp(3rem, 5vw, 4.5rem);
-  font-weight: 600;
-  letter-spacing: -0.04em;
-  line-height: 1.1;
-  margin-bottom: 24px;
-  background: linear-gradient(180deg, #FFFFFF 0%, #A1A1AA 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.subtitle {
-  font-size: clamp(1.125rem, 2vw, 1.35rem);
-  color: var(--text-secondary);
-  line-height: 1.6;
-  font-weight: 400;
-  letter-spacing: -0.01em;
-}
-
-/* Bento Grid Layout */
-.bentoGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 24px;
-  position: relative;
-}
-
-/* Индивидуальная карточка */
-.card {
-  position: relative;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 32px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: border-color 0.3s ease, background-color 0.3s ease;
-  
-  /* Каскадная анимация появления */
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: calc(var(--animation-order) * 0.1s + 0.2s);
-}
-
-.card:hover {
-  border-color: var(--border-hover);
-  background-color: rgba(255, 255, 255, 0.04);
-}
-
-/* Эффект свечения (Следящий градиент) */
-.cardGlow {
-  position: absolute;
-  top: 0;
-  left: 0;
+/* Линии разграничения пространства (Архитектурный стиль) */
+.horizontalLine {
   width: 100%;
-  height: 100%;
-  pointer-events: none;
-  background: radial-gradient(
-    600px circle at var(--mouse-x, 0) var(--mouse-y, 0),
-    var(--glow-color),
-    transparent 40%
-  );
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  height: 1px;
+  background-color: var(--border-color);
+  transform-origin: left center;
+  margin-bottom: 48px;
 }
 
-.card:hover .cardGlow {
-  opacity: 1;
+/* Верхняя зона */
+.topZone {
+  margin-bottom: 96px;
 }
 
-/* Внутренний контент карточки */
-.cardContent {
-  position: relative;
-  z-index: 1;
+.headerGrid {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  align-items: start;
+  gap: 32px;
+}
+
+.sectionKicker {
+  font-family: var(--font-sans, monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  padding-top: 8px;
+}
+
+.mainTitle {
+  font-family: var(--font-serif, "Playfair Display", Georgia, serif);
+  font-size: clamp(2rem, 3.5vw, 3.2rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin: 0;
+  max-width: 860px;
+  color: #ffffff;
+}
+
+/* Манифест Сетка */
+.manifestoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 80px;
+  margin-bottom: 120px;
+}
+
+.manifestoCard {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  will-change: transform, opacity;
 }
 
-.iconWrapper {
+.cardHeader {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #FFFFFF;
+  gap: 16px;
   margin-bottom: 24px;
+}
+
+.cardNumber {
+  font-family: var(--font-sans, sans-serif);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  opacity: 0.8;
+}
+
+.cardTag {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
 }
 
 .cardTitle {
-  font-size: 1.25rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  margin-bottom: 12px;
-  letter-spacing: -0.02em;
-}
-
-.cardDescription {
-  font-size: 1rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: 1.75rem;
   font-weight: 400;
+  letter-spacing: -0.01em;
+  margin: 0 0 20px 0;
+  color: #ffffff;
+}
+
+.cardText {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--text-muted);
   margin: 0;
-  /* Для длинного текста можно использовать flex-grow, если нужен выровненный footer */
-  flex-grow: 1; 
+  text-wrap: balance;
 }
 
-/* Анимация появления */
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+/* Метрики */
+.metricsZone {
+  margin-top: 80px;
+}
+
+.metricsZone .horizontalLine {
+  margin-bottom: 64px;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+}
+
+.metricItem {
+  will-change: transform, opacity;
+}
+
+.metricValue {
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 300;
+  line-height: 1;
+  color: var(--color-accent);
+  margin-bottom: 16px;
+}
+
+.metricLabel {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #ffffff;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.metricDescription {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Адаптивный дизайн (Планшеты и Мобильные) */
+@media (max-width: 1024px) {
+  .headerGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  .manifestoGrid {
+    gap: 40px;
   }
 }
 
-/* Responsive корректировки */
 @media (max-width: 768px) {
   .aboutSection {
-    padding: 80px 16px;
+    padding: 100px 16px;
   }
   
-  .bentoGrid {
+  .topZone {
+    margin-bottom: 64px;
+  }
+  
+  .manifestoGrid {
     grid-template-columns: 1fr;
+    gap: 48px;
+    margin-bottom: 80px;
   }
   
-  .card {
-    padding: 24px;
+  .metricsGrid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .cardText {
+    text-wrap: unset;
   }
 }

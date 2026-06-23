@@ -40,18 +40,13 @@ export function CanvasScrubber({
       images[0].onload = () => drawImage(0);
     };
 
-    if (priority) {
-      loadSequence();
-    } else {
-      const timer = setTimeout(loadSequence, 1000);
-      return () => {
-        isMounted = false;
-        clearTimeout(timer);
-      };
-    }
+    // Убрана искусственная задержка setTimeout для полной ликвидации лагов при быстром скролле
+    loadSequence();
 
-    return () => { isMounted = false; };
-  }, [frameCount, sequenceName, priority]);
+    return () => { 
+      isMounted = false; 
+    };
+  }, [frameCount, sequenceName]);
 
   const drawImage = (index: number) => {
     currentIndexRef.current = index;

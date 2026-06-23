@@ -81,7 +81,7 @@ export function Hero() {
         >
           <motion.div variants={textRevealVariant}>
             <h1 className={styles.logo}>V</h1>
-            <p className={styles.subtitle}>Club Village</p>
+            <p className={styles.subtitle}>Club Villas</p>
           </motion.div>
 
           <motion.h2 variants={textRevealVariant} className={styles.title}>

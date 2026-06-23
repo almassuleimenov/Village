@@ -1,230 +1,251 @@
 .section {
-  --bg-color: #050505;
+  --bg-primary: #050505;
   --text-main: #F7F8F8;
   --text-muted: #8A8F98;
-  --accent: #FFFFFF;
-  --panel-bg: rgba(20, 20, 20, 0.4);
-  --border-color: rgba(255, 255, 255, 0.08);
+  --color-accent: #e5d3b3;
+  --border-color: rgba(255, 255, 255, 0.06);
+  --canvas-bg: #090909;
 
-  background-color: var(--bg-color);
+  background-color: var(--bg-primary);
   color: var(--text-main);
-  padding: 120px 24px;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
+  padding: 140px 24px;
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
 }
 
 .container {
-  max-width: 1440px;
+  max-width: 1340px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1.5fr;
-  gap: 80px;
-  align-items: center;
-  width: 100%;
 }
 
-/* Левая панель с информацией */
-.infoPanel {
+.dashboard {
+  display: grid;
+  grid-template-columns: 460px 1fr;
+  gap: 64px;
+  align-items: start;
+}
+
+/* === Левая панель контента === */
+.controlsPanel {
   display: flex;
   flex-direction: column;
-  gap: 64px;
 }
 
 .header {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  margin-bottom: 40px;
 }
 
-.title {
-  font-size: clamp(2.5rem, 4vw, 4rem);
+.tag {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: var(--color-accent);
+  display: block;
+  margin-bottom: 16px;
+}
+
+.mainTitle {
+  font-size: 2rem;
   font-weight: 500;
   letter-spacing: -0.03em;
-  line-height: 1.1;
+  line-height: 1.2;
   margin: 0;
-  background: linear-gradient(180deg, #FFFFFF 0%, #A1A1AA 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #fff;
 }
 
-.subtitle {
-  font-size: 1.125rem;
-  color: var(--text-muted);
-  line-height: 1.6;
-  max-width: 400px;
-  margin: 0;
-}
-
-.globalStats {
+/* Табы селектора */
+.tabsContainer {
   display: flex;
-  gap: 40px;
-  margin-top: 16px;
-  padding-top: 32px;
-  border-top: 1px solid var(--border-color);
-}
-
-.statBlock {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.statLabel {
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.statValue {
-  font-size: 1.5rem;
-  font-weight: 300;
-  color: var(--accent);
-}
-
-/* Карточка выбранной комнаты */
-.activeDetails {
-  min-height: 200px; /* Предотвращает прыжки верстки при смене контента */
-}
-
-.detailCard {
-  background: var(--panel-bg);
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 32px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  padding: 6px;
+  border-radius: 14px;
+  margin-bottom: 40px;
+  position: relative;
 }
 
-.detailHeader {
+.tabButton {
+  flex: 1;
+  height: 44px;
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+  z-index: 1;
+}
+
+.tabIndex {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  z-index: 2;
+}
+
+.tabButton[data-active="true"] .tabIndex {
+  color: #050505;
+}
+
+.tabIndicator {
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-accent);
+  border-radius: 10px;
+  z-index: 1;
+}
+
+/* Описание этажа */
+.infoBlock {
+  margin-bottom: 40px;
+}
+
+.metaRow {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   margin-bottom: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 16px;
 }
 
-.detailTitle {
-  font-size: 1.5rem;
-  font-weight: 400;
+.floorTitle {
+  font-size: 1.25rem;
+  font-weight: 500;
   margin: 0;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.areaBadge {
+  font-family: monospace;
+  font-size: 1rem;
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.floorDescription {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Спецификации / Экспликация */
+.explication {
+  border-top: 1px solid var(--border-color);
+  padding-top: 32px;
+}
+
+.explicationHeading {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin: 0 0 20px 0;
+}
+
+.specList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.specItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.95rem;
+}
+
+.specName {
   color: var(--text-main);
 }
 
-.detailArea {
-  font-size: 1.125rem;
-  color: var(--text-muted);
-  font-family: monospace; /* Для красивых цифр */
+.specDots {
+  flex: 1;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
+  margin: 0 12px;
 }
 
-.detailDescription {
-  font-size: 1rem;
+.specArea {
+  font-family: monospace;
   color: var(--text-muted);
-  line-height: 1.6;
-  margin: 0;
 }
 
-/* Правая панель с планом */
-.planContainer {
+/* === Правая панель холста чертежа === */
+.canvasPanel {
   position: relative;
   width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.imageWrapper {
-  position: relative;
-  width: 100%;
-  max-width: 900px;
-  border-radius: 24px;
-  /* Мягкое свечение под чертежом для объема */
-  filter: drop-shadow(0 0 60px rgba(255, 255, 255, 0.03));
-}
-
-.planImage {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: contain;
-  /* Инвертируем картинку если она черная на белом фоне (опционально, удали если план и так темный) */
-  /* filter: invert(1) hue-rotate(180deg); */
-}
-
-/* Интерактивные точки (Pins) */
-.pin {
-  position: absolute;
-  width: 32px;
-  height: 32px;
-  transform: translate(-50%, -50%); /* Центрирование точки по точным координатам */
-  background: transparent;
-  border: none;
-  cursor: pointer;
+  height: 640px;
+  background-color: var(--canvas-bg);
+  border-radius: 32px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
-  z-index: 10;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.pin:hover {
-  transform: translate(-50%, -50%) scale(1.2);
-}
-
-.pinInner {
-  width: 10px;
-  height: 10px;
-  background-color: rgba(255, 255, 255, 0.5);
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
-}
-
-.pinActive .pinInner {
-  background-color: #FFFFFF;
-  box-shadow: 0 0 20px 4px rgba(255, 255, 255, 0.4);
-  transform: scale(1.5);
-}
-
-/* Анимация пульсации для неактивных пинов (Apple style ping) */
-.pinPing {
+/* Тонкая сетка для ощущения архитектурного софта */
+.blueprintGridOverlay {
   position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+.blueprintWrapper {
+  position: relative;
+  width: 85%;
+  height: 85%;
+}
+
+.imageContainer {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.4);
-  border-radius: 50%;
-  animation: ping 3s cubic-bezier(0, 0, 0.2, 1) infinite;
-  z-index: -1;
-  pointer-events: none;
+  will-change: transform, opacity;
 }
 
-@keyframes ping {
-  75%, 100% {
-    transform: scale(2.5);
-    opacity: 0;
-  }
+.blueprintImage {
+  object-fit: contain;
+  /* Фильтр инверсии цвета полностью удален */
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .container {
+/* === Адаптивность === */
+@media (max-width: 1100px) {
+  .dashboard {
     grid-template-columns: 1fr;
     gap: 48px;
   }
-
-  .planContainer {
-    grid-row: 1; /* Поднимаем план наверх на мобильных */
-  }
-
-  .infoPanel {
-    gap: 40px;
-  }
   
-  .activeDetails {
-    min-height: auto;
+  .canvasPanel {
+    height: 500px;
+  }
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 80px 16px;
+  }
+
+  .canvasPanel {
+    height: 380px;
+    border-radius: 24px;
+  }
+
+  .mainTitle {
+    font-size: 1.75rem;
   }
 }

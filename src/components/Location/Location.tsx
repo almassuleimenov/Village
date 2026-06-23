@@ -8,7 +8,8 @@ import styles from './Location.module.css';
 
 export function Location() {
   return (
-    <section className={styles.section}>
+    // ДОБАВЛЕН id="location-section"
+    <section id="location-section" className={styles.section}>
       <div className={styles.container}>
         
         <header className={styles.header}>

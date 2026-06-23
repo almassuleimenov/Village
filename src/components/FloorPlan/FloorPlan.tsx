@@ -1,132 +1,160 @@
 "use client";
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import styles from './FloorPlan.module.css';
+import React, { useState } from "react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import styles from "./FloorPlan.module.css";
 
-// Строгая типизация узлов плана
-interface PlanNode {
-  id: string;
-  title: string;
-  area: number;
-  description: string;
-  coordinates: { x: number; y: number }; // Проценты от верхнего левого угла картинки
+interface RoomSpec {
+  name: string;
+  area: string;
 }
 
-// Статические данные. O(1) Memory allocation.
-// ВНИМАНИЕ: Настрой координаты x и y под твою картинку Group 133.png
-const PLAN_NODES: PlanNode[] = [
+interface FloorData {
+  id: "first" | "second";
+  shortName: string;
+  title: string;
+  totalArea: string;
+  description: string;
+  imageSrc: string;
+  specs: RoomSpec[];
+}
+
+const FLOORS_DATA: FloorData[] = [
   {
-    id: 'living',
-    title: 'Гостиная-столовая',
-    area: 84.5,
-    description: 'Просторное сердце дома с панорамным остеклением, выходом на террасу и зоной для камина. Идеально для приемов.',
-    coordinates: { x: 35, y: 45 } 
+    id: "first",
+    shortName: "01 ЭТАЖ",
+    title: "Пространство дневной активности",
+    totalArea: "254.0 м²",
+    description: "Первый уровень спроектирован для масштабных сценариев жизни. Центром композиции является просторный зал, гармонично соседствующий с выделенной кухней-столовой и изолированной спальней. Развитая инфраструктура этажа включает вместительную кладовую, прихожую, два санузла и техническое помещение, а внешние террасы обеспечивают бесшовную связь с ландшафтом.",
+    imageSrc: "/forsecond/Firstfloor.png",
+    specs: [
+      { name: "Зал", area: "60.0 м²" },
+      { name: "Спальня", area: "25.8 м²" },
+      { name: "Кухня-столовая", area: "24.0 м²" },
+      { name: "Прихожая", area: "22.0 м²" },
+      { name: "Кладовая", area: "12.0 м²" },
+      { name: "Санузел (блок спальни)", area: "5.9 м²" },
+      { name: "Санузел (гостевой)", area: "5.9 м²" },
+      { name: "Вспомогательное помещение", area: "4.4 м²" },
+      { name: "Летняя терраса (северная)", area: "47.0 м²" },
+      { name: "Летняя терраса (южная)", area: "47.0 м²" }
+    ]
   },
   {
-    id: 'master-bed',
-    title: 'Master Bedroom',
-    area: 42.0,
-    description: 'Приватный блок владельцев с собственной гардеробной комнатой и просторной ванной, оборудованной двойной раковиной.',
-    coordinates: { x: 70, y: 30 }
-  },
-  {
-    id: 'kitchen',
-    title: 'Кухня',
-    area: 24.2,
-    description: 'Эргономичное пространство с "черновой" зоной для готовки и островом для утреннего кофе.',
-    coordinates: { x: 25, y: 20 }
-  },
-  {
-    id: 'terrace',
-    title: 'Терраса',
-    area: 65.0,
-    description: 'Летнее продолжение гостиной. Зона для BBQ, отдыха и созерцания ландшафтного дизайна комплекса.',
-    coordinates: { x: 50, y: 80 }
+    id: "second",
+    shortName: "02 ЭТАЖ",
+    title: "Приватная зона резидентов",
+    totalArea: "125.2 м²",
+    description: "Второй уровень полностью изолирован от гостевых маршрутов и представляет собой приватное крыло для отдыха. Здесь расположены три независимые спальни, включая главную мастер-спальню с собственной гардеробной и выделенным санузлом. Пространство объединено центральным холлом, а каждая жилая комната имеет доступ к индивидуальным ванным комнатам.",
+    imageSrc: "/forsecond/Secondfloor.png",
+    specs: [
+      { name: "Мастер-спальня", area: "31.2 м²" },
+      { name: "Спальня (южная)", area: "25.9 м²" },
+      { name: "Спальня (северная)", area: "25.8 м²" },
+      { name: "Центральный холл", area: "18.1 м²" },
+      { name: "Гардеробная мастер-спальни", area: "6.2 м²" },
+      { name: "Санузел мастер-спальни", area: "6.2 м²" },
+      { name: "Санузел (приватный №1)", area: "5.9 м²" },
+      { name: "Санузел (приватный №2)", area: "5.9 м²" }
+    ]
   }
 ];
 
+const springConfig = {
+  type: "spring",
+  stiffness: 380,
+  damping: 35,
+};
+
 export function FloorPlan() {
-  // По умолчанию активна первая зона
-  const [activeNode, setActiveNode] = useState<PlanNode>(PLAN_NODES[0]);
+  const [activeFloorIndex, setActiveFloorIndex] = useState<number>(0);
+  const currentFloor = FLOORS_DATA[activeFloorIndex];
 
   return (
-    <section className={styles.section}>
+    <section id="layout-section" className={styles.section}>
       <div className={styles.container}>
         
-        {/* Левая панель: Инфо (Master-Detail pattern) */}
-        <div className={styles.infoPanel}>
-          <div className={styles.header}>
-            <h2 className={styles.title}>The Layout.</h2>
-            <p className={styles.subtitle}>
-              Продуманная эргономика каждого квадратного метра. 
-              Архитектура, подчиненная сценариям вашей жизни.
-            </p>
-            
-            <div className={styles.globalStats}>
-              <div className={styles.statBlock}>
-                <span className={styles.statLabel}>Общая площадь</span>
-                <span className={styles.statValue}>320 m²</span>
+        <div className={styles.dashboard}>
+          
+          {/* Левая интерактивная панель спецификаций */}
+          <div className={styles.controlsPanel}>
+            <header className={styles.header}>
+              <span className={styles.tag}>[ ПЛАНИРОВОЧНЫЕ РЕШЕНИЯ ]</span>
+              <h2 className={styles.mainTitle}>Архитектура внутреннего пространства</h2>
+            </header>
+
+            {/* Селектор этажей */}
+            <div className={styles.tabsContainer}>
+              {FLOORS_DATA.map((floor, idx) => (
+                <button
+                  key={floor.id}
+                  onClick={() => setActiveFloorIndex(idx)}
+                  className={styles.tabButton}
+                  data-active={activeFloorIndex === idx}
+                >
+                  <span className={styles.tabIndex}>{floor.shortName}</span>
+                  {activeFloorIndex === idx && (
+                    <motion.div 
+                      layoutId="activeTabIndicator"
+                      className={styles.tabIndicator}
+                      transition={springConfig as any}
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Описание активного этажа */}
+            <div className={styles.infoBlock}>
+              <div className={styles.metaRow}>
+                <h3 className={styles.floorTitle}>{currentFloor.title}</h3>
+                <span className={styles.areaBadge}>{currentFloor.totalArea}</span>
               </div>
-              <div className={styles.statBlock}>
-                <span className={styles.statLabel}>Высота потолков</span>
-                <span className={styles.statValue}>3.6 m</span>
-              </div>
+              <p className={styles.floorDescription}>{currentFloor.description}</p>
+            </div>
+
+            {/* Экспликация помещений */}
+            <div className={styles.explication}>
+              <h4 className={styles.explicationHeading}>Экспликация помещений</h4>
+              <ul className={styles.specList}>
+                {currentFloor.specs.map((spec, i) => (
+                  <li key={i} className={styles.specItem}>
+                    <span className={styles.specName}>{spec.name}</span>
+                    <span className={styles.specDots} />
+                    <span className={styles.specArea}>{spec.area}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
-          <div className={styles.activeDetails}>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeNode.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                className={styles.detailCard}
-              >
-                <div className={styles.detailHeader}>
-                  <h3 className={styles.detailTitle}>{activeNode.title}</h3>
-                  <span className={styles.detailArea}>{activeNode.area} m²</span>
-                </div>
-                <p className={styles.detailDescription}>{activeNode.description}</p>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
-
-        {/* Правая панель: Интерактивный план */}
-        <div className={styles.planContainer}>
-          <div className={styles.imageWrapper}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img 
-              src="/forsecond/Group 133.png" 
-              alt="Планировка резиденции" 
-              className={styles.planImage}
-            />
-
-            {/* Рендер интерактивных точек */}
-            {PLAN_NODES.map((node) => {
-              const isActive = activeNode.id === node.id;
-              
-              return (
-                <button
-                  key={node.id}
-                  className={`${styles.pin} ${isActive ? styles.pinActive : ''}`}
-                  style={{ 
-                    left: `${node.coordinates.x}%`, 
-                    top: `${node.coordinates.y}%` 
-                  }}
-                  onClick={() => setActiveNode(node)}
-                  aria-label={`Показать информацию о ${node.title}`}
+          {/* Правая часть: Холст с чертежом */}
+          <div className={styles.canvasPanel}>
+            <div className={styles.blueprintGridOverlay} />
+            <div className={styles.blueprintWrapper}>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentFloor.id}
+                  initial={{ opacity: 0, y: 15, scale: 0.98, filter: "blur(4px)" }}
+                  animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, y: -15, scale: 0.98, filter: "blur(4px)" }}
+                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  className={styles.imageContainer}
                 >
-                  <span className={styles.pinInner} />
-                  {/* Эффект пульсации (Ping) для неактивных элементов */}
-                  {!isActive && <span className={styles.pinPing} />}
-                </button>
-              );
-            })}
+                  <Image
+                    src={currentFloor.imageSrc}
+                    alt={`Планировка резиденции V-Village — ${currentFloor.title}`}
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className={styles.blueprintImage}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
+
         </div>
 
       </div>

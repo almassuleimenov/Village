@@ -1,21 +1,46 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
 import styles from "./Preloader.module.css";
 
+const luxuryEase = [0.76, 0, 0.24, 1] as any;
+
 export function Preloader() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [progress, setProgress] = useState(0);
+  const [showLoader, setShowLoader] = useState(true);
+  const [isInstantExit, setIsInstantExit] = useState(false);
+  
+  const count = useMotionValue(0);
+  const roundedCount = useTransform(count, (latest) => Math.round(latest));
+  const progressWidth = useTransform(count, (v) => `${v}%`);
+  
+  const counterRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    // 1. Блокируем скролл Lenis/браузера на время загрузки
+    const unsubscribe = roundedCount.on("change", (latest) => {
+      if (counterRef.current) {
+        counterRef.current.textContent = latest.toString().padStart(3, "0");
+      }
+    });
+    return unsubscribe;
+  }, [roundedCount]);
+
+  useEffect(() => {
+    // === 1. ПРОВЕРКА СЕССИИ ===
+    // Если флаг есть в sessionStorage, значит пользователь уже был на сайте.
+    // Скрываем лоадер мгновенно, без анимации.
+    if (sessionStorage.getItem("v_village_preloaded")) {
+      setIsInstantExit(true);
+      setShowLoader(false);
+      return; 
+    }
+
+    // === 2. ПЕРВАЯ ЗАГРУЗКА ===
     document.body.style.overflow = "hidden";
 
-    // 2. Формируем массив критических ассетов (Hero фон + Сцена 1)
     const FRAMES_TO_LOAD = 91;
     const criticalAssets = [
-      "/image 407.png", // Главный фон Hero
+      "/image 407.png",
       ...Array.from({ length: FRAMES_TO_LOAD }).map(
         (_, i) => `/frames/seq1/${String(i + 1).padStart(4, "0")}.webp`
       ),
@@ -27,81 +52,111 @@ export function Preloader() {
       return new Promise((resolve) => {
         const img = new Image();
         img.src = src;
-        img.onload = () => {
+        
+        const handleComplete = () => {
           loadedCount++;
-          // Плавно считаем процент
-          setProgress(Math.round((loadedCount / criticalAssets.length) * 100));
+          const actualProgress = (loadedCount / criticalAssets.length) * 100;
+          
+          animate(count, actualProgress, {
+            type: "tween",
+            ease: "easeOut",
+            duration: 0.8,
+          });
           resolve(true);
         };
-        // Если кадр не загрузился (ошибка сети 404), все равно резолвим промис, 
-        // чтобы не получить вечно висящий лоадер.
-        img.onerror = resolve; 
+
+        img.onload = handleComplete;
+        img.onerror = handleComplete;
       });
     };
 
-    // 3. Запускаем параллельную загрузку
     Promise.all(criticalAssets.map(loadAsset)).then(() => {
-      // Искусственная задержка для эстетики: даем юзеру зафиксировать 100% и лого
-      setTimeout(() => {
-        setIsLoading(false);
-        // Возвращаем скролл
-        document.body.style.overflow = "";
-      }, 900);
+      animate(count, 100, { duration: 0.4, ease: "easeOut" }).then(() => {
+        setTimeout(() => {
+          // Записываем флаг об успешной загрузке в текущей сессии
+          sessionStorage.setItem("v_village_preloaded", "true");
+          setShowLoader(false);
+          document.body.style.overflow = "";
+        }, 600);
+      });
     });
 
-    // Fallback на случай, если интернет слишком медленный — пускаем юзера через 8 секунд принудительно
+    // Fallback: пускаем пользователя через 8 секунд, если интернет слишком медленный
     const timeout = setTimeout(() => {
-      setIsLoading(false);
-      document.body.style.overflow = "";
+      animate(count, 100, { duration: 1 }).then(() => {
+        sessionStorage.setItem("v_village_preloaded", "true");
+        setShowLoader(false);
+        document.body.style.overflow = "";
+      });
     }, 8000);
 
     return () => clearTimeout(timeout);
-  }, []);
+  }, [count]);
 
   return (
-    <AnimatePresence>
-      {isLoading && (
+    <AnimatePresence mode="wait">
+      {showLoader && (
         <motion.div
           className={styles.preloader}
-          // Элитарный выход: лоадер не просто исчезает, он размывается и уходит в фон
-          initial={{ opacity: 1, filter: "blur(0px)" }}
-          exit={{ 
-            opacity: 0, 
-            filter: "blur(24px)", 
-            scale: 1.05,
-            transition: { duration: 1.2, ease: [0.76, 0, 0.24, 1] } 
-          }}
+          initial={{ opacity: 1 }}
+          // === УМНЫЙ EXIT ===
+          // Если это повторный заход, duration: 0 скрывает блок за 1 миллисекунду.
+          // Если это первая загрузка, проигрывается роскошная Awwwards-анимация.
+          exit={
+            isInstantExit 
+              ? { opacity: 0, transition: { duration: 0 } } 
+              : { 
+                  y: "-100vh", 
+                  scale: 0.95,
+                  opacity: 0,
+                  filter: "blur(10px)",
+                  transition: { duration: 1.2, ease: luxuryEase, delay: 0.2 } 
+                }
+          }
         >
-          <div className={styles.container}>
-            <motion.h1
-              className={styles.logo}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, ease: "easeOut" }}
-            >
-              V
-            </motion.h1>
+          <div className={styles.noise} />
 
-            <div className={styles.progressWrapper}>
-              <motion.div
-                className={styles.progressBar}
-                // Анимируем ширину с помощью tween, чтобы ползунок не дергался
-                animate={{ width: `${progress}%` }}
-                transition={{ type: "tween", ease: "linear", duration: 0.1 }}
-              />
+          <div className={styles.container}>
+            <div className={styles.logoWrapper}>
+              <motion.h1
+                className={styles.logo}
+                initial={{ y: "100%", opacity: 0 }}
+                animate={{ y: "0%", opacity: 1 }}
+                transition={{ duration: 1.2, ease: luxuryEase, delay: 0.1 }}
+              >
+                V
+              </motion.h1>
             </div>
 
-            <motion.div 
-              className={styles.dataGroup}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-            >
-              <span className={styles.label}>LOADING ASSETS</span>
-              <span className={styles.percentage}>
-                {progress.toString().padStart(3, "0")}%
-              </span>
-            </motion.div>
+            <div className={styles.progressSection}>
+              <motion.div 
+                className={styles.progressLineWrapper}
+                initial={{ scaleX: 0, opacity: 0 }}
+                animate={{ scaleX: 1, opacity: 1 }}
+                transition={{ duration: 1.2, ease: luxuryEase, delay: 0.3 }}
+              >
+                <div className={styles.progressTrack} />
+                <motion.div
+                  className={styles.progressBar}
+                  style={{ width: progressWidth }}
+                >
+                  <div className={styles.progressGlow} />
+                </motion.div>
+              </motion.div>
+
+              <motion.div 
+                className={styles.dataGroup}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, ease: luxuryEase, delay: 0.5 }}
+              >
+                <span className={styles.label}>Инициализация пространства</span>
+                <div className={styles.counterWrapper}>
+                  <span ref={counterRef} className={styles.percentage}>000</span>
+                  <span className={styles.percentSymbol}>%</span>
+                </div>
+              </motion.div>
+            </div>
           </div>
         </motion.div>
       )}

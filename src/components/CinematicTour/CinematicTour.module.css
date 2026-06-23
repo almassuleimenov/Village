@@ -1,6 +1,5 @@
 .container {
   position: relative;
-  /* Достаточная высота для комфортного распределения 3-х зон триггеров */
   height: 400vh; 
   background-color: #000;
 }

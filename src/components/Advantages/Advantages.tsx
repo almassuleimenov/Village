@@ -1,163 +1,143 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import styles from './Advantages.module.css';
+import React from "react";
+import { motion } from "framer-motion";
+import styles from "./Advantages.module.css";
 
-interface Advantage {
+interface AdvantageItem {
   id: string;
   title: string;
   description: string;
-  visualClassName: string;
+  span?: "col-2" | "col-1" | "row-2";
+  icon: React.ReactNode;
 }
 
-// Статические данные O(1) memory
-const ADVANTAGES: Advantage[] = [
+// Статические данные вынесены из компонента для оптимизации
+const ADVANTAGES: AdvantageItem[] = [
   {
-    id: 'privacy',
-    title: 'Абсолютная приватность',
-    description: 'Интеллектуальная система контроля доступа, скрытые маршруты для персонала и продуманная посадка зданий, исключающая вид "окна в окна".',
-    visualClassName: styles.visualPrivacy
+    id: "privacy",
+    title: "Абсолютная приватность",
+    description:
+      "Скрытые маршруты, закрытая охраняемая территория и архитектурные решения, которые защищают вашу частную жизнь от посторонних взглядов.",
+    span: "col-2",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+      </svg>
+    ),
   },
   {
-    id: 'engineering',
-    title: 'Инженерный интеллект',
-    description: 'Системы очистки воздуха хирургического уровня, автономное резервное энергоснабжение и бесшовная интеграция умного дома в каждый элемент пространства.',
-    visualClassName: styles.visualEngineering
+    id: "architecture",
+    title: "Вневременная архитектура",
+    description: "Монументальный фасад, строгие линии и панорамное остекление, стирающее границу между интерьером и природой.",
+    span: "col-1",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
+      </svg>
+    ),
   },
   {
-    id: 'community',
-    title: 'Курируемое комьюнити',
-    description: 'Закрытый клуб для резидентов. Единая социальная среда, где ваши соседи разделяют те же ценности, уровень жизни и эстетический вкус.',
-    visualClassName: styles.visualCommunity
+    id: "engineering",
+    title: "Инженерия будущего",
+    description: "Системы «Умный дом», премиальная очистка воздуха и воды. Интеллектуальный климат-контроль в каждой комнате.",
+    span: "col-1",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25zm.75-12h9v9h-9v-9z" />
+      </svg>
+    ),
   },
   {
-    id: 'architecture',
-    title: 'Архитектура вне времени',
-    description: 'Монументальный фасад из юрского мрамора, строгие геометрические линии и панорамное остекление, стирающее границу между интерьером и ландшафтом.',
-    visualClassName: styles.visualArchitecture
-  }
+    id: "ecology",
+    title: "Эко-интеграция",
+    description: "Проект органично вписан в естественный рельеф. Мы сохранили природный ландшафт и дополнили его вековыми соснами.",
+    span: "col-2",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" />
+      </svg>
+    ),
+  },
 ];
 
-const AUTO_PLAY_INTERVAL = 5000; // 5 секунд на каждый слайд
+// Настройки оркестрации анимаций
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30, filter: "blur(8px)" },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+  },
+};
 
 export function Advantages() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-
-  // Логика авто-переключения с паузой при наведении (Apple-style behavior)
-  useEffect(() => {
-    if (isHovered) return;
-
-    const timer = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % ADVANTAGES.length);
-    }, AUTO_PLAY_INTERVAL);
-
-    return () => clearInterval(timer);
-  }, [isHovered]);
-
   return (
-    <section className={styles.section}>
+    <section id="advantages-section" className={styles.section}>
       <div className={styles.container}>
         
         <header className={styles.header}>
-          <h2 className={styles.mainTitle}>Непревзойденный стандарт.</h2>
-          <p className={styles.subtitle}>
-            Мы переосмыслили каждый аспект премиальной недвижимости, чтобы создать среду, которая предугадывает ваши желания до их появления.
-          </p>
+          <motion.h2
+            className={styles.title}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          >
+            Стандарты без компромиссов
+          </motion.h2>
+          <motion.p
+            className={styles.subtitle}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          >
+            Философия V Club Village строится на безупречном внимании к деталям. 
+            Каждое решение здесь подчинено комфорту и эстетике.
+          </motion.p>
         </header>
 
-        <div 
-          className={styles.contentGrid}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+        <motion.div
+          className={styles.grid}
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
         >
-          {/* Левая колонка: Интерактивный список */}
-          <div className={styles.listContainer}>
-            {ADVANTAGES.map((adv, index) => {
-              const isActive = index === activeIndex;
+          {ADVANTAGES.map((adv) => (
+            <motion.div
+              key={adv.id}
+              variants={itemVariants as any}
+              className={`${styles.card} ${adv.span === "col-2" ? styles.col2 : ""}`}
+            >
+              {/* Декоративный градиент, реагирующий на hover */}
+              <div className={styles.cardGlow} />
+              
+              <div className={styles.cardContent}>
+                <div className={styles.iconWrapper}>{adv.icon}</div>
+                <div className={styles.textWrapper}>
+                  <h3 className={styles.cardTitle}>{adv.title}</h3>
+                  <p className={styles.cardDescription}>{adv.description}</p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
 
-              return (
-                <button
-                  key={adv.id}
-                  className={`${styles.listItem} ${isActive ? styles.listActive : ''}`}
-                  onClick={() => setActiveIndex(index)}
-                  aria-expanded={isActive}
-                >
-                  <div className={styles.itemHeader}>
-                    <span className={styles.itemIndex}>0{index + 1}</span>
-                    <h3 className={styles.itemTitle}>{adv.title}</h3>
-                  </div>
-
-                  {/* Emil Kowalski style spring layout animation */}
-                  <AnimatePresence initial={false}>
-                    {isActive && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                        className={styles.itemDescriptionWrapper}
-                      >
-                        <p className={styles.itemDescription}>{adv.description}</p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  {/* Индикатор прогресса для активного элемента */}
-                  {isActive && (
-                    <div className={styles.progressBarWrapper}>
-                      <motion.div 
-                        className={styles.progressBar}
-                        initial={{ width: "0%" }}
-                        animate={{ width: isHovered ? "100%" : "100%" }}
-                        transition={{ 
-                          duration: AUTO_PLAY_INTERVAL / 1000, 
-                          ease: "linear" 
-                        }}
-                        // Сброс анимации при смене индекса
-                        key={`progress-${activeIndex}`} 
-                      />
-                    </div>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Правая колонка: Визуальное окно (Glassmorphism) */}
-          <div className={styles.visualContainer}>
-            <div className={styles.visualGlass}>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeIndex}
-                  initial={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
-                  animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                  exit={{ opacity: 0, scale: 1.05, filter: 'blur(10px)' }}
-                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                  className={`${styles.visualContent} ${ADVANTAGES[activeIndex].visualClassName}`}
-                >
-                  {/* Здесь абстрактный CSS-контент. Позже можно заменить на <img src={adv.image} /> */}
-                  {activeIndex === 0 && <div className={styles.pulseRing} />}
-                  {activeIndex === 1 && <div className={styles.scannerLine} />}
-                  {activeIndex === 2 && (
-                    <>
-                      <div className={`${styles.orb} ${styles.orb1}`} />
-                      <div className={`${styles.orb} ${styles.orb2}`} />
-                    </>
-                  )}
-                  {activeIndex === 3 && (
-                    <div className={styles.archLines}>
-                      <div className={styles.lineH} />
-                      <div className={styles.lineV} />
-                    </div>
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </div>
-
-        </div>
       </div>
     </section>
   );

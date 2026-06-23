@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { Cormorant_Garamond, Manrope } from "next/font/google";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import "./globals.css";
 import { Preloader } from "@/components/Preloader/Preloader";
-//D:\Project\react_projects\v-village-brochure\src\app\layout.tsx
+import { Atmosphere } from "@/components/Atmosphere/Atmosphere";
+
 const serif = Cormorant_Garamond({ 
   subsets: ["latin", "cyrillic"], 
   weight: ["300", "400", "500"],
@@ -11,10 +12,10 @@ const serif = Cormorant_Garamond({
   display: 'swap'
 });
 
-const sans = Inter({ 
+const manrope = Manrope({ 
   subsets: ["latin", "cyrillic"], 
-  weight: ["300", "400"],
-  variable: "--font-sans",
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-manrope",
   display: 'swap'
 });
 
@@ -29,8 +30,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className={`${serif.variable} ${sans.variable}`}>
+    // Инжектим обе CSS-переменные в корневой тег html
+    <html lang="ru" className={`${serif.variable} ${manrope.variable}`}>
       <body>
+        <Atmosphere />
         <Preloader />
         <SmoothScroll>
           {children}

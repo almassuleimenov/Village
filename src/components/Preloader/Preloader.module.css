@@ -2,40 +2,72 @@
   position: fixed;
   inset: 0;
   z-index: 99999;
-  background-color: #020202; /* Строгий черный без синевы */
+  background-color: #020202;
   display: flex;
   justify-content: center;
   align-items: center;
-  will-change: opacity, filter, transform;
+  /* Аппаратное ускорение для всего слоя */
+  will-change: transform, opacity, filter;
+  transform-origin: top center;
+}
+
+/* Нативный пленочный шум (как в кино) - убивает цифровую "стерильность" фона */
+.noise {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.04;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
 .container {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 240px; /* Узкий, элегантный блок прогресса */
-  gap: 3rem;
+  max-width: 320px; /* Слегка расширили для баланса */
+  gap: 4rem;
+}
+
+/* Обёртка для эффекта выплывания логотипа снизу-вверх (Clip-path эффект) */
+.logoWrapper {
+  overflow: hidden;
+  padding: 10px;
 }
 
 .logo {
-  font-family: var(--font-serif);
-  font-size: 5.5rem;
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: clamp(5rem, 10vw, 7rem);
   font-weight: 300;
   line-height: 1;
   color: var(--color-accent, #c4a977);
   margin: 0;
   letter-spacing: -0.02em;
-  /* Легкое свечение золота */
-  text-shadow: 0 0 40px rgba(196, 169, 119, 0.15); 
+  /* Дорогое свечение золота */
+  filter: drop-shadow(0 0 30px rgba(196, 169, 119, 0.2)); 
 }
 
-.progressWrapper {
+.progressSection {
   width: 100%;
-  height: 1px;
-  background-color: rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.progressLineWrapper {
   position: relative;
-  overflow: hidden;
+  width: 100%;
+  height: 2px; /* Чуть толще для премиальности */
+  transform-origin: center;
+}
+
+.progressTrack {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .progressBar {
@@ -44,22 +76,52 @@
   left: 0;
   height: 100%;
   background-color: var(--color-accent, #c4a977);
-  box-shadow: 0 0 10px rgba(196, 169, 119, 0.4); /* Эффект лазерной линии */
   will-change: width;
+}
+
+/* Маленькая светящаяся искра на кончике прогресс-бара */
+.progressGlow {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #fff;
+  box-shadow: 0 0 12px 4px rgba(196, 169, 119, 0.6);
 }
 
 .dataGroup {
   display: flex;
   justify-content: space-between;
+  align-items: flex-end;
   width: 100%;
-  font-family: var(--font-sans);
+  font-family: var(--font-sans, sans-serif);
   font-size: 0.65rem;
-  letter-spacing: 0.25em;
-  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.2em;
   text-transform: uppercase;
 }
 
-.percentage {
-  font-variant-numeric: tabular-nums; /* Чтобы ширина цифр не прыгала при счете */
+.label {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.counterWrapper {
+  display: flex;
+  align-items: baseline;
   color: var(--color-accent, #c4a977);
+}
+
+.percentage {
+  font-size: 0.85rem;
+  font-weight: 500;
+  /* КРИТИЧНО: Чтобы цифры не дергали верстку при счете */
+  font-variant-numeric: tabular-nums; 
+}
+
+.percentSymbol {
+  font-size: 0.65rem;
+  margin-left: 2px;
+  opacity: 0.8;
 }

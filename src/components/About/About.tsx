@@ -1,120 +1,173 @@
-"use client"
-import React, { useRef } from 'react';
-import styles from './About.module.css';
+"use client";
 
-// Строгая типизация данных
-interface CoreValue {
-  id: string;
+import React from "react";
+import { motion } from "framer-motion";
+import styles from "./About.module.css";
+
+interface ManifestoItem {
+  number: string;
+  tag: string;
   title: string;
-  description: string;
-  icon: React.ReactNode;
+  text: string;
 }
 
-// Статические данные вынесены из компонента (O(1) Memory allocation)
-const CORE_VALUES: CoreValue[] = [
+interface MetricItem {
+  value: string;
+  label: string;
+  description: string;
+}
+
+const MANIFESTO_DATA: ManifestoItem[] = [
   {
-    id: 'craft',
-    title: 'Focus on craft',
-    description: 'Мы уделяем внимание каждой детали. Качество продукта отражает качество мышления нашей команды.',
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <polygon points="12 2 2 7 12 12 22 7 12 2" />
-        <polyline points="2 17 12 22 22 17" />
-        <polyline points="2 12 12 17 22 12" />
-      </svg>
-    )
+    number: "01",
+    tag: "Философия",
+    title: "Монументальный минимализм",
+    text: "Мы убрали всё лишнее, чтобы обнажить чистую форму. Архитектура резиденций гармонично продолжает природный ландшафт предгорий, сочетая в себе грубую текстуру натурального камня, благородство темного металла и безупречную гладь панорамного остекления.",
   },
   {
-    id: 'velocity',
-    title: 'Velocity is a feature',
-    description: 'Скорость доставки ценности определяет победителя. Мы строим системы, которые позволяют двигаться быстро без потери стабильности.',
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="12" y1="20" x2="12" y2="10" />
-        <line x1="18" y1="20" x2="18" y2="4" />
-        <line x1="6" y1="20" x2="6" y2="16" />
-      </svg>
-    )
+    number: "02",
+    tag: "Эргономика",
+    title: "Пространство как манифест свободы",
+    text: "Каждый квадратный метр спроектирован с учетом сценариев движения света и человека. Высокие потолки, отсутствие слепых зон и интеграция приватных внутренних дворов создают абсолютную автономию для каждого члена семьи.",
   },
-  {
-    id: 'ownership',
-    title: 'Extreme ownership',
-    description: 'Никаких оправданий. Каждый инженер несет полную ответственность за архитектуру, код и конечный опыт пользователя.',
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-      </svg>
-    )
-  },
-  {
-    id: 'clarity',
-    title: 'Radical clarity',
-    description: 'Простота масштабируется, сложность — нет. Мы пишем код и общаемся так, чтобы нас было невозможно не понять.',
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10" />
-        <line x1="12" y1="16" x2="12" y2="12" />
-        <line x1="12" y1="8" x2="12.01" y2="8" />
-      </svg>
-    )
-  }
 ];
 
-export const About: React.FC = () => {
-  const gridRef = useRef<HTMLDivElement>(null);
+const METRICS_DATA: MetricItem[] = [
+  {
+    value: "4.2 м",
+    label: "Высота потолков",
+    description: "В чистой отделке для максимального объема воздуха.",
+  },
+  {
+    value: "0.45 га",
+    label: "Приватный участок",
+    description: "Интегрированный вековой сосновый парк вокруг каждой виллы.",
+  },
+  {
+    value: "100%",
+    label: "Автономия",
+    description: "Резервное жизнеобеспечение: генерация, фильтрация, климат.",
+  },
+];
 
-  // Обработка движения мыши для создания эффекта свечения (Linear-style hover)
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!gridRef.current) return;
-    
-    const cards = gridRef.current.getElementsByClassName(styles.card);
-    for (const card of Array.from(cards)) {
-      const rect = (card as HTMLElement).getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      
-      (card as HTMLElement).style.setProperty('--mouse-x', `${x}px`);
-      (card as HTMLElement).style.setProperty('--mouse-y', `${y}px`);
-    }
-  };
+// Конфигурация плавных кривых Безье (Luxury Snappy Ease)
+const textEasing = [0.16, 1, 0.3, 1];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.2 },
+  },
+};
+
+const fadeUpVariants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 1, ease: textEasing },
+  },
+};
+
+const lineVariants = {
+  hidden: { scaleX: 0 },
+  visible: {
+    scaleX: 1,
+    transition: { duration: 1.4, ease: textEasing },
+  },
+};
+
+export function About() {
   return (
-    <section className={styles.aboutSection}>
-      <div className={styles.container}>
+    <section id="about-section" className={styles.aboutSection}>
+      <div className={styles.wrapper}>
         
-        <header className={styles.hero}>
-          <h1 className={styles.title}>
-            Building the standard.
-          </h1>
-          <p className={styles.subtitle}>
-            Мы не просто пишем код. Мы создаем надежную, масштабируемую инфраструктуру и интерфейсы, которые формируют индустрию. Инженерия как искусство.
-          </p>
-        </header>
-
-        <div 
-          className={styles.bentoGrid} 
-          ref={gridRef} 
-          onMouseMove={handleMouseMove}
-        >
-          {CORE_VALUES.map((value, index) => (
-            <article 
-              key={value.id} 
-              className={styles.card}
-              style={{ '--animation-order': index } as React.CSSProperties}
+        {/* Верхняя линия и заголовок-айстоппер */}
+        <div className={styles.topZone}>
+          <motion.div 
+            className={styles.horizontalLine}
+            variants={lineVariants as any}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+          />
+          <div className={styles.headerGrid}>
+            <motion.span 
+              className={styles.sectionKicker}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <div className={styles.cardGlow} />
-              <div className={styles.cardContent}>
-                <div className={styles.iconWrapper}>
-                  {value.icon}
-                </div>
-                <h3 className={styles.cardTitle}>{value.title}</h3>
-                <p className={styles.cardDescription}>{value.description}</p>
+            </motion.span>
+            <motion.h2 
+              className={styles.mainTitle}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8, ease: textEasing as any, delay: 0.1 }}
+            >
+              Бескомпромиссный взгляд на приватность и монументальное качество.
+            </motion.h2>
+          </div>
+        </div>
+
+        {/* Основной блок: Манифест */}
+        <motion.div 
+          className={styles.manifestoGrid}
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          {MANIFESTO_DATA.map((item) => (
+            <motion.article 
+              key={item.number} 
+              className={styles.manifestoCard}
+              variants={fadeUpVariants as any}
+            >
+              <div className={styles.cardHeader}>
+                <span className={styles.cardNumber}>{item.number}</span>
+                <span className={styles.cardTag}>{item.tag}</span>
               </div>
-            </article>
+              <h3 className={styles.cardTitle}>{item.title}</h3>
+              <p className={styles.cardText}>{item.text}</p>
+            </motion.article>
           ))}
+        </motion.div>
+
+        {/* Блок метрик с тонкими разделительными линиями */}
+        <div className={styles.metricsZone}>
+          <motion.div 
+            className={styles.horizontalLine}
+            variants={lineVariants as any}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          />
+          <motion.div 
+            className={styles.metricsGrid}
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+          >
+            {METRICS_DATA.map((metric, idx) => (
+              <motion.div 
+                key={idx} 
+                className={styles.metricItem}
+                variants={fadeUpVariants as any}
+              >
+                <div className={styles.metricValue}>{metric.value}</div>
+                <div className={styles.metricLabel}>{metric.label}</div>
+                <p className={styles.metricDescription}>{metric.description}</p>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
 
       </div>
     </section>
   );
-};
+}
