@@ -56,6 +56,9 @@ export function HorizontalGallery() {
         <motion.div 
           className={styles.track}
           drag="x"
+          data-cursor="drag"
+        
+
           // Ограничиваем перетаскивание размерами контента
           dragConstraints={{ right: 0, left: -dragWidth }}
           // Даем премиальное ощущение "резинки" при достижении края

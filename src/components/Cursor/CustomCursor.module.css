@@ -1,0 +1,45 @@
+/* components/Cursor/CustomCursor.module.css */
+.cursorWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99999;
+  pointer-events: none; /* Пропускаем клики сквозь курсор */
+  /* mix-blend-mode инвертирует цвета под курсором */
+  mix-blend-mode: difference;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Прячем на устройствах с тачскрином */
+  @media (hover: none) and (pointer: coarse) {
+    display: none;
+  }
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  will-change: transform, width, height;
+}
+
+/* Текст внутри курсора (например, для галереи) */
+.cursorText {
+  position: absolute;
+  font-family: var(--font-sans, monospace);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: #000000; /* Черный текст, так как фон при difference станет белым */
+  opacity: 0;
+  pointer-events: none;
+  text-transform: uppercase;
+}
+
+/* Глобальный сброс системного курсора.
+  Используем класс, который будет вешаться на body.
+*/
+:global(.custom-cursor-active) * {
+  cursor: none !important;
+}

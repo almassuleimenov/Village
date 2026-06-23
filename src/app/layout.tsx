@@ -4,6 +4,7 @@ import { SmoothScroll } from "@/components/SmoothScroll";
 import "./globals.css";
 import { Preloader } from "@/components/Preloader/Preloader";
 import { Atmosphere } from "@/components/Atmosphere/Atmosphere";
+import { CustomCursor } from "@/components/Cursor/CustomCursor";
 
 const serif = Cormorant_Garamond({ 
   subsets: ["latin", "cyrillic"], 
@@ -34,6 +35,7 @@ export default function RootLayout({
     <html lang="ru" className={`${serif.variable} ${manrope.variable}`}>
       <body>
         <Atmosphere />
+        <CustomCursor />
         <Preloader />
         <SmoothScroll>
           {children}

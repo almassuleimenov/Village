@@ -2,11 +2,12 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, Transition } from "framer-motion";
-// Импортируем хук Lenis
 import { useLenis } from "lenis/react";
 import styles from "./Navbar.module.css";
+// Импорт Magnetic
+import { Magnetic } from "../Cursor/Magnetic";
 
-// === Контент тултипов (оставляем без изменений) ===
+// === Контент тултипов ===
 const ConceptMenu = () => (
   <div>
     <h4 className={styles.menuItemTitle}>О проекте</h4>
@@ -47,7 +48,6 @@ const LocationMenu = () => (
   </div>
 );
 
-// === Структура навигации ===
 const NAV_ITEMS = [
   { id: "concept", title: "Концепция", targetId: "about-section", content: <ConceptMenu /> },
   { id: "advantages", title: "Стандарты", targetId: "advantages-section", content: <AdvantagesMenu /> },
@@ -62,7 +62,6 @@ export function Navbar() {
   
   const prevMenu = useRef<string | null>(null);
   
-  // Получаем инстанс Lenis
   const lenis = useLenis();
 
   useEffect(() => {
@@ -100,18 +99,15 @@ export function Navbar() {
     return () => observer.disconnect();
   }, []);
 
-  // Идеально плавный скролл через Lenis
   const scrollToSection = (targetId: string) => {
     setHoveredMenu(null); 
     
     if (lenis) {
-      // Lenis сам вычисляет позицию элемента и применяет offset!
       lenis.scrollTo(`#${targetId}`, { 
-        offset: -120, // Оффсет для высоты шапки
-        duration: 1.5, // Можно подкрутить скорость скролла
+        offset: -120,
+        duration: 1.5,
       });
     } else {
-      // Fallback на случай, если Lenis еще не успел инициализироваться
       const element = document.getElementById(targetId);
       if (element) {
         const headerOffset = 120; 
@@ -152,12 +148,14 @@ export function Navbar() {
         transition={layoutSpring}
       >
         <div className={styles.logoZone}>
-          <div 
-            className={styles.logo} 
-            onClick={() => lenis ? lenis.scrollTo(0, { duration: 1.5 }) : window.scrollTo({ top: 0, behavior: "smooth" })}
-          >
-            V
-          </div>
+          <Magnetic strength={0.3}>
+            <div 
+              className={styles.logo} 
+              onClick={() => lenis ? lenis.scrollTo(0, { duration: 1.5 }) : window.scrollTo({ top: 0, behavior: "smooth" })}
+            >
+              V
+            </div>
+          </Magnetic>
         </div>
 
         <ul className={styles.navList}>
@@ -166,14 +164,17 @@ export function Navbar() {
 
             return (
               <li key={item.id} className={styles.navItem} onMouseEnter={() => setHoveredMenu(item.id)}>
-                <button 
-                  className={styles.navButton} 
-                  data-active={isActive}
-                  onClick={() => scrollToSection(item.targetId)}
-                  aria-label={`Перейти к разделу ${item.title}`}
-                >
-                  {item.title}
-                </button>
+                {/* ВОТ ЗДЕСЬ МЫ ОБЕРНУЛИ КНОПКУ В MAGNETIC */}
+                <Magnetic strength={0.2}>
+                  <button 
+                    className={styles.navButton} 
+                    data-active={isActive}
+                    onClick={() => scrollToSection(item.targetId)}
+                    aria-label={`Перейти к разделу ${item.title}`}
+                  >
+                    {item.title}
+                  </button>
+                </Magnetic>
 
                 <div className={styles.dropdownWrapper}>
                   <AnimatePresence>
@@ -215,26 +216,29 @@ export function Navbar() {
         </ul>
 
         <div className={styles.actionZone}>
-          <button 
-            className={styles.phoneButton} 
-            onClick={scrollToNextSection}
-            aria-label="Связаться с нами"
-          >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth={1.8} 
-              className={styles.phoneIcon}
+          {/* Кнопка телефона тоже магнитная */}
+          <Magnetic strength={0.4}>
+            <button 
+              className={styles.phoneButton} 
+              onClick={scrollToNextSection}
+              aria-label="Связаться с нами"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" 
-              />
-            </svg>
-          </button>
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth={1.8} 
+                className={styles.phoneIcon}
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" 
+                />
+              </svg>
+            </button>
+          </Magnetic>
         </div>
       </motion.nav>
     </header>

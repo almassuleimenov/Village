@@ -3,8 +3,9 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./Cta.module.css";
+// Подключаем Magnetic
+import { Magnetic } from "../Cursor/Magnetic";
 
-// Фирменная "пружина" в стиле лучших инженерных стандартов
 const springTransition = {
   type: "spring",
   stiffness: 400,
@@ -92,7 +93,7 @@ export function Cta() {
               ) : (
                 <motion.form
                   key="form"
-                  layout // Позволяет плавно менять высоту
+                  layout
                   onSubmit={handleSubmit}
                   className={styles.form}
                   initial={{ opacity: 0 }}
@@ -128,20 +129,23 @@ export function Cta() {
                     <label htmlFor="phone" className={styles.label}>Номер телефона</label>
                   </div>
 
-                  <motion.button
-                    type="submit"
-                    className={styles.submitBtn}
-                    disabled={status === "loading"}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.97 }} // Пружинный отклик на нажатие
-                    transition={springTransition as any}
-                  >
-                    {status === "loading" ? (
-                      <span className={styles.loader} />
-                    ) : (
-                      "Запросить показ"
-                    )}
-                  </motion.button>
+                  {/* Делаем главную кнопку формы магнитной */}
+                  <Magnetic strength={0.1}>
+                    <motion.button
+                      type="submit"
+                      className={styles.submitBtn}
+                      disabled={status === "loading"}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.97 }}
+                      transition={springTransition as any}
+                    >
+                      {status === "loading" ? (
+                        <span className={styles.loader} />
+                      ) : (
+                        "Запросить показ"
+                      )}
+                    </motion.button>
+                  </Magnetic>
 
                   <p className={styles.disclaimer}>
                     Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности.
