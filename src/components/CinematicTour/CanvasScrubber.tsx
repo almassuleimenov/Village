@@ -1,4 +1,3 @@
-// components/CanvasScrubber.tsx
 "use client";
 
 import { useEffect, useRef } from "react";
@@ -22,6 +21,7 @@ export function CanvasScrubber({
   const currentIndexRef = useRef<number>(0); 
   const lastDrawnIndexRef = useRef<number | null>(null);
   const containerSize = useRef({ width: 0, height: 0 });
+  const animationFrameId = useRef<number | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -32,7 +32,7 @@ export function CanvasScrubber({
       for (let i = 1; i <= frameCount; i++) {
         const img = new Image();
         const frameStr = i.toString().padStart(4, "0");
-        // Желательно добавить приоритет загрузки для первых кадров
+        
         if (priority && i < 10) {
           img.fetchPriority = "high";
         } else {
@@ -52,6 +52,15 @@ export function CanvasScrubber({
 
     return () => { 
       isMounted = false; 
+      // Агрессивная очистка памяти (предотвращение OOM на мобилках)
+      imagesRef.current.forEach(img => {
+        img.onload = null;
+        img.src = ""; 
+      });
+      imagesRef.current = [];
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
     };
   }, [frameCount, sequenceName, priority]);
 
@@ -65,25 +74,24 @@ export function CanvasScrubber({
         const { width, height } = entry.contentRect;
         containerSize.current = { width, height };
         
-        const dpr = window.devicePixelRatio || 1;
-        // Устанавливаем физическое разрешение канваса с учетом плотности пикселей
+        // ВАЖНО: Ограничиваем DPR максимум до 2. Иначе на iPhone (DPR 3) GPU задохнется.
+        const rawDpr = window.devicePixelRatio || 1;
+        const dpr = Math.min(rawDpr, 2);
+        
         canvas.width = width * dpr;
         canvas.height = height * dpr;
         
         const ctx = canvas.getContext("2d", { alpha: false });
         if (ctx) {
-          // Нормализуем координаты
           ctx.scale(dpr, dpr);
           ctx.imageSmoothingEnabled = true;
           ctx.imageSmoothingQuality = "high";
         }
         
-        // Перерисовываем текущий кадр при ресайзе
         drawImage(currentIndexRef.current);
       }
     });
 
-    // Наблюдаем за родителем канваса (чтобы канвас сам себя не ресайзил бесконечно)
     if (canvas.parentElement) {
       resizeObserver.observe(canvas.parentElement);
     }
@@ -110,8 +118,7 @@ export function CanvasScrubber({
       const x = (width / 2) - (img.width / 2) * scale;
       const y = (height / 2) - (img.height / 2) * scale;
       
-      // Заливаем фон черным (из-за alpha: false это полезно для краев, если пропорции не сошлись)
-      ctx.fillStyle = "#000000";
+      ctx.fillStyle = "#050505";
       ctx.fillRect(0, 0, width, height);
       
       ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
@@ -130,7 +137,12 @@ export function CanvasScrubber({
     const frameIndex = Math.min(frameCount - 1, Math.floor(clamped * frameCount));
     
     if (frameIndex === lastDrawnIndexRef.current) return;
-    requestAnimationFrame(() => drawImage(frameIndex));
+    
+    if (animationFrameId.current) {
+      cancelAnimationFrame(animationFrameId.current);
+    }
+    
+    animationFrameId.current = requestAnimationFrame(() => drawImage(frameIndex));
   });
 
   return (
@@ -140,7 +152,8 @@ export function CanvasScrubber({
         width: "100%",
         height: "100%",
         display: "block",
-        transform: "translateZ(0)", 
+        transform: "translateZ(0)", // Аппаратное ускорение
+        willChange: "transform", // Подсказка браузеру о композитном слое
       }}
     />
   );

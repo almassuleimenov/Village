@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import styles from "./About.module.css";
 
 interface ManifestoItem {
@@ -51,30 +51,31 @@ const METRICS_DATA: MetricItem[] = [
 ];
 
 // Конфигурация плавных кривых Безье (Luxury Snappy Ease)
-const textEasing = [0.16, 1, 0.3, 1];
+const textEasing = [0.16, 1, 0.3, 1] as any ;
 
-const containerVariants = {
+// Строгая типизация анимаций вместо `as any`
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.2 },
+    transition: { staggerChildren: 0.15 }, // Ускорил stagger для более динамичного появления на мобилках
   },
 };
 
-const fadeUpVariants = {
-  hidden: { opacity: 0, y: 40 },
+const fadeUpVariants: Variants = {
+  hidden: { opacity: 0, y: 30 }, // Уменьшил y: 40 -> 30, чтобы на мобилках не было слишком длинного пути
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 1, ease: textEasing },
+    transition: { duration: 0.8, ease: textEasing }, // Немного ускорил duration: 1 -> 0.8
   },
 };
 
-const lineVariants = {
+const lineVariants: Variants = {
   hidden: { scaleX: 0 },
   visible: {
     scaleX: 1,
-    transition: { duration: 1.4, ease: textEasing },
+    transition: { duration: 1.2, ease: textEasing },
   },
 };
 
@@ -87,26 +88,27 @@ export function About() {
         <div className={styles.topZone}>
           <motion.div 
             className={styles.horizontalLine}
-            variants={lineVariants as any}
+            variants={lineVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "-10%" }} 
           />
           <div className={styles.headerGrid}>
             <motion.span 
               className={styles.sectionKicker}
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              viewport={{ once: true, margin: "-10%" }}
+              transition={{ duration: 0.5, delay: 0.1 }}
             >
+              О проекте {/* Добавлен текст, так как элемент был пустым */}
             </motion.span>
             <motion.h2 
               className={styles.mainTitle}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, ease: textEasing as any, delay: 0.1 }}
+              viewport={{ once: true, margin: "-10%" }}
+              transition={{ duration: 0.8, ease: textEasing, delay: 0.1 }}
             >
               Бескомпромиссный взгляд на приватность и монументальное качество.
             </motion.h2>
@@ -119,13 +121,13 @@ export function About() {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: "-10%" }}
         >
           {MANIFESTO_DATA.map((item) => (
             <motion.article 
               key={item.number} 
               className={styles.manifestoCard}
-              variants={fadeUpVariants as any}
+              variants={fadeUpVariants}
             >
               <div className={styles.cardHeader}>
                 <span className={styles.cardNumber}>{item.number}</span>
@@ -141,23 +143,23 @@ export function About() {
         <div className={styles.metricsZone}>
           <motion.div 
             className={styles.horizontalLine}
-            variants={lineVariants as any}
+            variants={lineVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "-10%" }}
           />
           <motion.div 
             className={styles.metricsGrid}
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true, margin: "-10%" }}
           >
             {METRICS_DATA.map((metric, idx) => (
               <motion.div 
                 key={idx} 
                 className={styles.metricItem}
-                variants={fadeUpVariants as any}
+                variants={fadeUpVariants}
               >
                 <div className={styles.metricValue}>{metric.value}</div>
                 <div className={styles.metricLabel}>{metric.label}</div>

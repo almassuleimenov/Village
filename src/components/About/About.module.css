@@ -10,6 +10,7 @@
   padding: 160px 24px;
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
   position: relative;
+  overflow: hidden; /* Предотвращаем горизонтальный скролл при анимациях */
 }
 
 .wrapper {
@@ -39,6 +40,7 @@
 }
 
 .sectionKicker {
+  display: inline-block;
   font-family: var(--font-sans, monospace);
   font-size: 0.75rem;
   letter-spacing: 0.25em;
@@ -49,7 +51,8 @@
 
 .mainTitle {
   font-family: var(--font-serif, "Playfair Display", Georgia, serif);
-  font-size: clamp(2rem, 3.5vw, 3.2rem);
+  /* Безопасный clamp: не менее 1.75rem на мобилках, не более 3.2rem на десктопах */
+  font-size: clamp(1.75rem, 3.5vw, 3.2rem);
   font-weight: 400;
   line-height: 1.2;
   letter-spacing: -0.02em;
@@ -96,7 +99,7 @@
 
 .cardTitle {
   font-family: var(--font-serif, Georgia, serif);
-  font-size: 1.75rem;
+  font-size: clamp(1.4rem, 2vw, 1.75rem);
   font-weight: 400;
   letter-spacing: -0.01em;
   margin: 0 0 20px 0;
@@ -132,7 +135,8 @@
 
 .metricValue {
   font-family: var(--font-serif, Georgia, serif);
-  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  /* Корректный clamp для метрик, чтобы на смартфонах не ломалась верстка */
+  font-size: clamp(2rem, 5vw, 4.5rem);
   font-weight: 300;
   line-height: 1;
   color: var(--color-accent);
@@ -154,21 +158,33 @@
   margin: 0;
 }
 
-/* Адаптивный дизайн (Планшеты и Мобильные) */
+/* --- АДАПТИВНЫЙ ДИЗАЙН --- */
+
+/* Планшеты (Portrait & Landscape) */
 @media (max-width: 1024px) {
-  .headerGrid {
-    grid-template-columns: 1fr;
-    gap: 16px;
+  .aboutSection {
+    padding: 120px 24px;
   }
   
+  .headerGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .sectionKicker {
+    padding-top: 0;
+  }
+
   .manifestoGrid {
-    gap: 40px;
+    gap: 56px;
+    margin-bottom: 96px;
   }
 }
 
+/* Большие смартфоны и мелкие планшеты */
 @media (max-width: 768px) {
   .aboutSection {
-    padding: 100px 16px;
+    padding: 80px 20px;
   }
   
   .topZone {
@@ -178,7 +194,7 @@
   .manifestoGrid {
     grid-template-columns: 1fr;
     gap: 48px;
-    margin-bottom: 80px;
+    margin-bottom: 64px;
   }
   
   .metricsGrid {
@@ -186,7 +202,34 @@
     gap: 40px;
   }
 
+  .metricsZone .horizontalLine {
+    margin-bottom: 40px;
+  }
+
   .cardText {
-    text-wrap: unset;
+    text-wrap: pretty; /* pretty лучше поддерживается и выглядит аккуратнее на мобилках, чем unset */
+  }
+}
+
+/* Стандартные смартфоны (iPhone, Android) */
+@media (max-width: 480px) {
+  .aboutSection {
+    padding: 60px 16px; /* Максимально уплотняем секцию для узких экранов */
+  }
+
+  .topZone {
+    margin-bottom: 48px;
+  }
+
+  .horizontalLine {
+    margin-bottom: 32px;
+  }
+
+  .manifestoGrid {
+    gap: 40px;
+  }
+
+  .metricsGrid {
+    gap: 32px;
   }
 }

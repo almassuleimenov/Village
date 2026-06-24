@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import styles from "./Advantages.module.css";
 
 interface AdvantageItem {
@@ -12,7 +12,6 @@ interface AdvantageItem {
   icon: React.ReactNode;
 }
 
-// Статические данные вынесены из компонента для оптимизации
 const ADVANTAGES: AdvantageItem[] = [
   {
     id: "privacy",
@@ -62,25 +61,27 @@ const ADVANTAGES: AdvantageItem[] = [
   },
 ];
 
-// Настройки оркестрации анимаций
-const containerVariants = {
+// Кривая Безье для премиальной физики движения
+const customEase = [0.16, 1, 0.3, 1] as any;
+
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
       staggerChildren: 0.15,
-      delayChildren: 0.2,
+      delayChildren: 0.1, // Уменьшил задержку для большей отзывчивости
     },
   },
 };
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 30, filter: "blur(8px)" },
+const itemVariants: Variants = {
+  // Убрал filter: "blur(8px)", чтобы не убить FPS на мобилках
+  hidden: { opacity: 0, y: 30 }, 
   visible: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.8, ease: customEase },
   },
 };
 
@@ -94,8 +95,8 @@ export function Advantages() {
             className={styles.title}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.6, ease: customEase }}
           >
             Стандарты без компромиссов
           </motion.h2>
@@ -103,8 +104,8 @@ export function Advantages() {
             className={styles.subtitle}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.6, delay: 0.1, ease: customEase }}
           >
             Философия V Club Village строится на безупречном внимании к деталям. 
             Каждое решение здесь подчинено комфорту и эстетике.
@@ -116,16 +117,16 @@ export function Advantages() {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
+          viewport={{ once: true, margin: "-10%" }}
         >
           {ADVANTAGES.map((adv) => (
             <motion.div
               key={adv.id}
-              variants={itemVariants as any}
+              variants={itemVariants}
               className={`${styles.card} ${adv.span === "col-2" ? styles.col2 : ""}`}
             >
-              {/* Декоративный градиент, реагирующий на hover */}
-              <div className={styles.cardGlow} />
+              {/* Декоративный градиент, реагирующий на hover (только для ПК) */}
+              <div className={styles.cardGlow} aria-hidden="true" />
               
               <div className={styles.cardContent}>
                 <div className={styles.iconWrapper}>{adv.icon}</div>

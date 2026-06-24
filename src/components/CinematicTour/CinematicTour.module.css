@@ -1,15 +1,16 @@
 .container {
   position: relative;
+  /* На мобильных скролл может ощущаться слишком длинным, поэтому оставляем 400vh для плавности, но без сбоев */
   height: 400vh; 
-  background-color: #050505; /* Заменил чисто черный на фирменный из твоей палитры */
+  background-color: #050505; 
 }
 
 .stickyArea {
   position: sticky;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%; /* Заменили 100vw, чтобы избежать горизонтального скроллбара */
+  height: 100svh; /* Заменили 100vh на 100svh (Small Viewport Height) для устранения рывков при скролле на iOS/Android */
   overflow: hidden;
   background-color: #050505;
 }
@@ -22,19 +23,33 @@
   background-color: #050505;
 }
 
-/* ДОБАВИТЬ ЭТОТ КЛАСС */
 .cinematicOverlay {
   position: absolute;
   inset: 0;
   z-index: 10;
-  pointer-events: none; /* Пропускаем клики */
-  /* 1. Радиальный градиент: сохраняем центр прозрачным на 40%, к краям уходим в полутень.
-    2. Линейный градиент: сильное затемнение сверху и снизу (для читаемости текста или UI).
-  */
+  pointer-events: none; 
   background: 
     radial-gradient(circle at center, transparent 40%, rgba(5, 5, 5, 0.4) 100%),
     linear-gradient(to bottom, rgba(5, 5, 5, 0.8) 0%, transparent 15%, transparent 85%, rgba(5, 5, 5, 0.8) 100%);
-  
-  /* Режим наложения multiply делает тени глубже, не делая светлые участки "серыми" */
   mix-blend-mode: multiply;
+}
+
+/* --- АДАПТИВНЫЙ ДИЗАЙН --- */
+
+/* Мобильные устройства (вертикальная ориентация) */
+@media (max-width: 768px) {
+  .cinematicOverlay {
+    /* На мобильных экранах уменьшаем затемнение в центре, так как экран меньше и нужно больше видимой зоны */
+    background: 
+      radial-gradient(circle at center, transparent 55%, rgba(5, 5, 5, 0.4) 100%),
+      linear-gradient(to bottom, rgba(5, 5, 5, 0.8) 0%, transparent 20%, transparent 80%, rgba(5, 5, 5, 0.8) 100%);
+  }
+}
+
+/* Компактные смартфоны */
+@media (max-width: 480px) {
+  .container {
+    /* Ускоряем скролл на узких экранах, чтобы не заставлять пользователя листать слишком долго */
+    height: 300vh; 
+  }
 }

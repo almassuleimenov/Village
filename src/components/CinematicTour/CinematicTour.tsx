@@ -34,8 +34,6 @@ export function CinematicTour() {
     if (targetZone !== currentZoneRef.current) {
       currentZoneRef.current = targetZone;
 
-      // Уменьшена длительность (duration) до 1.1s и выставлен плавный выезд easeOut
-      // Это убирает ощущение "задержки" и делает старт видео моментальным
       animate(animatingProgress, targetProgress, {
         type: "tween",
         ease: "easeOut",
@@ -52,16 +50,10 @@ export function CinematicTour() {
 
   /* ================= МАРШРУТИЗАЦИЯ И МИКРО-КРОССФЕЙД ================= */
   
-  // Поток 1: Изменение кадров от 0.0 до 0.5 значения animatingProgress
   const firsttProgress = useTransform(animatingProgress, [0, 0.5], [0, 1], { clamp: true });
-  
-  // Плавное исчезновение первого видео начинается чуть заранее (на прогрессе 0.42) и завершается ровно в 0.50
   const firsttOpacity = useTransform(animatingProgress, [0, 0.42, 0.50], [1, 1, 0], { clamp: true });
 
-  // Поток 2: Изменение кадров начнется только ПОСЛЕ достижения 0.5 прогресса
   const seconddProgress = useTransform(animatingProgress, [0.5, 1.0], [0, 1], { clamp: true });
-  
-  // Плавное появление второго видео (на его статической 1-й картинке) происходит синхронно с угасанием первого
   const seconddOpacity = useTransform(animatingProgress, [0.42, 0.50, 1.0], [0, 1, 1], { clamp: true });
 
   return (
@@ -93,7 +85,8 @@ export function CinematicTour() {
             priority={false} 
           />
         </motion.div>
-      <div className={styles.cinematicOverlay} aria-hidden="true" />
+        
+        <div className={styles.cinematicOverlay} aria-hidden="true" />
       </div>
     </section>
   );

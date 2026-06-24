@@ -36,11 +36,12 @@
 
 .title {
   font-family: var(--font-serif, Georgia, serif);
-  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-size: clamp(2rem, 4vw, 3.5rem); /* Скорректирован нижний порог для мобильных */
   font-weight: 400;
   line-height: 1.1;
   letter-spacing: -0.02em;
   margin: 0 0 24px 0;
+  text-wrap: balance; /* Заменяет жесткий тег <br /> для идеальной типографики */
 }
 
 .subtitle {
@@ -48,6 +49,7 @@
   line-height: 1.6;
   color: var(--text-muted);
   margin: 0;
+  text-wrap: pretty;
 }
 
 /* === Форма === */
@@ -56,7 +58,7 @@
   max-width: 480px;
   margin-left: auto;
   position: relative;
-  min-height: 300px; /* Предотвращает прыжки при смене стейта */
+  min-height: 300px;
   display: flex;
   align-items: center;
 }
@@ -80,13 +82,16 @@
   background: var(--input-bg);
   border: 1px solid var(--input-border);
   border-radius: 16px;
-  padding: 24px 20px 8px; /* Место для floating label */
-  font-size: 1rem;
+  padding: 24px 20px 8px;
+  font-size: 1rem; /* Оставлен 1rem (16px), чтобы предотвратить зум на iOS при фокусе */
   color: var(--text-main);
   outline: none;
   transition: border-color 0.3s ease, background 0.3s ease;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  /* Отключаем дефолтные стили iOS для инпутов */
+  -webkit-appearance: none;
+  border-radius: 16px;
 }
 
 .label {
@@ -100,7 +105,7 @@
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), font-size 0.3s ease, color 0.3s ease;
 }
 
-/* Анимация Label при фокусе или если инпут не пустой */
+/* Анимация Label */
 .input:focus,
 .input:not(:placeholder-shown) {
   border-color: rgba(229, 211, 179, 0.4);
@@ -114,7 +119,7 @@
   color: var(--color-accent);
 }
 
-/* Кнопка с пружиной */
+/* Кнопка */
 .submitBtn {
   height: 64px;
   width: 100%;
@@ -130,6 +135,8 @@
   justify-content: center;
   margin-top: 8px;
   outline: none;
+  /* Отключаем системное выделение тапом на мобильных */
+  -webkit-tap-highlight-color: transparent;
 }
 
 .submitBtn:disabled {
@@ -137,7 +144,7 @@
   cursor: not-allowed;
 }
 
-/* Spinner для состояния Loading */
+/* Spinner */
 .loader {
   width: 24px;
   height: 24px;
@@ -158,6 +165,7 @@
   color: rgba(255, 255, 255, 0.3);
   text-align: center;
   margin: 0;
+  line-height: 1.4;
 }
 
 /* === Состояние успеха === */
@@ -202,32 +210,86 @@
   margin: 0;
 }
 
-/* === Responsive === */
+/* --- АДАПТИВНЫЙ ДИЗАЙН --- */
+
+/* Планшеты */
 @media (max-width: 1024px) {
   .grid {
     grid-template-columns: 1fr;
-    gap: 48px;
-    padding: 60px 40px;
+    gap: 56px;
+    padding: 64px 48px;
     background: radial-gradient(circle at 50% 100%, rgba(229, 211, 179, 0.03) 0%, transparent 50%);
   }
   
+  .textContent {
+    max-width: 100%;
+    text-align: center;
+  }
+
   .formWrapper {
     max-width: 100%;
     margin-left: 0;
   }
 }
 
+/* Смартфоны (вертикальная ориентация) */
 @media (max-width: 768px) {
   .section {
-    padding: 80px 16px;
+    padding: 80px 20px;
   }
 
   .grid {
-    padding: 40px 24px;
+    padding: 48px 24px;
     border-radius: 24px;
+    gap: 48px;
+  }
+
+  .title {
+    font-size: 2.25rem;
+    margin-bottom: 16px;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+}
+
+/* Компактные смартфоны */
+@media (max-width: 480px) {
+  .section {
+    padding: 60px 16px;
+  }
+
+  .grid {
+    /* На маленьких экранах убираем внутренние рамки и отступы у самой карточки, чтобы форма заняла максимум ширины */
+    padding: 0;
+    background: none;
+    border: none;
+    gap: 40px;
+  }
+
+  .textContent {
+    text-align: left; /* На узком экране центрированный текст читается хуже */
   }
 
   .title {
     font-size: 2rem;
+  }
+
+  .input {
+    height: 56px; /* Чуть уменьшаем высоту инпутов для компактности */
+    padding: 20px 16px 4px;
+  }
+
+  .label {
+    left: 16px;
+  }
+
+  .submitBtn {
+    height: 56px;
+  }
+
+  .successState {
+    padding: 32px 20px;
   }
 }

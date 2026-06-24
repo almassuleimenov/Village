@@ -28,7 +28,7 @@
 }
 
 .title {
-  font-size: clamp(2.5rem, 4vw, 4rem);
+  font-size: clamp(2rem, 4vw, 4rem); /* Уменьшен нижний порог clamp для мобайла */
   font-weight: 500;
   letter-spacing: -0.03em;
   line-height: 1.1;
@@ -36,10 +36,11 @@
   background: linear-gradient(180deg, #FFFFFF 0%, #A1A1AA 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  color: #FFFFFF; /* Fallback */
 }
 
 .subtitle {
-  font-size: 1.125rem;
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
   color: var(--text-muted);
   line-height: 1.6;
   margin: 0;
@@ -68,6 +69,8 @@
   transition: border-color 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  /* Подсказка для браузера вынести слой на GPU */
+  will-change: transform, border-color; 
 }
 
 .col2 {
@@ -89,13 +92,16 @@
   z-index: 0;
 }
 
-.card:hover {
-  border-color: rgba(229, 211, 179, 0.2);
-  transform: translateY(-4px);
-}
+/* Изоляция hover-эффектов для мыши, чтобы избежать залипания на смартфонах */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    border-color: rgba(229, 211, 179, 0.2);
+    transform: translateY(-4px);
+  }
 
-.card:hover .cardGlow {
-  opacity: 1;
+  .card:hover .cardGlow {
+    opacity: 1;
+  }
 }
 
 .cardContent {
@@ -130,7 +136,7 @@
 }
 
 .cardTitle {
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
   font-weight: 500;
   letter-spacing: -0.02em;
   color: var(--text-main);
@@ -146,31 +152,94 @@
   max-width: 90%;
 }
 
-/* Адаптивность */
+/* --- АДАПТИВНЫЙ ДИЗАЙН --- */
+
+/* Планшеты */
 @media (max-width: 1024px) {
+  .section {
+    padding: 100px 24px;
+  }
+
   .grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
+  
   .col2 {
     grid-column: span 2;
   }
 }
 
+/* Мобильные устройства (вертикальная ориентация) */
 @media (max-width: 768px) {
   .section {
-    padding: 80px 16px;
+    padding: 80px 20px;
   }
+
+  .header {
+    margin-bottom: 56px;
+  }
+
   .grid {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
+  
   .col2 {
-    grid-column: span 1;
+    grid-column: span 1; /* Отменяем расширение на всю ширину сетки */
   }
+  
   .card {
-    min-height: 260px;
+    min-height: auto; /* Отменяем жесткую высоту для мобилок */
     padding: 32px 24px;
   }
+  
+  .textWrapper {
+    margin-top: 32px;
+  }
+
   .cardDescription {
     max-width: 100%;
+    text-wrap: pretty;
+  }
+}
+
+/* Компактные смартфоны */
+@media (max-width: 480px) {
+  .section {
+    padding: 60px 16px;
+  }
+
+  .header {
+    margin-bottom: 40px;
+  }
+
+  .card {
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+
+  .iconWrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+
+  .iconWrapper svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .textWrapper {
+    margin-top: 24px;
+  }
+
+  .cardTitle {
+    font-size: 1.25rem;
+    margin-bottom: 8px;
+  }
+
+  .cardDescription {
+    font-size: 0.9375rem; /* Слегка уменьшаем текст для плотности */
   }
 }

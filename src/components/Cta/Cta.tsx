@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import styles from "./Cta.module.css";
 // Подключаем Magnetic
 import { Magnetic } from "../Cursor/Magnetic";
@@ -10,9 +10,10 @@ const springTransition = {
   type: "spring",
   stiffness: 400,
   damping: 30,
-};
+} as any;
 
-const staggerContainer = {
+// Строгая типизация анимаций
+const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -22,7 +23,7 @@ const staggerContainer = {
   },
 };
 
-const springItem = {
+const springItem: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: { 
     opacity: 1, 
@@ -59,27 +60,27 @@ export function Cta() {
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: "-10%" }} // Заменен пиксельный марджин на относительный
         >
           {/* Левая часть: Текст */}
           <div className={styles.textContent}>
-            <motion.h2 variants={springItem as any} className={styles.title}>
-              Станьте резидентом <br /> V Club Villas
+            <motion.h2 variants={springItem} className={styles.title}>
+              Станьте резидентом V Club Villas
             </motion.h2>
-            <motion.p variants={springItem as any} className={styles.subtitle}>
+            <motion.p variants={springItem} className={styles.subtitle}>
               Оставьте заявку на закрытый показ. Наш консьерж свяжется с вами в течение 15 минут для обсуждения деталей.
             </motion.p>
           </div>
 
           {/* Правая часть: Форма */}
-          <motion.div variants={springItem as any} className={styles.formWrapper}>
+          <motion.div variants={springItem} className={styles.formWrapper}>
             <AnimatePresence mode="wait">
               {status === "success" ? (
                 <motion.div
                   key="success"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={springTransition as any}
+                  transition={springTransition}
                   className={styles.successState}
                 >
                   <div className={styles.successIcon}>
@@ -99,7 +100,7 @@ export function Cta() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0, scale: 0.95, filter: "blur(4px)" }}
-                  transition={springTransition as any}
+                  transition={springTransition}
                 >
                   <div className={styles.inputGroup}>
                     <input
@@ -108,6 +109,7 @@ export function Cta() {
                       id="name"
                       placeholder=" "
                       required
+                      autoComplete="name" // Вызов системного автозаполнения имени
                       value={formData.name}
                       onChange={handleChange}
                       className={styles.input}
@@ -122,6 +124,8 @@ export function Cta() {
                       id="phone"
                       placeholder=" "
                       required
+                      inputMode="tel" // Принудительный вызов цифровой клавиатуры на мобильных
+                      autoComplete="tel" // Вызов системного автозаполнения телефона
                       value={formData.phone}
                       onChange={handleChange}
                       className={styles.input}
@@ -129,7 +133,6 @@ export function Cta() {
                     <label htmlFor="phone" className={styles.label}>Номер телефона</label>
                   </div>
 
-                  {/* Делаем главную кнопку формы магнитной */}
                   <Magnetic strength={0.1}>
                     <motion.button
                       type="submit"
@@ -137,7 +140,7 @@ export function Cta() {
                       disabled={status === "loading"}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.97 }}
-                      transition={springTransition as any}
+                      transition={springTransition}
                     >
                       {status === "loading" ? (
                         <span className={styles.loader} />
