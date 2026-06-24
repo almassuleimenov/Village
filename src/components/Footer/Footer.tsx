@@ -12,8 +12,8 @@ const FOOTER_COLUMNS = [
     title: "Контакты",
     links: [
       { label: "Офис продаж", href: "/contacts" },
-      { label: "sales@v-village.kz", href: "mailto:sales@v-village.kz" },
-      { label: "+7 (700) 000-00-00", href: "tel:+77000000000" },
+      { label: "vclubvillas@gmail.com", href: "mailto:vclubvillas@gmail.com" },
+      { label: "+7 (700) 123-45-67", href: "tel:+77001234567" },
     ],
   },
 ];
@@ -120,7 +120,7 @@ export function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a href="https://wa.me/77000000000" target="_blank" rel="noopener noreferrer" className={styles.link}>
+                  <a href="https://wa.me/77001234567" target="_blank" rel="noopener noreferrer" className={styles.link}>
                     <WhatsAppIcon />
                     WhatsApp
                   </a>
