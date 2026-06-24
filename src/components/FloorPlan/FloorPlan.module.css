@@ -18,19 +18,32 @@
   margin: 0 auto;
 }
 
+/* === СЕТКА (Главная магия для мобилок) === */
 .dashboard {
   display: grid;
   grid-template-columns: 460px 1fr;
-  gap: 64px;
+  /* topSection и explicationSection в левой колонке, canvasPanel на всю высоту правой */
+  grid-template-areas:
+    "top canvas"
+    "explication canvas";
+  column-gap: 64px;
+  row-gap: 32px;
   align-items: start;
 }
 
-/* === Левая панель контента === */
-.controlsPanel {
-  display: flex;
-  flex-direction: column;
+.topSection {
+  grid-area: top;
 }
 
+.canvasPanel {
+  grid-area: canvas;
+}
+
+.explicationSection {
+  grid-area: explication;
+}
+
+/* === Левая панель контента === */
 .header {
   margin-bottom: 40px;
 }
@@ -41,11 +54,12 @@
   color: var(--color-accent);
   display: block;
   margin-bottom: 16px;
+  font-weight: 600; /* Сделали тег заметнее */
 }
 
 .mainTitle {
-  font-size: 2rem;
-  font-weight: 500;
+  font-size: 2.2rem; /* Чуть увеличили */
+  font-weight: 600; /* Усилили вес */
   letter-spacing: -0.03em;
   line-height: 1.2;
   margin: 0;
@@ -100,7 +114,7 @@
 
 /* Описание этажа */
 .infoBlock {
-  margin-bottom: 40px;
+  margin-bottom: 0; /* Убрал отступ, так как теперь есть row-gap у грида */
 }
 
 .metaRow {
@@ -112,18 +126,19 @@
 }
 
 .floorTitle {
-  font-size: 1.25rem;
-  font-weight: 500;
+  font-size: 1.35rem; /* Сделали крупнее */
+  font-weight: 600; /* Сделали жирнее для контраста */
   margin: 0;
-  color: #fff;
+  color: var(--color-accent); /* Добавили цвет для привлечения внимания */
   letter-spacing: -0.01em;
 }
 
 .areaBadge {
   font-family: monospace;
-  font-size: 1rem;
-  color: var(--color-accent);
-  font-weight: 500;
+  font-size: 1.1rem;
+  color: #fff; /* Теперь выделяется на фоне названия этажа */
+  font-weight: 600;
+  white-space: nowrap; /* Решение проблемы №3: запрет переноса строк */
 }
 
 .floorDescription {
@@ -134,17 +149,18 @@
 }
 
 /* Спецификации / Экспликация */
-.explication {
+.explicationSection {
   border-top: 1px solid var(--border-color);
   padding-top: 32px;
 }
 
 .explicationHeading {
-  font-size: 0.8rem;
+  font-size: 0.9rem; /* Сделали заголовок крупнее */
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-muted);
-  margin: 0 0 20px 0;
+  color: var(--text-main); /* Сделали ярче (был muted) */
+  margin: 0 0 24px 0;
 }
 
 .specList {
@@ -165,6 +181,7 @@
 
 .specName {
   color: var(--text-main);
+  font-weight: 500; /* Сделали текст комнат более читаемым */
 }
 
 .specDots {
@@ -175,7 +192,9 @@
 
 .specArea {
   font-family: monospace;
-  color: var(--text-muted);
+  color: var(--color-accent); /* Выделили площади акцентным цветом */
+  font-weight: 500;
+  white-space: nowrap; /* Решение проблемы №3: запрет переноса строк */
 }
 
 /* === Правая панель холста чертежа === */
@@ -220,14 +239,18 @@
 
 .blueprintImage {
   object-fit: contain;
-  /* Фильтр инверсии цвета полностью удален */
 }
 
 /* === Адаптивность === */
 @media (max-width: 1100px) {
   .dashboard {
+    /* Меняем сетку на 1 колонку. Здесь решается проблема №1 */
     grid-template-columns: 1fr;
-    gap: 48px;
+    grid-template-areas:
+      "top"
+      "canvas"
+      "explication";
+    gap: 40px 0;
   }
   
   .canvasPanel {
@@ -247,5 +270,9 @@
 
   .mainTitle {
     font-size: 1.75rem;
+  }
+  
+  .dashboard {
+    gap: 32px 0;
   }
 }

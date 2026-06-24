@@ -77,14 +77,13 @@ export function FloorPlan() {
         
         <div className={styles.dashboard}>
           
-          {/* Левая интерактивная панель спецификаций */}
-          <div className={styles.controlsPanel}>
+          {/* СЕКЦИЯ 1: Заголовки, табы и описание (Всегда сверху) */}
+          <div className={styles.topSection}>
             <header className={styles.header}>
               <span className={styles.tag}>[ ПЛАНИРОВОЧНЫЕ РЕШЕНИЯ ]</span>
               <h2 className={styles.mainTitle}>Архитектура внутреннего пространства</h2>
             </header>
 
-            {/* Селектор этажей */}
             <div className={styles.tabsContainer}>
               {FLOORS_DATA.map((floor, idx) => (
                 <button
@@ -105,7 +104,6 @@ export function FloorPlan() {
               ))}
             </div>
 
-            {/* Описание активного этажа */}
             <div className={styles.infoBlock}>
               <div className={styles.metaRow}>
                 <h3 className={styles.floorTitle}>{currentFloor.title}</h3>
@@ -113,23 +111,9 @@ export function FloorPlan() {
               </div>
               <p className={styles.floorDescription}>{currentFloor.description}</p>
             </div>
-
-            {/* Экспликация помещений */}
-            <div className={styles.explication}>
-              <h4 className={styles.explicationHeading}>Экспликация помещений</h4>
-              <ul className={styles.specList}>
-                {currentFloor.specs.map((spec, i) => (
-                  <li key={i} className={styles.specItem}>
-                    <span className={styles.specName}>{spec.name}</span>
-                    <span className={styles.specDots} />
-                    <span className={styles.specArea}>{spec.area}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
 
-          {/* Правая часть: Холст с чертежом */}
+          {/* СЕКЦИЯ 2: Холст с чертежом (На десктопе справа, на мобилках посередине) */}
           <div className={styles.canvasPanel}>
             <div className={styles.blueprintGridOverlay} />
             <div className={styles.blueprintWrapper}>
@@ -155,8 +139,21 @@ export function FloorPlan() {
             </div>
           </div>
 
-        </div>
+          {/* СЕКЦИЯ 3: Экспликация помещений (На десктопе слева внизу, на мобилках в самом низу) */}
+          <div className={styles.explicationSection}>
+            <h4 className={styles.explicationHeading}>Экспликация помещений</h4>
+            <ul className={styles.specList}>
+              {currentFloor.specs.map((spec, i) => (
+                <li key={i} className={styles.specItem}>
+                  <span className={styles.specName}>{spec.name}</span>
+                  <span className={styles.specDots} />
+                  <span className={styles.specArea}>{spec.area}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
+        </div>
       </div>
     </section>
   );
