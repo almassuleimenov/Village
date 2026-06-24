@@ -17,18 +17,19 @@ interface MetricItem {
   description: string;
 }
 
+// Контент сбалансирован по длине строк для идеальной симметрии
 const MANIFESTO_DATA: ManifestoItem[] = [
   {
     number: "01",
     tag: "Философия",
     title: "Монументальный минимализм",
-    text: "Мы убрали всё лишнее, чтобы обнажить чистую форму. Архитектура резиденций гармонично продолжает природный ландшафт предгорий, сочетая в себе грубую текстуру натурального камня, благородство темного металла и безупречную гладь панорамного остекления.",
+    text: "Архитектура резиденций гармонично продолжает природный ландшафт предгорий, сочетая в себе грубую текстуру камня и безупречную гладь остекления.",
   },
   {
     number: "02",
     tag: "Эргономика",
-    title: "Пространство как манифест свободы",
-    text: "Каждый квадратный метр спроектирован с учетом сценариев движения света и человека. Высокие потолки, отсутствие слепых зон и интеграция приватных внутренних дворов создают абсолютную автономию для каждого члена семьи.",
+    title: "Манифест личной свободы",
+    text: "Каждый квадратный метр спроектирован с учетом сценариев движения света. Интеграция внутренних дворов создает абсолютную автономию для семьи.",
   },
 ];
 
@@ -41,41 +42,31 @@ const METRICS_DATA: MetricItem[] = [
   {
     value: "0.45 га",
     label: "Приватный участок",
-    description: "Интегрированный вековой сосновый парк вокруг каждой виллы.",
+    description: "Вековой сосновый парк, интегрированный вокруг виллы.",
   },
   {
     value: "100%",
-    label: "Автономия",
+    label: "Полная автономия",
     description: "Резервное жизнеобеспечение: генерация, фильтрация, климат.",
   },
 ];
 
-// Конфигурация плавных кривых Безье (Luxury Snappy Ease)
-const textEasing = [0.16, 1, 0.3, 1] as any ;
+const textEasing = [0.16, 1, 0.3, 1] as any;
 
-// Строгая типизация анимаций вместо `as any`
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.15 }, // Ускорил stagger для более динамичного появления на мобилках
+    transition: { staggerChildren: 0.15, delayChildren: 0.1 },
   },
 };
 
 const fadeUpVariants: Variants = {
-  hidden: { opacity: 0, y: 30 }, // Уменьшил y: 40 -> 30, чтобы на мобилках не было слишком длинного пути
+  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, ease: textEasing }, // Немного ускорил duration: 1 -> 0.8
-  },
-};
-
-const lineVariants: Variants = {
-  hidden: { scaleX: 0 },
-  visible: {
-    scaleX: 1,
-    transition: { duration: 1.2, ease: textEasing },
+    transition: { duration: 0.8, ease: textEasing },
   },
 };
 
@@ -84,15 +75,8 @@ export function About() {
     <section id="about-section" className={styles.aboutSection}>
       <div className={styles.wrapper}>
         
-        {/* Верхняя линия и заголовок-айстоппер */}
+        {/* Верхняя зона с заголовком */}
         <div className={styles.topZone}>
-          <motion.div 
-            className={styles.horizontalLine}
-            variants={lineVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-10%" }} 
-          />
           <div className={styles.headerGrid}>
             <motion.span 
               className={styles.sectionKicker}
@@ -101,7 +85,7 @@ export function About() {
               viewport={{ once: true, margin: "-10%" }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              О проекте {/* Добавлен текст, так как элемент был пустым */}
+              О проекте
             </motion.span>
             <motion.h2 
               className={styles.mainTitle}
@@ -115,7 +99,7 @@ export function About() {
           </div>
         </div>
 
-        {/* Основной блок: Манифест */}
+        {/* Основной блок: Манифест (Bento Grid) */}
         <motion.div 
           className={styles.manifestoGrid}
           variants={containerVariants}
@@ -126,48 +110,45 @@ export function About() {
           {MANIFESTO_DATA.map((item) => (
             <motion.article 
               key={item.number} 
-              className={styles.manifestoCard}
+              className={styles.card}
               variants={fadeUpVariants}
             >
-              <div className={styles.cardHeader}>
-                <span className={styles.cardNumber}>{item.number}</span>
-                <span className={styles.cardTag}>{item.tag}</span>
+              <div className={styles.cardGlow} aria-hidden="true" />
+              <div className={styles.cardContent}>
+                <div className={styles.cardHeader}>
+                  <span className={styles.cardNumber}>{item.number}</span>
+                  <span className={styles.cardTag}>{item.tag}</span>
+                </div>
+                <h3 className={styles.cardTitle}>{item.title}</h3>
+                <p className={styles.cardText}>{item.text}</p>
               </div>
-              <h3 className={styles.cardTitle}>{item.title}</h3>
-              <p className={styles.cardText}>{item.text}</p>
             </motion.article>
           ))}
         </motion.div>
 
-        {/* Блок метрик с тонкими разделительными линиями */}
-        <div className={styles.metricsZone}>
-          <motion.div 
-            className={styles.horizontalLine}
-            variants={lineVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-10%" }}
-          />
-          <motion.div 
-            className={styles.metricsGrid}
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-10%" }}
-          >
-            {METRICS_DATA.map((metric, idx) => (
-              <motion.div 
-                key={idx} 
-                className={styles.metricItem}
-                variants={fadeUpVariants}
-              >
+        {/* Блок метрик (Bento Grid) */}
+        <motion.div 
+          className={styles.metricsGrid}
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-10%" }}
+        >
+          {METRICS_DATA.map((metric, idx) => (
+            <motion.div 
+              key={idx} 
+              className={styles.card}
+              variants={fadeUpVariants}
+            >
+              <div className={styles.cardGlow} aria-hidden="true" />
+              <div className={styles.cardContent}>
                 <div className={styles.metricValue}>{metric.value}</div>
                 <div className={styles.metricLabel}>{metric.label}</div>
                 <p className={styles.metricDescription}>{metric.description}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
 
       </div>
     </section>

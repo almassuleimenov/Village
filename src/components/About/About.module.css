@@ -3,33 +3,27 @@
   --text-main: #F7F8F8;
   --text-muted: #8A8F98;
   --color-accent: #e5d3b3;
-  --border-color: rgba(255, 255, 255, 0.05);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --card-bg: rgba(20, 20, 20, 0.4);
 
   background-color: var(--bg-primary);
   color: var(--text-main);
   padding: 160px 24px;
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
   position: relative;
-  overflow: hidden; /* Предотвращаем горизонтальный скролл при анимациях */
+  overflow: hidden; 
 }
 
 .wrapper {
   max-width: 1280px;
   margin: 0 auto;
-}
-
-/* Линии разграничения пространства (Архитектурный стиль) */
-.horizontalLine {
-  width: 100%;
-  height: 1px;
-  background-color: var(--border-color);
-  transform-origin: left center;
-  margin-bottom: 48px;
+  position: relative;
+  z-index: 2;
 }
 
 /* Верхняя зона */
 .topZone {
-  margin-bottom: 96px;
+  margin-bottom: 80px;
 }
 
 .headerGrid {
@@ -51,7 +45,6 @@
 
 .mainTitle {
   font-family: var(--font-serif, "Playfair Display", Georgia, serif);
-  /* Безопасный clamp: не менее 1.75rem на мобилках, не более 3.2rem на десктопах */
   font-size: clamp(1.75rem, 3.5vw, 3.2rem);
   font-weight: 400;
   line-height: 1.2;
@@ -61,18 +54,62 @@
   color: #ffffff;
 }
 
+/* Универсальные стили карточек (Bento Style) */
+.card {
+  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  padding: 40px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  will-change: transform, border-color;
+}
+
+/* Эффект свечения */
+.cardGlow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    800px circle at 50% 0%, 
+    rgba(229, 211, 179, 0.05), 
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    border-color: rgba(229, 211, 179, 0.2);
+    transform: translateY(-4px);
+  }
+
+  .card:hover .cardGlow {
+    opacity: 1;
+  }
+}
+
+.cardContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 /* Манифест Сетка */
 .manifestoGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 80px;
-  margin-bottom: 120px;
-}
-
-.manifestoCard {
-  display: flex;
-  flex-direction: column;
-  will-change: transform, opacity;
+  gap: 24px;
+  margin-bottom: 24px;
 }
 
 .cardHeader {
@@ -88,6 +125,10 @@
   font-weight: 600;
   color: var(--color-accent);
   opacity: 0.8;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 8px 12px;
+  border-radius: 12px;
 }
 
 .cardTag {
@@ -102,8 +143,12 @@
   font-size: clamp(1.4rem, 2vw, 1.75rem);
   font-weight: 400;
   letter-spacing: -0.01em;
-  margin: 0 0 20px 0;
+  margin: 0;
   color: #ffffff;
+  /* Фиксируем высоту под 2 строки, чтобы сетка не прыгала */
+  min-height: 2.6em; 
+  display: flex;
+  align-items: flex-start;
 }
 
 .cardText {
@@ -112,31 +157,20 @@
   color: var(--text-muted);
   margin: 0;
   text-wrap: balance;
+  /* Прижимаем текст к низу карточки */
+  margin-top: auto; 
 }
 
-/* Метрики */
-.metricsZone {
-  margin-top: 80px;
-}
-
-.metricsZone .horizontalLine {
-  margin-bottom: 64px;
-}
-
+/* Метрики Сетка */
 .metricsGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 48px;
-}
-
-.metricItem {
-  will-change: transform, opacity;
+  gap: 24px;
 }
 
 .metricValue {
   font-family: var(--font-serif, Georgia, serif);
-  /* Корректный clamp для метрик, чтобы на смартфонах не ломалась верстка */
-  font-size: clamp(2rem, 5vw, 4.5rem);
+  font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 300;
   line-height: 1;
   color: var(--color-accent);
@@ -149,6 +183,7 @@
   color: #ffffff;
   margin-bottom: 8px;
   letter-spacing: -0.01em;
+  min-height: 2.4em; /* Резерв под 2 строки */
 }
 
 .metricDescription {
@@ -156,11 +191,11 @@
   line-height: 1.5;
   color: var(--text-muted);
   margin: 0;
+  margin-top: auto; /* Прижимаем к низу */
 }
 
 /* --- АДАПТИВНЫЙ ДИЗАЙН --- */
 
-/* Планшеты (Portrait & Landscape) */
 @media (max-width: 1024px) {
   .aboutSection {
     padding: 120px 24px;
@@ -174,62 +209,49 @@
   .sectionKicker {
     padding-top: 0;
   }
-
-  .manifestoGrid {
-    gap: 56px;
-    margin-bottom: 96px;
-  }
 }
 
-/* Большие смартфоны и мелкие планшеты */
 @media (max-width: 768px) {
   .aboutSection {
     padding: 80px 20px;
   }
   
   .topZone {
-    margin-bottom: 64px;
+    margin-bottom: 48px;
   }
   
   .manifestoGrid {
     grid-template-columns: 1fr;
-    gap: 48px;
-    margin-bottom: 64px;
+    gap: 16px;
+    margin-bottom: 16px;
   }
   
   .metricsGrid {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 16px;
   }
 
-  .metricsZone .horizontalLine {
-    margin-bottom: 40px;
+  .card {
+    padding: 32px 24px;
   }
 
-  .cardText {
-    text-wrap: pretty; /* pretty лучше поддерживается и выглядит аккуратнее на мобилках, чем unset */
+  .cardTitle, .metricLabel {
+    min-height: auto; /* На мобильных убираем фиксацию высоты */
+    margin-bottom: 12px;
   }
 }
 
-/* Стандартные смартфоны (iPhone, Android) */
 @media (max-width: 480px) {
   .aboutSection {
-    padding: 60px 16px; /* Максимально уплотняем секцию для узких экранов */
+    padding: 60px 16px; 
   }
 
-  .topZone {
-    margin-bottom: 48px;
+  .card {
+    padding: 24px 20px;
+    border-radius: 20px;
   }
 
-  .horizontalLine {
-    margin-bottom: 32px;
-  }
-
-  .manifestoGrid {
-    gap: 40px;
-  }
-
-  .metricsGrid {
-    gap: 32px;
+  .metricValue {
+    font-size: 2.5rem;
   }
 }
