@@ -11,15 +11,15 @@ export function MobileCinematic() {
   
   const currentStepRef = useRef<number>(0);
   const [videoDuration, setVideoDuration] = useState<number>(10);
-  // Флаг, разрешающий загрузку видеоресурса в DOM
   const [shouldLoadVideo, setShouldLoadVideo] = useState<boolean>(false);
+  const [isDecoderReady, setIsDecoderReady] = useState<boolean>(false);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
   });
 
-  // Ленивый триггер загрузки видеопотока через IntersectionObserver
+  // 1. Ленивая инициализация контейнера
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -28,39 +28,46 @@ export function MobileCinematic() {
       ([entry]) => {
         if (entry.isIntersecting) {
           setShouldLoadVideo(true);
-          observer.disconnect(); // Видео инициализировано, следить больше не нужно
+          observer.disconnect();
         }
       },
-      { rootMargin: "500px 0px 500px 0px" } // Начинаем качать за 500px до скролла к компоненту
+      { rootMargin: "400px 0px 400px 0px" } 
     );
 
     observer.observe(container);
     return () => observer.disconnect();
   }, []);
 
-  // Инициализация метаданных только после того, как видео разрешено к загрузке
-  useEffect(() => {
-    if (!shouldLoadVideo) return;
-
+  // 2. Обработка готовности медиа-потока и прогрев декодера
+  const handleVideoReady = async () => {
     const video = videoRef.current;
     if (!video) return;
 
-    const handleLoadedMetadata = () => {
-      setVideoDuration(video.duration);
-    };
+    setVideoDuration(video.duration);
 
-    if (video.readyState >= 1) {
-      setVideoDuration(video.duration);
-    } else {
-      video.addEventListener("loadedmetadata", handleLoadedMetadata);
+    // iOS/Android Safari Trick: принудительно будим декодер через кратковременный play/pause
+    try {
+      video.currentTime = 0;
+      const playPromise = video.play();
+      
+      if (playPromise !== undefined) {
+        await playPromise;
+        video.pause();
+      }
+      
+      // Декодер прогрет, первый кадр извлечен, можно разрешать скраббинг
+      setIsDecoderReady(true);
+    } catch (error) {
+      console.warn("Decoder warmup warm-up was interrupted:", error);
+      // В случае блокировки политиками автоплея все равно разрешаем работу
+      setIsDecoderReady(true);
     }
-
-    return () => video.removeEventListener("loadedmetadata", handleLoadedMetadata);
-  }, [shouldLoadVideo]);
+  };
 
   const animateVideoTo = (targetTime: number) => {
     const video = videoRef.current;
-    if (!video || !shouldLoadVideo) return;
+    // Запрещаем анимацию, если видео не смонтировано или декодер еще не готов
+    if (!video || !shouldLoadVideo || !isDecoderReady) return;
 
     if (animationFrameId.current) {
       cancelAnimationFrame(animationFrameId.current);
@@ -69,7 +76,7 @@ export function MobileCinematic() {
     const startVidTime = video.currentTime;
     const timeDistance = Math.abs(targetTime - startVidTime);
 
-    if (timeDistance < 0.05) {
+    if (timeDistance < 0.04) {
       video.currentTime = targetTime;
       return;
     }
@@ -82,7 +89,11 @@ export function MobileCinematic() {
       const progress = Math.min(elapsed / durationMs, 1);
 
       const nextTime = startVidTime + ((targetTime - startVidTime) * progress);
-      video.currentTime = nextTime;
+      
+      // Проверяем готовность буфера перед изменением кадра во избежание фризов
+      if (video.readyState >= 2) {
+        video.currentTime = nextTime;
+      }
 
       if (progress < 1) {
         animationFrameId.current = requestAnimationFrame(renderLoop);
@@ -94,8 +105,9 @@ export function MobileCinematic() {
     animationFrameId.current = requestAnimationFrame(renderLoop);
   };
 
+  // Маршрутизатор скролла
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    if (!shouldLoadVideo) return; // Игнорируем расчеты, если видео еще не подгружено
+    if (!shouldLoadVideo || !isDecoderReady) return;
 
     let targetStep = 0;
 
@@ -125,22 +137,27 @@ export function MobileCinematic() {
   return (
     <section ref={containerRef} className={styles.container}>
       <div className={styles.stickyArea}>
-        <video
-          ref={videoRef}
-          // Управляем src динамически
-          src={shouldLoadVideo ? "/videos/mobilevideo_optimized.mp4" : undefined}
-          playsInline
-          muted
-          preload={shouldLoadVideo ? "auto" : "none"}
-          className={styles.mobileVideoElement}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            display: "block",
-            transform: "translateZ(0)",
-          }}
-        />
+        {/* Использование условного рендеринга вместо динамического src */}
+        {shouldLoadVideo && (
+          <video
+            ref={videoRef}
+            src="/videos/mobilevideo_optimized.mp4"
+            playsInline
+            muted
+            preload="auto"
+            onLoadedData={handleVideoReady}
+            className={styles.mobileVideoElement}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              display: "block",
+              transform: "translateZ(0)",
+              opacity: isDecoderReady ? 1 : 0, // Плавное проявление после прогрева декодера
+              transition: "opacity 0.3s ease-in-out",
+            }}
+          />
+        )}
         <div className={styles.cinematicOverlay} aria-hidden="true" />
       </div>
     </section>
