@@ -1,11 +1,10 @@
 .footer {
-  /* Идеально черный фон, как в референсе */
-  background-color: #000000;
-  color: #ffffff;
-  /* Много воздуха сверху и снизу */
-  padding: 100px 24px 40px;
+  background-color: #050505;
+  color: #F7F8F8;
+  padding: 120px 24px 40px;
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
 }
 
 .container {
@@ -13,77 +12,159 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
-/* === Сетка навигации === */
+/* === Сетка навигации (Треугольная композиция) === */
 .grid {
-  display: grid;
-  /* Распределяем колонки равномерно */
-  grid-template-columns: repeat(5, 1fr);
-  gap: 40px;
-  margin-bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 80px;
+  margin-bottom: 100px;
+  width: 100%;
+}
+
+.rightGroup {
+  order: -1;
+  display: flex;
+  justify-content: center;
+}
+
+.leftGroup {
+  order: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 900px; /* Слегка увеличил ширину, чтобы горизонтальным ссылкам было просторно */
 }
 
 .column {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .columnTitle {
-  color: #8A8F98; /* Приглушенный серый для заголовков */
+  color: #8A8F98;
   font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  margin: 0 0 24px 0;
+  margin: 0 0 32px 0;
 }
 
+/* Изменено для горизонтального расположения */
 .linkList {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  flex-direction: row; /* Главное изменение: горизонталь */
+  flex-wrap: wrap;     /* Плавный перенос на узких экранах */
+  justify-content: center;
+  gap: 40px;           /* Увеличенный журнальный воздух между ссылками */
+  align-items: center;
 }
 
 .link {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  color: #A1A1AA; /* Светло-серый для ссылок */
-  font-size: 0.9rem;
+  justify-content: center;
+  gap: 12px;
+  color: #A1A1AA;
+  font-size: 1.05rem;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color 0.4s ease;
 }
 
 .link:hover {
-  color: #FFFFFF; /* Чистый белый при наведении */
+  color: #FFFFFF;
 }
 
-/* Иконка инстаграма */
 .socialIcon {
-  width: 18px;
-  height: 18px;
-  opacity: 0.8;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  width: 20px;
+  height: 20px;
+  opacity: 0.6;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
 }
 
 .link:hover .socialIcon {
   opacity: 1;
-  transform: scale(1.05); /* Легкий скейл иконки при наведении */
+  transform: scale(1.1) translateY(-2px);
+}
+
+/* === Кнопка Наверх (Премиальный вид) === */
+.backToTopBtn {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 24px;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+  font-family: inherit;
+}
+
+.backToTopText {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8A8F98;
+  transition: color 0.4s ease;
+}
+
+.backToTopCircle {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, background-color, border-color;
+}
+
+.backToTopCircle svg {
+  width: 28px;
+  height: 28px;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.backToTopBtn:hover .backToTopText {
+  color: #ffffff;
+}
+
+.backToTopBtn:hover .backToTopCircle {
+  background-color: #ffffff;
+  border-color: #ffffff;
+  color: #050505;
+  transform: translateY(-8px);
+}
+
+.backToTopBtn:hover .backToTopCircle svg {
+  transform: translateY(-4px);
 }
 
 /* === Разделитель === */
 .divider {
   width: 100%;
   height: 1px;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.08);
   margin-bottom: 32px;
 }
 
-/* === Юридический блок (Нижняя панель) === */
+/* === Юридический блок === */
 .legalZone {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -98,13 +179,13 @@
 .legalLinks {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 16px;
 }
 
 .legalLinks a {
   color: #8A8F98;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color 0.3s ease;
 }
 
 .legalLinks a:hover {
@@ -112,37 +193,46 @@
 }
 
 .dot {
-  opacity: 0.5;
+  opacity: 0.3;
 }
 
 /* === Адаптивность === */
 @media (max-width: 1024px) {
+  .leftGroup {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 80px 20px 32px;
+  }
+  
   .grid {
-    grid-template-columns: repeat(3, 1fr);
-    row-gap: 60px;
+    gap: 64px;
+    margin-bottom: 64px;
+  }
+
+  .leftGroup {
+    flex-direction: column;
+    gap: 64px;
+  }
+  
+  .linkList {
+    gap: 20px; /* Уменьшаем отступ для мобильных устройств при переносе строк */
+  }
+
+  .backToTopCircle {
+    width: 72px;
+    height: 72px;
   }
 }
 
 @media (max-width: 640px) {
-  .footer {
-    padding: 60px 16px 32px;
-  }
-  
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-    row-gap: 48px;
-    margin-bottom: 60px;
-  }
-  
   .legalZone {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .grid {
-    grid-template-columns: 1fr;
+    text-align: center;
   }
 }
