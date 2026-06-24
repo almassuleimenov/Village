@@ -2,7 +2,16 @@
 
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
-import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { 
+  motion, 
+  useMotionValue, 
+  useTransform, 
+  useSpring, 
+  AnimatePresence,
+  useScroll,
+  useMotionValueEvent
+} from "framer-motion";
+import { Magnetic } from "@/components/Cursor/Magnetic"; 
 import styles from "./HorizontalGallery.module.css";
 
 const images = [
@@ -17,17 +26,20 @@ const images = [
 export function HorizontalGallery() {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [dragWidth, setDragWidth] = useState(0);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   
-  // Motion-значение для отслеживания координаты X при перетаскивании
+  // Motion-значение для X-координаты. Будет управляться И свайпом, И скроллом.
   const x = useMotionValue(0);
+  // Используем Ref для ширины, чтобы не триггерить зависимости внутри scroll-ивента
+  const dragWidthRef = useRef(0);
 
-  // Динамический пересчет доступной ширины для свайпа (O(1) сложность, отрабатывает только при ресайзе)
+  // Динамический пересчет доступной ширины при ресайзе
   useEffect(() => {
     const calcWidth = () => {
       if (carouselRef.current) {
-        setDragWidth(
-          carouselRef.current.scrollWidth - carouselRef.current.offsetWidth
-        );
+        const width = carouselRef.current.scrollWidth - carouselRef.current.offsetWidth;
+        setDragWidth(width);
+        dragWidthRef.current = width;
       }
     };
     
@@ -36,10 +48,39 @@ export function HorizontalGallery() {
     return () => window.removeEventListener("resize", calcWidth);
   }, []);
 
-  // Физика пружины для прогресс-бара (чтобы он двигался чуть плавнее самой галереи)
+  // Блокировка скролла страницы при открытии фото
+  useEffect(() => {
+    if (selectedImage) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [selectedImage]);
+
+  // === МАГИЯ AWWWARDS: Связываем вертикальный скролл с горизонтальным движением ===
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    // Получаем предыдущее значение скролла для расчета ускорения (delta)
+    const previous = scrollY.getPrevious() ?? latest;
+    const delta = latest - previous;
+    
+    // Коэффициент 1.2 делает движение чуть динамичнее самого скролла
+    let newX = x.get() - delta * 1.2; 
+    
+    // Жестко ограничиваем вылет за границы галереи (Clamping)
+    const maxLeft = -dragWidthRef.current;
+    if (newX > 0) newX = 0;
+    if (newX < maxLeft) newX = maxLeft;
+    
+    x.set(newX);
+  });
+
+  // Физика пружины для индикатора прогресса (чтобы он двигался плавно)
   const springX = useSpring(x, { stiffness: 400, damping: 40 });
-  
-  // Интерполяция: превращаем пиксели сдвига (от 0 до -dragWidth) в проценты (от 0% до 100%)
   const progress = useTransform(springX, [0, -dragWidth], [0, 100]);
 
   return (
@@ -52,24 +93,23 @@ export function HorizontalGallery() {
       {/* Контейнер, ограничивающий видимую область */}
       <div className={styles.carouselWrapper} ref={carouselRef}>
         
-        {/* Интерактивный трек, который мы будем "тянуть" */}
+        {/* Интерактивный трек */}
         <motion.div 
           className={styles.track}
           drag="x"
           data-cursor="drag"
-        
-
-          // Ограничиваем перетаскивание размерами контента
           dragConstraints={{ right: 0, left: -dragWidth }}
-          // Даем премиальное ощущение "резинки" при достижении края
           dragElastic={0.15}
           style={{ x }}
-          // Тактильный фидбек: при клике галерея чуть "вдавливается"
-          whileTap={{ cursor: "grabbing", scale: 0.99 }}
+          whileTap={{ cursor: "grabbing" }}
         >
           {images.map((src, index) => (
-            <div key={src} className={styles.card}>
-              <div className={styles.imageContainer}>
+            <motion.div 
+              key={src} 
+              className={styles.card}
+              onClick={() => setSelectedImage(src)}
+            >
+              <motion.div layoutId={`wrapper-${src}`} className={styles.imageContainer}>
                 <Image 
                   src={src} 
                   alt={`Ракурс виллы V-Village ${index + 1}`}
@@ -78,13 +118,12 @@ export function HorizontalGallery() {
                   sizes="(max-width: 768px) 90vw, (max-width: 1200px) 70vw, 60vw"
                   priority={index < 2}
                   quality={90}
-                  // Отключаем pointer-events на картинке, чтобы она не перехватывала события drag
                   className={styles.image}
                   draggable={false} 
                 />
                 <div className={styles.imageOverlay} />
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           ))}
         </motion.div>
       </div>
@@ -104,6 +143,52 @@ export function HorizontalGallery() {
           Тяните для просмотра
         </div>
       </div>
+
+      {/* Полноэкранный Lightbox (Модальное окно) */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div 
+            className={styles.lightbox}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            onClick={() => setSelectedImage(null)}
+          >
+            <div className={styles.closeBtnWrapper} onClick={(e) => e.stopPropagation()}>
+              <Magnetic strength={0.5}>
+                <button 
+                  className={styles.closeBtn} 
+                  onClick={() => setSelectedImage(null)}
+                  aria-label="Закрыть фото"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </Magnetic>
+            </div>
+
+            <motion.div 
+              className={styles.fullscreenImageContainer}
+              layoutId={`wrapper-${selectedImage}`}
+              transition={{ type: "spring", stiffness: 200, damping: 25 }}
+              onClick={(e) => e.stopPropagation()} 
+            >
+              <Image 
+                src={selectedImage}
+                alt="Полноэкранный просмотр"
+                fill
+                quality={100}
+                style={{ objectFit: "contain" }}
+                sizes="100vw"
+                draggable={false}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
