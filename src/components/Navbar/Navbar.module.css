@@ -13,23 +13,16 @@
   display: flex;
   justify-content: center;
   pointer-events: none;
-  /* Резервируем пространство, но не анимируем его! */
   padding-top: 0; 
 }
 
 /* === Стили динамического контейнера (Nav) === */
-
-/* === Стили динамического контейнера (Nav) === */
-
 .navContainerTop {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  
-  /* КРИТИЧНОЕ ИСПРАВЛЕНИЕ: Возвращаем реакцию на клики */
   pointer-events: auto; 
-  
   width: calc(100% - 3rem); 
   max-width: 1440px;
   height: 4.5rem;
@@ -40,6 +33,7 @@
   border: 1px solid rgba(255, 255, 255, 0.05); 
   border-radius: 24px; 
   padding: 0 3rem;
+  z-index: 101; /* Держим поверх оверлея */
 }
 
 .navContainerScrolled {
@@ -47,10 +41,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  
-  /* КРИТИЧНОЕ ИСПРАВЛЕНИЕ: Возвращаем реакцию на клики */
   pointer-events: auto; 
-  
   width: 100%;
   max-width: 1200px;
   height: 3.5rem;
@@ -62,21 +53,7 @@
   padding: 0 1.5rem;
   margin-top: 1rem; 
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-/* === Адаптивность для телефонов и планшетов === */
-@media (max-width: 768px) {
-  .navContainerTop {
-    width: calc(100% - 1.5rem); /* На мобильных отступы меньше */
-    margin-top: 0.75rem;
-    padding: 0 1.5rem;
-    border-radius: 20px;
-  }
-  
-  .navContainerScrolled {
-    width: calc(100% - 1.5rem);
-    padding: 0 1.25rem;
-  }
+  z-index: 101; /* Держим поверх оверлея */
 }
 
 /* === Зонирование макета === */
@@ -92,6 +69,7 @@
   align-items: center;
   flex: 1;
   justify-content: flex-end;
+  gap: 12px; /* Отступ между телефоном и бургером на мобильных */
 }
 
 .logo {
@@ -103,8 +81,16 @@
   user-select: none;
 }
 
-.navList {
+/* Десктопные элементы */
+.desktopOnly {
   display: flex;
+}
+
+.mobileOnly {
+  display: none;
+}
+
+.navList {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -139,7 +125,7 @@
 }
 
 .navButton:active {
-  transform: scale(0.97); /* Физика нажатия */
+  transform: scale(0.97);
 }
 
 /* === Правая кнопка действия (Телефон) === */
@@ -156,10 +142,11 @@
   cursor: pointer;
   transition: all 150ms var(--ease-out);
   outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .phoneButton:active {
-  transform: scale(0.95); /* Мгновенный отклик */
+  transform: scale(0.95);
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.3);
 }
@@ -169,7 +156,6 @@
   height: 1.15rem;
 }
 
-/* Защита hover состояний для мобилок */
 @media (hover: hover) and (pointer: fine) {
   .navButton:hover {
     color: #fff;
@@ -191,7 +177,7 @@
   transform: translateX(-50%);
   z-index: 10;
   pointer-events: none; 
-  transform-origin: top center; /* Поповер открывается от триггера */
+  transform-origin: top center;
 }
 
 .dropdownBackground {
@@ -237,4 +223,108 @@
   color: rgba(255, 255, 255, 0.55);
   line-height: 1.45;
   max-width: 200px;
+}
+
+/* ========================================= */
+/* === АДАПТИВ И МОБИЛЬНОЕ МЕНЮ === */
+/* ========================================= */
+
+@media (max-width: 768px) {
+  .desktopOnly {
+    display: none !important;
+  }
+  
+  .mobileOnly {
+    display: flex;
+  }
+
+  .navContainerTop {
+    width: calc(100% - 1.5rem); 
+    margin-top: 0.75rem;
+    padding: 0 1.5rem;
+    border-radius: 20px;
+  }
+  
+  .navContainerScrolled {
+    width: calc(100% - 1.5rem);
+    padding: 0 1.25rem;
+  }
+
+  /* Гамбургер */
+  .hamburgerBtn {
+    width: 2.2rem;
+    height: 2.2rem;
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    z-index: 102; /* Поверх всего */
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .hamburgerLine {
+    width: 20px;
+    height: 1.5px;
+    background-color: #fff;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: center;
+  }
+
+  /* Анимация крестика */
+  .hamburgerActive .hamburgerLine:first-child {
+    transform: translateY(3.75px) rotate(45deg);
+  }
+  
+  .hamburgerActive .hamburgerLine:last-child {
+    transform: translateY(-3.75px) rotate(-45deg);
+  }
+}
+
+/* Мобильный Оверлей */
+.mobileOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100svh; /* Small Viewport Height для мобильных браузеров */
+  background: rgba(5, 5, 5, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  z-index: 100; /* Под навбаром, но над контентом */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.mobileNavList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  text-align: center;
+}
+
+.mobileNavButton {
+  background: transparent;
+  border: none;
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: 2.5rem;
+  color: #fff;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.3s ease;
+}
+
+.mobileNavButton:active {
+  color: var(--color-accent, #e5d3b3);
 }
