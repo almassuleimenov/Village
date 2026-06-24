@@ -57,7 +57,7 @@ export function Hero() {
           animate={{ scale: 1.05, z: -80 }}
           transition={springSlow}
         >
-          {/* Production-ready загрузка Hero изображения */}
+          {/* Десктопное изображение */}
           <Image
             src="/Corona3.jpg.jpeg"
             alt="Панорама V-Village"
@@ -65,6 +65,19 @@ export function Hero() {
             priority // Критически важно для LCP — грузит картинку мгновенно
             quality={90}
             sizes="100vw"
+            className={styles.desktopImage}
+            style={{ objectFit: "cover" }}
+          />
+
+          {/* Мобильное изображение */}
+          <Image
+            src="/Heromobile.png"
+            alt="Панорама V-Village (Мобильная версия)"
+            fill
+            priority // Также ставим priority для мгновенной загрузки на смартфонах
+            quality={90}
+            sizes="100vw"
+            className={styles.mobileImage}
             style={{ objectFit: "cover" }}
           />
         </motion.div>

@@ -101,3 +101,22 @@
   background-color: var(--color-accent);
   transform-origin: top;
 }
+/* === Подмена изображений (Art Direction) === */
+.desktopImage {
+  display: block !important;
+}
+
+.mobileImage {
+  display: none !important;
+}
+
+/* Переключаем на мобилку при ширине 768px и ниже */
+@media (max-width: 768px) {
+  .desktopImage {
+    display: none !important;
+  }
+  
+  .mobileImage {
+    display: block !important;
+  }
+}
