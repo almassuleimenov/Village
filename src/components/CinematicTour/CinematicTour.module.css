@@ -1,6 +1,5 @@
 .container {
   position: relative;
-  /* На мобильных скролл может ощущаться слишком длинным, поэтому оставляем 400vh для плавности, но без сбоев */
   height: 400vh; 
   background-color: #050505; 
 }
@@ -9,8 +8,8 @@
   position: sticky;
   top: 0;
   left: 0;
-  width: 100%; /* Заменили 100vw, чтобы избежать горизонтального скроллбара */
-  height: 100svh; /* Заменили 100vh на 100svh (Small Viewport Height) для устранения рывков при скролле на iOS/Android */
+  width: 100%; 
+  height: 100svh; /* svh защищает от прыжков панели адреса в iOS Safari */
   overflow: hidden;
   background-color: #050505;
 }
@@ -34,12 +33,18 @@
   mix-blend-mode: multiply;
 }
 
+.mobileVideoElement {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 /* --- АДАПТИВНЫЙ ДИЗАЙН --- */
 
-/* Мобильные устройства (вертикальная ориентация) */
+/* Планшеты и мобильные устройства */
 @media (max-width: 768px) {
   .cinematicOverlay {
-    /* На мобильных экранах уменьшаем затемнение в центре, так как экран меньше и нужно больше видимой зоны */
     background: 
       radial-gradient(circle at center, transparent 55%, rgba(5, 5, 5, 0.4) 100%),
       linear-gradient(to bottom, rgba(5, 5, 5, 0.8) 0%, transparent 20%, transparent 80%, rgba(5, 5, 5, 0.8) 100%);
@@ -49,45 +54,7 @@
 /* Компактные смартфоны */
 @media (max-width: 480px) {
   .container {
-    /* Ускоряем скролл на узких экранах, чтобы не заставлять пользователя листать слишком долго */
+    /* Корректируем высоту контейнера скролла для мобильной стейт-машины */
     height: 300vh; 
   }
-}
-/* ... твой существующий код для десктопа оставляем без изменений ... */
-
-/* --- АДАПТИВНЫЙ ДИЗАЙН --- */
-@media (max-width: 768px) {
-  .cinematicOverlay {
-    background: 
-      radial-gradient(circle at center, transparent 55%, rgba(5, 5, 5, 0.4) 100%),
-      linear-gradient(to bottom, rgba(5, 5, 5, 0.8) 0%, transparent 20%, transparent 80%, rgba(5, 5, 5, 0.8) 100%);
-  }
-}
-
-@media (max-width: 480px) {
-  .container {
-    height: 300vh; 
-  }
-}
-
-/* === НОВЫЕ КЛАССЫ ДЛЯ МОБИЛЬНОГО ВИДЕО === */
-
-.mobileVideoContainer {
-  position: relative;
-  width: 100vw;
-  height: 100svh; /* svh важен для предотвращения скачков UI в iOS Safari */
-  background-color: #050505;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  /* Снаппинг помогает блоку ровно встать по центру перед тем, как сработает блокировка скролла */
-  scroll-snap-align: start; 
-}
-
-.mobileVideoElement {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  will-change: transform; /* Подсказка для аппаратного ускорения */
 }
