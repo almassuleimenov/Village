@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MotionValue, useMotionValueEvent } from "framer-motion";
 
 interface CanvasScrubberProps {
@@ -22,49 +22,98 @@ export function CanvasScrubber({
   const lastDrawnIndexRef = useRef<number | null>(null);
   const containerSize = useRef({ width: 0, height: 0 });
   const animationFrameId = useRef<number | null>(null);
+  const [isIntersecting, setIsIntersecting] = useState(false);
+
+  // Следим за видимостью компонента, чтобы не грузить картинки раньше времени
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsIntersecting(true);
+          observer.disconnect(); // Нам нужно сработать только один раз
+        }
+      },
+      { rootMargin: "600px 0px 600px 0px" } // Начинаем за 600px до появления на экране
+    );
+
+    observer.observe(canvas);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
-    let isMounted = true;
+    if (!isIntersecting) return;
 
-    // Предзагрузка изображений
-    const loadSequence = () => {
-      const images: HTMLImageElement[] = [];
-      for (let i = 1; i <= frameCount; i++) {
-        const img = new Image();
-        const frameStr = i.toString().padStart(4, "0");
-        
-        if (priority && i < 10) {
-          img.fetchPriority = "high";
-        } else {
-          img.fetchPriority = "low";
-        }
-        img.src = `/frames/${sequenceName}/frame_${frameStr}.jpg`;
-        images.push(img);
-      }
+    let isMounted = true;
+    const BATCH_SIZE = 8; // Загружаем по 8 картинок одновременно, чтобы не блокировать сеть
+
+    const loadSequence = async () => {
+      const images: HTMLImageElement[] = new Array(frameCount);
       imagesRef.current = images;
 
-      images[0].onload = () => {
-        if (isMounted) drawImage(0);
+      // Сначала загружаем самый первый кадр для мгновенной отрисовки
+      const firstImg = new Image();
+      firstImg.src = `/frames/${sequenceName}/frame_0001.jpg`; // Переведи в .webp при возможности
+      firstImg.onload = () => {
+        if (isMounted) {
+          images[0] = firstImg;
+          drawImage(0);
+          // После первого кадра запускаем порционную загрузку остальных
+          loadInBatches(1);
+        }
       };
+    };
+
+    const loadInBatches = async (startIndex: number) => {
+      if (startIndex > frameCount || !isMounted) return;
+
+      const promises: Promise<void>[] = [];
+      const endIndex = Math.min(startIndex + BATCH_SIZE - 1, frameCount);
+
+      for (let i = startIndex; i <= endIndex; i++) {
+        promises.push(
+          new Promise<void>((resolve) => {
+            const img = new Image();
+            const frameStr = i.toString().padStart(4, "0");
+            
+            img.fetchPriority = priority && i < 15 ? "high" : "low";
+            img.src = `/frames/${sequenceName}/frame_${frameStr}.jpg`;
+            
+            img.onload = () => {
+              if (isMounted) imagesRef.current[i - 1] = img;
+              resolve();
+            };
+            img.onerror = () => {
+              resolve(); // Игнорируем ошибку битого кадра, чтобы не стопорить конвейер
+            };
+          })
+        );
+      }
+
+      await Promise.all(promises);
+      // Рекурсивно вызываем загрузку следующего пакета кадров
+      loadInBatches(endIndex + 1);
     };
 
     loadSequence();
 
     return () => { 
       isMounted = false; 
-      // Агрессивная очистка памяти (предотвращение OOM на мобилках)
       imagesRef.current.forEach(img => {
-        img.onload = null;
-        img.src = ""; 
+        if (img) {
+          img.onload = null;
+          img.src = ""; 
+        }
       });
       imagesRef.current = [];
       if (animationFrameId.current) {
         cancelAnimationFrame(animationFrameId.current);
       }
     };
-  }, [frameCount, sequenceName, priority]);
+  }, [frameCount, sequenceName, priority, isIntersecting]);
 
-  // Обработка Resize и Device Pixel Ratio
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -74,7 +123,6 @@ export function CanvasScrubber({
         const { width, height } = entry.contentRect;
         containerSize.current = { width, height };
         
-        // ВАЖНО: Ограничиваем DPR максимум до 2. Иначе на iPhone (DPR 3) GPU задохнется.
         const rawDpr = window.devicePixelRatio || 1;
         const dpr = Math.min(rawDpr, 2);
         
@@ -113,14 +161,12 @@ export function CanvasScrubber({
       const { width, height } = containerSize.current;
       if (width === 0 || height === 0) return;
 
-      // Алгоритм object-fit: cover
       const scale = Math.max(width / img.width, height / img.height);
       const x = (width / 2) - (img.width / 2) * scale;
       const y = (height / 2) - (img.height / 2) * scale;
       
       ctx.fillStyle = "#050505";
       ctx.fillRect(0, 0, width, height);
-      
       ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
       lastDrawnIndexRef.current = index;
     };
@@ -152,8 +198,8 @@ export function CanvasScrubber({
         width: "100%",
         height: "100%",
         display: "block",
-        transform: "translateZ(0)", // Аппаратное ускорение
-        willChange: "transform", // Подсказка браузеру о композитном слое
+        transform: "translateZ(0)",
+        willChange: "transform",
       }}
     />
   );
