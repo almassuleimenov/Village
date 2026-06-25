@@ -4,7 +4,10 @@ import { Hero } from "@/components/Hero/Hero";
 import { About } from "@/components/About/About";
 import { Footer } from "@/components/Footer/Footer";
 
-// Асинхронная подгрузка тяжелых компонентов (без запрещенного флага)
+// Импорт нашего нового глобального виджета
+import { FloatingSocials } from "@/components/FloatingSocials/FloatingSocials";
+
+// Асинхронная подгрузка тяжелых компонентов
 const CinematicTour = dynamic(() => 
   import("@/components/CinematicTour/CinematicTour").then((mod) => mod.CinematicTour)
 );
@@ -28,8 +31,10 @@ const Location = dynamic(() =>
 const Cta = dynamic(() => 
   import("@/components/Cta/Cta").then((mod) => mod.Cta)
 );
+
+// Для VR Journey отключаем SSR, чтобы избежать конфликтов при инъекции iframe
 const VrJourney = dynamic(() => 
-  import("@/components/VrJourney/VrJourney").then((mod) => mod.VrJourney)
+  import("@/components/VrJourney/VrJourney").then((mod) => mod.VrJourney),
 );
 
 export default function Home() {
@@ -37,7 +42,7 @@ export default function Home() {
     <main>
       <Navbar />
       
-      {/* Критически важный контент */}
+      {/* Критически важный контент (грузится сразу) */}
       <Hero />
       <About />
       
@@ -51,6 +56,9 @@ export default function Home() {
       <VrJourney />
       
       <Footer />
+
+      {/* Глобальный плавающий виджет соцсетей (рендерится поверх всего) */}
+      <FloatingSocials />
     </main>
   );
 }

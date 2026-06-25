@@ -1,0 +1,101 @@
+.container {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 9000; /* Должен быть поверх контента, но под VR порталом */
+  pointer-events: auto;
+}
+
+.btn {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(20, 20, 20, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* Важно: отрезает жидкость, выходящую за края круга */
+  cursor: pointer;
+  text-decoration: none;
+  color: #F7F8F8;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.icon {
+  position: relative;
+  z-index: 2; /* Иконка всегда поверх жидкости */
+  width: 24px;
+  height: 24px;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s ease;
+}
+
+/* --- МАГИЯ ЖИДКОСТИ (WAVE EFFECT) --- */
+.liquid {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  bottom: -150px; /* Жидкость опущена ниже кнопки */
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 38%; /* Искривление создает эффект волн при вращении */
+  z-index: 1;
+  animation: waveSpin 4s linear infinite;
+  transition: bottom 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.instaLiquid {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+
+.waLiquid {
+  background: #25D366;
+}
+
+@keyframes waveSpin {
+  0% { transform: translateX(-50%) rotate(0deg); }
+  100% { transform: translateX(-50%) rotate(360deg); }
+}
+
+/* --- ВЗАИМОДЕЙСТВИЕ --- */
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover {
+    border-color: transparent;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .btn:hover .icon {
+    transform: scale(1.1);
+    color: #ffffff;
+  }
+
+  .btn:hover .liquid {
+    bottom: -10px; /* Жидкость поднимается и заполняет кнопку */
+  }
+}
+
+/* Адаптив для смартфонов */
+@media (max-width: 768px) {
+  .container {
+    bottom: max(24px, env(safe-area-inset-bottom, 24px));
+    right: max(20px, env(safe-area-inset-right, 20px));
+    gap: 12px;
+  }
+
+  .btn {
+    width: 52px;
+    height: 52px;
+  }
+  
+  .icon {
+    width: 22px;
+    height: 22px;
+  }
+}
