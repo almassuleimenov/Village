@@ -3,69 +3,178 @@
   width: 100%;
   padding: 120px 24px;
   background-color: #050505;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+}
+
+.wrapper {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* --- КОНТЕЙНЕР ПРЕВЬЮ --- */
+.previewContainer {
+  position: relative;
+  width: 100%;
+  min-height: 700px; 
+  border-radius: 32px;
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- ЭМБИЕНТНЫЙ ФОН --- */
+.ambientBackground {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   overflow: hidden;
 }
 
-.previewWrapper {
-  max-width: 1280px;
-  margin: 0 auto;
+.orbOne, .orbTwo {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.15;
+  animation: float 20s infinite ease-in-out alternate;
+  /* Аппаратное ускорение для плавности */
+  will-change: transform; 
+}
+
+.orbOne {
+  width: 600px;
+  height: 600px;
+  background: #e5d3b3; 
+  top: -100px;
+  left: -100px;
+}
+
+.orbTwo {
+  width: 500px;
+  height: 500px;
+  background: rgba(255, 255, 255, 0.8);
+  bottom: -50px;
+  right: -50px;
+  animation-delay: -10s;
+}
+
+.noiseOverlay {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(5%, 10%) scale(1.1); }
+  100% { transform: translate(-5%, 5%) scale(0.95); }
+}
+
+/* --- КОНТЕНТ ПРЕВЬЮ --- */
+.previewContent {
   position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
-  background: rgba(20, 20, 20, 0.4);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding: 80px 40px;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 48px;
+}
+
+.centerZone {
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 500px;
-  overflow: hidden;
 }
 
-.glowOverlay {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    800px circle at 50% 50%, 
-    rgba(229, 211, 179, 0.08), 
-    transparent 70%
-  );
-  pointer-events: none;
-  z-index: 0;
+.massivePlayButton {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #e5d3b3;
+  cursor: pointer;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  /* Отключаем дефолтное серое выделение при тапе на мобилках */
+  -webkit-tap-highlight-color: transparent; 
 }
 
-.content {
-  position: relative;
-  z-index: 1;
+/* Изолируем hover-эффекты только для мыши. Это убивает "Sticky Hover" на тачпадах */
+@media (hover: hover) and (pointer: fine) {
+  .massivePlayButton:hover {
+    background: rgba(229, 211, 179, 0.1);
+    border-color: rgba(229, 211, 179, 0.4);
+    transform: scale(1.05);
+    color: #ffffff;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(229, 211, 179, 0.2);
+  }
+
+  .closeButton:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.05);
+  }
+}
+
+.playText {
+  font-family: var(--font-sans, sans-serif);
+  font-size: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.bottomZone {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 48px;
+  gap: 24px;
 }
 
-.textContent {
-  max-width: 640px;
+.metaTags {
+  display: flex;
+  gap: 12px;
+  /* Важно для мобилки: разрешаем перенос тегов на новую строку */
+  flex-wrap: wrap; 
 }
 
-.kicker {
-  display: block;
-  font-family: var(--font-sans, monospace);
+.tag {
   font-size: 0.75rem;
-  letter-spacing: 0.25em;
-  color: #e5d3b3;
   text-transform: uppercase;
-  margin-bottom: 24px;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 16px;
+  border-radius: 100px;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.textGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: end;
 }
 
 .title {
   font-family: var(--font-serif, "Playfair Display", Georgia, serif);
-  font-size: clamp(2rem, 4vw, 3.2rem);
+  /* Снизил нижнюю границу clamp до 2rem, чтобы на iPhone SE текст не рвал контейнер */
+  font-size: clamp(2rem, 5vw, 4rem); 
   font-weight: 400;
   line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0;
   color: #ffffff;
-  margin: 0 0 24px 0;
 }
 
 .description {
@@ -73,47 +182,11 @@
   line-height: 1.6;
   color: #8A8F98;
   margin: 0;
-  text-wrap: balance;
+  max-width: 500px;
+  justify-self: end;
 }
 
-.playButton {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 16px 32px 16px 24px;
-  border-radius: 100px;
-  color: #ffffff;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-}
-
-.playButton:hover {
-  background: rgba(229, 211, 179, 0.1);
-  border-color: rgba(229, 211, 179, 0.3);
-}
-
-.playIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  background: #e5d3b3;
-  color: #050505;
-  border-radius: 50%;
-}
-
-.playIcon svg {
-  width: 14px;
-  height: 14px;
-  margin-left: 2px;
-}
-
+/* --- VR ПОРТАЛ (ПОЛНОЭКРАННЫЙ) --- */
 .vrPortal {
   position: fixed;
   inset: 0;
@@ -125,8 +198,9 @@
 
 .closeControl {
   position: absolute;
-  top: 32px;
-  right: 32px;
+  /* Интеграция Safe Areas для iOS (челка/dynamic island) */
+  top: max(32px, env(safe-area-inset-top, 32px));
+  right: max(32px, env(safe-area-inset-right, 32px));
   z-index: 10000;
 }
 
@@ -144,11 +218,7 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   transition: all 0.3s ease;
-}
-
-.closeButton:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: scale(1.05);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .closeButton svg {
@@ -162,7 +232,6 @@
   flex: 1;
 }
 
-/* Стили для встроенного iframe */
 .iframe {
   width: 100%;
   height: 100%;
@@ -171,23 +240,70 @@
   background: transparent;
 }
 
+/* --- АДАПТИВ (Планшеты) --- */
+@media (max-width: 1024px) {
+  .previewContainer {
+    min-height: 600px;
+  }
+  
+  .textGrid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .description {
+    justify-self: start;
+  }
+}
+
+/* --- АДАПТИВ (Мобилки) --- */
 @media (max-width: 768px) {
   .section {
     padding: 80px 20px;
   }
   
-  .previewWrapper {
-    padding: 60px 24px;
-    min-height: 400px;
+  .previewContainer {
+    min-height: 500px;
+    border-radius: 24px;
+  }
+
+  .previewContent {
+    padding: 32px 24px;
   }
 
   .closeControl {
-    top: 24px;
-    right: 24px;
+    /* На мобилках прижимаем кнопку ближе к краю с учетом Safe Area */
+    top: max(24px, env(safe-area-inset-top, 24px));
+    right: max(20px, env(safe-area-inset-right, 20px));
   }
 
   .closeButton {
-    width: 56px;
-    height: 56px;
+    width: 52px;
+    height: 52px;
+  }
+}
+
+/* --- АДАПТИВ (Узкие экраны / iPhone SE) --- */
+@media (max-width: 480px) {
+  .section {
+    padding: 60px 16px;
+  }
+
+  .previewContent {
+    padding: 24px 20px;
+  }
+
+  /* Пропорционально уменьшаем массивную кнопку для мелких экранов */
+  .massivePlayButton {
+    width: 110px;
+    height: 110px;
+  }
+
+  .playText {
+    font-size: 0.85rem;
+  }
+
+  .description {
+    font-size: 1rem; /* Чуть уменьшаем текст, чтобы влезло больше смысла на экран */
   }
 }
