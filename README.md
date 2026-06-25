@@ -65,5 +65,3 @@ v-village-brochure
 │     │  └─ motion.ts
 │     └─ SmoothScroll.tsx
 └─ tsconfig.json
-
-```

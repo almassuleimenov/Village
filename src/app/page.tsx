@@ -28,6 +28,9 @@ const Location = dynamic(() =>
 const Cta = dynamic(() => 
   import("@/components/Cta/Cta").then((mod) => mod.Cta)
 );
+const VrJourney = dynamic(() => 
+  import("@/components/VrJourney/VrJourney").then((mod) => mod.VrJourney)
+);
 
 export default function Home() {
   return (
@@ -45,6 +48,7 @@ export default function Home() {
       <HorizontalGallery />
       <Cta />
       <Location />
+      <VrJourney />
       
       <Footer />
     </main>
