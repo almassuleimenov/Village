@@ -6,18 +6,18 @@ import styles from "./Footer.module.css";
 // Убедитесь, что путь к вашему Magnetic компоненту указан верно
 import { Magnetic } from "@/components/Cursor/Magnetic"; 
 
-// Оставили только блок Контактов
+// Контакты (Офис продаж теперь ведет на WhatsApp)
 const FOOTER_COLUMNS = [
   {
     title: "Контакты",
     links: [
-      { label: "Офис продаж", href: "/contacts" },
-      { label: "vclubvillas@gmail.com", href: "mailto:vclubvillas@gmail.com" },
-      { label: "+7 (700) 123-45-67", href: "tel:+77001234567" },
+      { label: "Офис продаж", href: "https://wa.me/77760002507" },
+      { label: "8 776 000 25 07", href: "tel:+77760002507" },
     ],
   },
 ];
 
+// Иконки в едином стиле (strokeWidth="1.5")
 const InstagramIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={styles.socialIcon}>
     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
@@ -26,10 +26,10 @@ const InstagramIcon = () => (
   </svg>
 );
 
-const TelegramIcon = () => (
+const MapPinIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={styles.socialIcon}>
-    <line x1="22" y1="2" x2="11" y2="13"></line>
-    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+    <circle cx="12" cy="10" r="3"></circle>
   </svg>
 );
 
@@ -87,7 +87,7 @@ export function Footer() {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
         >
-          {/* Левая группа: Контакты и Соцсети */}
+          {/* Левая группа: Контакты и Соцсети/Адреса */}
           <div className={styles.leftGroup}>
             {FOOTER_COLUMNS.map((col, idx) => (
               <motion.div key={idx} variants={columnVariants as any} className={styles.column}>
@@ -95,7 +95,7 @@ export function Footer() {
                 <ul className={styles.linkList}>
                   {col.links.map((link, linkIdx) => (
                     <li key={linkIdx}>
-                      <a href={link.href} className={styles.link}>
+                      <a href={link.href} className={styles.link} target={link.href.startsWith('http') ? "_blank" : "_self"} rel={link.href.startsWith('http') ? "noopener noreferrer" : ""}>
                         {link.label}
                       </a>
                     </li>
@@ -114,13 +114,13 @@ export function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a href="https://t.me/v_village" target="_blank" rel="noopener noreferrer" className={styles.link}>
-                    <TelegramIcon />
-                    Telegram
+                  <a href="https://2gis.kz/almaty/geo/9430047375119615/76.895892,43.150935" target="_blank" rel="noopener noreferrer" className={styles.link}>
+                    <MapPinIcon />
+                    Алатау көшесі, 17
                   </a>
                 </li>
                 <li>
-                  <a href="https://wa.me/77001234567" target="_blank" rel="noopener noreferrer" className={styles.link}>
+                  <a href="https://wa.me/77760002507" target="_blank" rel="noopener noreferrer" className={styles.link}>
                     <WhatsAppIcon />
                     WhatsApp
                   </a>
