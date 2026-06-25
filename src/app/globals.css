@@ -171,3 +171,13 @@ a.secondary {
     width: 100%;
   }
 }
+::selection {
+  background-color: #e5d3b3; /* Наш фирменный акцентный цвет */
+  color: #050505; /* Темный цвет для идеального контраста */
+}
+
+/* Поддержка для Firefox */
+::-moz-selection {
+  background-color: #e5d3b3;
+  color: #050505;
+}
