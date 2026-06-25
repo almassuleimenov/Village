@@ -92,13 +92,13 @@ export function Hero() {
           className={styles.content}
           style={{ z: 80 }} 
         >
-          <motion.div variants={textRevealVariant}>
+          <motion.div variants={textRevealVariant} className={styles.logoGroup}>
             <h1 className={styles.logo}>V</h1>
             <p className={styles.subtitle}>Club Villas</p>
           </motion.div>
 
           <motion.h2 variants={textRevealVariant} className={styles.title}>
-            Жизнь в гармонии <br /> с природой
+            Архитектура <br /> личной свободы
           </motion.h2>
         </motion.div>
       </motion.div>

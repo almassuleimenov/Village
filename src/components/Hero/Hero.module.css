@@ -16,8 +16,8 @@
   z-index: 10;
   pointer-events: none;
   background: 
-    radial-gradient(circle at center, transparent 35%, rgba(28, 28, 26, 0.95) 100%),
-    linear-gradient(to bottom, transparent 85%, #050505 100%);
+    radial-gradient(circle at center, transparent 35%, rgba(28, 28, 26, 0.8) 100%),
+    linear-gradient(to bottom, transparent 80%, #050505 100%);
 }
 
 .scene {
@@ -29,7 +29,6 @@
   justify-content: center;
   align-items: center;
   will-change: transform;
-  /* Важно: отключаем события мыши внутри сцены, чтобы onMouseMove секции работал гладко */
   pointer-events: none; 
 }
 
@@ -40,20 +39,41 @@
   width: 120%;
   height: 120%;
   will-change: transform;
-  /* Image fill требует relative/absolute на родителе + overflow hidden */
   overflow: hidden; 
 }
 
 .content {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   gap: var(--space-md);
   will-change: transform;
-  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
-  /* Возвращаем события мыши для текста, если нужно выделение */
   pointer-events: auto; 
+  /* Убрали жесткий drop-shadow, заменим его на мягкий backdrop */
+}
+
+/* ЭЛЕГАНТНОЕ ЗАТЕМНЕНИЕ ФОНА ПОД ТЕКСТОМ (Радиальное размытие) */
+.content::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 180%;
+  height: 160%;
+  background: radial-gradient(circle at center, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.15) 50%, transparent 70%);
+  filter: blur(20px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* МНОГОСЛОЙНАЯ ТЕНЬ ДЛЯ ИДЕАЛЬНОЙ ЧИТАЕМОСТИ БУКВ */
+.logoGroup, .title {
+  text-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.6), 
+    0 8px 40px rgba(0, 0, 0, 0.5);
 }
 
 .logo {
@@ -79,7 +99,8 @@
   color: var(--color-text-main);
   max-width: 600px;
   margin-top: var(--space-md);
-  text-wrap: balance; /* Предотвращает одиночные слова на новой строке */
+  text-wrap: balance; 
+  font-weight: 400;
 }
 
 .scrollIndicator {
@@ -91,8 +112,9 @@
   gap: var(--space-xs);
   font-size: 0.75rem;
   letter-spacing: 0.1em;
-  color: var(--color-text-muted);
+  color: var(--color-text-main); /* Сделал ярче для читаемости */
   z-index: 15;
+  text-shadow: 0 4px 10px rgba(0,0,0,0.8); /* Тень для индикатора скролла */
 }
 
 .scrollLine {
@@ -100,7 +122,9 @@
   height: 40px;
   background-color: var(--color-accent);
   transform-origin: top;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
+
 /* === Подмена изображений (Art Direction) === */
 .desktopImage {
   display: block !important;
@@ -110,7 +134,6 @@
   display: none !important;
 }
 
-/* Переключаем на мобилку при ширине 768px и ниже */
 @media (max-width: 768px) {
   .desktopImage {
     display: none !important;
@@ -118,5 +141,12 @@
   
   .mobileImage {
     display: block !important;
+  }
+  
+  /* На мобилках радиус затемнения можно сделать чуть меньше */
+  .content::before {
+    width: 140%;
+    height: 140%;
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.2) 60%, transparent 80%);
   }
 }
