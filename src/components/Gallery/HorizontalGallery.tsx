@@ -14,39 +14,73 @@ import {
 import { Magnetic } from "@/components/Cursor/Magnetic"; 
 import styles from "./HorizontalGallery.module.css";
 
-const images = [
+const baseImages = [
   "/Corona1.jpg.jpeg",
   "/Corona2.jpg.jpeg",
   "/Corona3.jpg.jpeg",
   "/Corona4.jpg.jpeg",
   "/Corona5.jpg.jpeg",
   "/Corona6.jpg",
+  "/Corona8.jpeg",
 ];
+
+// Умножаем массив на 3 для создания бесшовной иллюзии бесконечности
+const infiniteImages = [...baseImages, ...baseImages, ...baseImages];
 
 export function HorizontalGallery() {
   const carouselRef = useRef<HTMLDivElement>(null);
-  const [dragWidth, setDragWidth] = useState(0);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   
-  // Motion-значение для X-координаты. Будет управляться И свайпом, И скроллом.
+  // Храним не только ссылку, но и уникальный индекс, чтобы layoutId работал корректно
+  const [selectedImage, setSelectedImage] = useState<{src: string, index: number} | null>(null);
+  const [isMeasured, setIsMeasured] = useState(false);
+  
+  // Координата X
   const x = useMotionValue(0);
-  // Используем Ref для ширины, чтобы не триггерить зависимости внутри scroll-ивента
-  const dragWidthRef = useRef(0);
+  const originalWidthRef = useRef(0);
 
-  // Динамический пересчет доступной ширины при ресайзе
+  // Высчитываем ширину ОДНОГО оригинального сета картинок
   useEffect(() => {
     const calcWidth = () => {
       if (carouselRef.current) {
-        const width = carouselRef.current.scrollWidth - carouselRef.current.offsetWidth;
-        setDragWidth(width);
-        dragWidthRef.current = width;
+        // Делим общую ширину скролла на 3 (количество сетов)
+        const oneSetWidth = carouselRef.current.scrollWidth / 3;
+        originalWidthRef.current = oneSetWidth;
+
+        // При первой загрузке центрируем галерею на втором сете (чтобы можно было листать влево)
+        if (!isMeasured) {
+          x.set(-oneSetWidth);
+          setIsMeasured(true);
+        }
       }
     };
     
     calcWidth();
     window.addEventListener("resize", calcWidth);
     return () => window.removeEventListener("resize", calcWidth);
-  }, []);
+  }, [isMeasured, x]);
+
+  // === БЕСКОНЕЧНЫЙ ЦИКЛ (WRAPPER) ===
+  useMotionValueEvent(x, "change", (latest) => {
+    if (!isMeasured) return;
+    const w = originalWidthRef.current;
+
+    // Если ушли слишком далеко вправо (в 1-й сет) -> кидаем обратно во 2-й
+    if (latest > 0) {
+      x.set(latest - w);
+    } 
+    // Если ушли слишком далеко влево (в 3-й сет) -> кидаем обратно во 2-й
+    else if (latest < -w * 2) {
+      x.set(latest + w);
+    }
+  });
+
+  // === СВЯЗЬ СО СКРОЛЛОМ МЫШИ ===
+  const { scrollY } = useScroll();
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? latest;
+    const delta = latest - previous;
+    x.set(x.get() - delta * 1.5); // Коэффициент 1.5 дает легкое ускорение
+  });
 
   // Блокировка скролла страницы при открытии фото
   useEffect(() => {
@@ -55,33 +89,19 @@ export function HorizontalGallery() {
     } else {
       document.body.style.overflow = "";
     }
-    return () => {
-      document.body.style.overflow = "";
-    };
+    return () => { document.body.style.overflow = ""; };
   }, [selectedImage]);
 
-  // === МАГИЯ AWWWARDS: Связываем вертикальный скролл с горизонтальным движением ===
-  const { scrollY } = useScroll();
-
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    // Получаем предыдущее значение скролла для расчета ускорения (delta)
-    const previous = scrollY.getPrevious() ?? latest;
-    const delta = latest - previous;
-    
-    // Коэффициент 1.2 делает движение чуть динамичнее самого скролла
-    let newX = x.get() - delta * 1.2; 
-    
-    // Жестко ограничиваем вылет за границы галереи (Clamping)
-    const maxLeft = -dragWidthRef.current;
-    if (newX > 0) newX = 0;
-    if (newX < maxLeft) newX = maxLeft;
-    
-    x.set(newX);
+  // Вычисляем бесконечный прогресс-бар через деление по модулю
+  const progressSpring = useSpring(x, { stiffness: 400, damping: 40 });
+  const progress = useTransform(progressSpring, (latest) => {
+    const w = originalWidthRef.current;
+    if (!w) return 0;
+    // Нормализуем значение от 0 до 100% в рамках одного сета
+    const positiveX = Math.abs(latest);
+    const normalized = positiveX % w;
+    return (normalized / w) * 100;
   });
-
-  // Физика пружины для индикатора прогресса (чтобы он двигался плавно)
-  const springX = useSpring(x, { stiffness: 400, damping: 40 });
-  const progress = useTransform(springX, [0, -dragWidth], [0, 100]);
 
   return (
     <section className={styles.section}>
@@ -90,33 +110,31 @@ export function HorizontalGallery() {
         <h2 className={styles.title}>Архитектура в деталях</h2>
       </header>
 
-      {/* Контейнер, ограничивающий видимую область */}
       <div className={styles.carouselWrapper} ref={carouselRef}>
-        
-        {/* Интерактивный трек */}
         <motion.div 
           className={styles.track}
           drag="x"
           data-cursor="drag"
-          dragConstraints={{ right: 0, left: -dragWidth }}
-          dragElastic={0.15}
+          // Огромные лимиты, чтобы свайп не блокировался
+          dragConstraints={{ left: -100000, right: 100000 }}
+          dragElastic={0} // Убираем резиновый эффект для идеального цикла
           style={{ x }}
           whileTap={{ cursor: "grabbing" }}
         >
-          {images.map((src, index) => (
+          {infiniteImages.map((src, index) => (
             <motion.div 
-              key={src} 
+              key={`${src}-${index}`} 
               className={styles.card}
-              onClick={() => setSelectedImage(src)}
+              onClick={() => setSelectedImage({ src, index })}
             >
-              <motion.div layoutId={`wrapper-${src}`} className={styles.imageContainer}>
+              <motion.div layoutId={`wrapper-${src}-${index}`} className={styles.imageContainer}>
                 <Image 
                   src={src} 
                   alt={`Ракурс виллы V-Village ${index + 1}`}
                   fill
                   style={{ objectFit: "cover" }}
-                  sizes="(max-width: 768px) 90vw, (max-width: 1200px) 70vw, 60vw"
-                  priority={index < 2}
+                  sizes="(max-width: 768px) 85vw, (max-width: 1200px) 70vw, 60vw"
+                  priority={index > 5 && index < 12} // Приоритет для центрального сета
                   quality={90}
                   className={styles.image}
                   draggable={false} 
@@ -128,7 +146,6 @@ export function HorizontalGallery() {
         </motion.div>
       </div>
 
-      {/* Индикатор прогресса галереи */}
       <div className={styles.progressContainer}>
         <div className={styles.progressBar}>
           <motion.div 
@@ -140,11 +157,10 @@ export function HorizontalGallery() {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18M17.25 15.75L21 12m0 0l-3.75-3.75" />
           </svg>
-          Тяните для просмотра
+          Бесконечная галерея
         </div>
       </div>
 
-      {/* Полноэкранный Lightbox (Модальное окно) */}
       <AnimatePresence>
         {selectedImage && (
           <motion.div 
@@ -172,12 +188,13 @@ export function HorizontalGallery() {
 
             <motion.div 
               className={styles.fullscreenImageContainer}
-              layoutId={`wrapper-${selectedImage}`}
+              // Привязываем layoutId к конкретному индексу, чтобы картинка летела именно туда, куда нажали
+              layoutId={`wrapper-${selectedImage.src}-${selectedImage.index}`}
               transition={{ type: "spring", stiffness: 200, damping: 25 }}
               onClick={(e) => e.stopPropagation()} 
             >
               <Image 
-                src={selectedImage}
+                src={selectedImage.src}
                 alt="Полноэкранный просмотр"
                 fill
                 quality={100}
