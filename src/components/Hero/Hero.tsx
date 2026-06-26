@@ -98,7 +98,9 @@ export function Hero() {
           </motion.div>
 
           <motion.h2 variants={textRevealVariant} className={styles.title}>
-            Проект, <br /> который предлагает нам мечтать  <br /> с открытыми глазами.
+            Проект, <br className={styles.desktopBreak} /> 
+            который предлагает нам мечтать <br className={styles.desktopBreak} /> 
+            с открытыми глазами.
           </motion.h2>
         </motion.div>
       </motion.div>
@@ -109,7 +111,6 @@ export function Hero() {
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
       >
-
       </motion.div>
     </section>
   );

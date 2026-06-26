@@ -51,7 +51,6 @@
   gap: var(--space-md);
   will-change: transform;
   pointer-events: auto; 
-  /* Убрали жесткий drop-shadow, заменим его на мягкий backdrop */
 }
 
 /* ЭЛЕГАНТНОЕ ЗАТЕМНЕНИЕ ФОНА ПОД ТЕКСТОМ (Радиальное размытие) */
@@ -95,12 +94,17 @@
 }
 
 .title {
-  font-size: var(--font-size-h2);
+  /* Уменьшенный шрифт: минимальный 1.1rem, масштабируется от 2vw, максимум 1.75rem */
+  font-size: clamp(1.1rem, 2vw, 1.75rem); 
   color: var(--color-text-main);
-  max-width: 600px;
   margin-top: var(--space-md);
-  text-wrap: balance; 
   font-weight: 400;
+  line-height: 1.4; /* Слегка увеличили межстрочный интервал для дыхания текста */
+}
+
+/* Класс для контролируемых переносов на десктопе */
+.desktopBreak {
+  display: block;
 }
 
 .scrollIndicator {
@@ -112,9 +116,9 @@
   gap: var(--space-xs);
   font-size: 0.75rem;
   letter-spacing: 0.1em;
-  color: var(--color-text-main); /* Сделал ярче для читаемости */
+  color: var(--color-text-main); 
   z-index: 15;
-  text-shadow: 0 4px 10px rgba(0,0,0,0.8); /* Тень для индикатора скролла */
+  text-shadow: 0 4px 10px rgba(0,0,0,0.8); 
 }
 
 .scrollLine {
@@ -148,5 +152,16 @@
     width: 140%;
     height: 140%;
     background: radial-gradient(circle at center, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.2) 60%, transparent 80%);
+  }
+
+  /* Скрываем жесткие переносы на мобильных устройствах */
+  .desktopBreak {
+    display: none;
+  }
+
+  /* Включаем автоматическую балансировку строк для мобилок */
+  .title {
+    text-wrap: balance;
+    max-width: 90vw;
   }
 }
