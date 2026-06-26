@@ -17,19 +17,19 @@ interface MetricItem {
   description: string;
 }
 
-// Контент сбалансирован по длине строк для идеальной симметрии
+// Контент от копирайтера (исправлены переносы \n без лишних пробелов)
 const MANIFESTO_DATA: ManifestoItem[] = [
   {
     number: "01",
     tag: "Философия",
-    title: "Монументальный минимализм",
-    text: "Архитектура резиденций гармонично продолжает природный ландшафт предгорий, сочетая в себе грубую текстуру камня и безупречную гладь остекления.",
+    title: "Архитектура,\nсозданная для жизни",
+    text: "Каждая вилла спроектирована так, чтобы наполнять пространство естественным светом, открывать виды на горы и дарить ощущение свободы. Современная архитектура подчеркивает статус проекта, сохраняя гармонию с окружающей природой.",
   },
   {
     number: "02",
-    tag: "Эргономика",
-    title: "Манифест личной свободы",
-    text: "Каждый квадратный метр спроектирован с учетом сценариев движения света. Интеграция внутренних дворов создает абсолютную автономию для семьи.",
+    tag: "Пространство",
+    title: "Комфорт\nв каждой детали",
+    text: "Высокие потолки, панорамное остекление, второй свет в гостиной и функциональные планировки создают просторные интерьеры, которые легко адаптировать под собственный стиль жизни.",
   },
 ];
 
@@ -45,9 +45,9 @@ const METRICS_DATA: MetricItem[] = [
     description: "Просторные интерьеры со вторым светом, дающие невероятное ощущение объема и воздуха.",
   },
   {
-    value: "5 мин",
-    label: "До горных маршрутов",
-    description: "Прямой выход к пешим тропам Заилийского Алатау. Приватные горные маршруты каждый день.",
+    value: "285 м²",
+    label: "Общая площадь виллы",
+    description: "Идеально сбалансированное пространство для жизни. Безупречное зонирование включает панорамную гостиную, просторные мастер-спальни и открытые террасы.",
   },
 ];
 
@@ -75,7 +75,7 @@ export function About() {
     <section id="about-section" className={styles.aboutSection}>
       <div className={styles.wrapper}>
         
-        {/* Верхняя зона с заголовком */}
+        {/* Верхняя зона с заголовком и описанием */}
         <div className={styles.topZone}>
           <div className={styles.headerGrid}>
             <motion.span 
@@ -87,15 +87,19 @@ export function About() {
             >
               О проекте
             </motion.span>
-            <motion.h2 
-              className={styles.mainTitle}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-10%" }}
-              transition={{ duration: 0.8, ease: textEasing, delay: 0.1 }}
-            >
-              Бескомпромиссный взгляд на приватность и монументальное качество.
-            </motion.h2>
+            
+            {/* Обертка для Заголовка и нового текста */}
+            <div className={styles.titleWrapper}>
+              <motion.h2 
+                className={styles.mainTitle}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.8, ease: textEasing, delay: 0.1 }}
+              >
+                Жизнь, где природа <br />становится частью дома.
+              </motion.h2>
+            </div>
           </div>
         </div>
 
@@ -119,6 +123,7 @@ export function About() {
                   <span className={styles.cardNumber}>{item.number}</span>
                   <span className={styles.cardTag}>{item.tag}</span>
                 </div>
+                {/* Заголовок с точным выравниванием */}
                 <h3 className={styles.cardTitle}>{item.title}</h3>
                 <p className={styles.cardText}>{item.text}</p>
               </div>

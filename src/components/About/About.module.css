@@ -43,6 +43,13 @@
   padding-top: 8px;
 }
 
+/* Обертка для заголовка и описания */
+.titleWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
 .mainTitle {
   font-family: var(--font-serif, "Playfair Display", Georgia, serif);
   font-size: clamp(1.75rem, 3.5vw, 3.2rem);
@@ -52,6 +59,16 @@
   margin: 0;
   max-width: 860px;
   color: #ffffff;
+}
+
+/* Стили для нового текста от Марины */
+.mainDescription {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  max-width: 760px;
+  margin: 0;
+  text-wrap: balance;
 }
 
 /* Универсальные стили карточек (Bento Style) */
@@ -145,10 +162,11 @@
   letter-spacing: -0.01em;
   margin: 0;
   color: #ffffff;
-  /* Фиксируем высоту под 2 строки, чтобы сетка не прыгала */
-  min-height: 2.6em; 
+  /* Буфер высоты под 2 строки. Гарантирует, что тексты ниже начнутся на одном уровне */
+  min-height: 3.5em; 
   display: flex;
   align-items: flex-start;
+  white-space: pre-line;
 }
 
 .cardText {
@@ -157,8 +175,7 @@
   color: var(--text-muted);
   margin: 0;
   text-wrap: balance;
-  /* Прижимаем текст к низу карточки */
-  margin-top: auto; 
+  /* Убрали margin-top: auto, чтобы текст лип к заголовку и линия была ровной */
 }
 
 /* Метрики Сетка */
@@ -183,7 +200,8 @@
   color: #ffffff;
   margin-bottom: 8px;
   letter-spacing: -0.01em;
-  min-height: 2.4em; /* Резерв под 2 строки */
+  /* Резерв под 2 строки (например "Общая площадь виллы") */
+  min-height: 2.8em; 
 }
 
 .metricDescription {
@@ -191,7 +209,7 @@
   line-height: 1.5;
   color: var(--text-muted);
   margin: 0;
-  margin-top: auto; /* Прижимаем к низу */
+  /* Убрали margin-top: auto, чтобы тексты стартовали ровно по одной горизонтальной линии */
 }
 
 /* --- АДАПТИВНЫЙ ДИЗАЙН --- */
@@ -220,6 +238,14 @@
     margin-bottom: 48px;
   }
   
+  .titleWrapper {
+    gap: 20px;
+  }
+
+  .mainDescription {
+    font-size: 1rem;
+  }
+
   .manifestoGrid {
     grid-template-columns: 1fr;
     gap: 16px;
@@ -236,7 +262,7 @@
   }
 
   .cardTitle, .metricLabel {
-    min-height: auto; /* На мобильных убираем фиксацию высоты */
+    min-height: auto; /* На мобильных убираем фиксацию высоты, так как они идут друг под другом */
     margin-bottom: 12px;
   }
 }
