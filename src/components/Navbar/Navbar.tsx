@@ -49,7 +49,7 @@ const LocationMenu = () => (
 
 const NAV_ITEMS = [
   { id: "concept", title: "Концепция", targetId: "about-section", content: <ConceptMenu /> },
-  { id: "advantages", title: "Стандарты", targetId: "advantages-section", content: <AdvantagesMenu /> },
+  { id: "advantages", title: "Преимущества", targetId: "advantages-section", content: <AdvantagesMenu /> },
   { id: "layout", title: "Планировки", targetId: "layout-section", content: <LayoutMenu /> },
   { id: "location", title: "Расположение", targetId: "location-section", content: <LocationMenu /> },
 ];

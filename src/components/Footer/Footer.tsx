@@ -116,7 +116,7 @@ export function Footer() {
                 <li>
                   <a href="https://2gis.kz/almaty/geo/9430047375119615/76.895892,43.150935" target="_blank" rel="noopener noreferrer" className={styles.link}>
                     <MapPinIcon />
-                    Алатау көшесі, 17
+                    Алатау көшесі, 54
                   </a>
                 </li>
                 <li>

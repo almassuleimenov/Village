@@ -3,12 +3,12 @@
   --text-main: #F7F8F8;
   --text-muted: #8A8F98;
   --color-accent: #e5d3b3;
-  --input-bg: rgba(255, 255, 255, 0.03);
-  --input-border: rgba(255, 255, 255, 0.08);
+  --input-bg: rgba(255, 255, 255, 0.02);
+  --input-border: rgba(255, 255, 255, 0.1);
   
   background-color: var(--bg-primary);
   color: var(--text-main);
-  padding: 120px 24px;
+  padding: 140px 24px;
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
   position: relative;
   overflow: hidden;
@@ -19,29 +19,63 @@
   margin: 0 auto;
 }
 
+/* === Премиальная карточка === */
+.card {
+  position: relative;
+  border-radius: 32px;
+  background: rgba(20, 20, 20, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  overflow: hidden;
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+}
+
+/* Мягкое свечение из правого нижнего угла */
+.cardGlow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 100% 100%, rgba(229, 211, 179, 0.06) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
 .grid {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 80px;
   align-items: center;
-  background: radial-gradient(circle at 100% 50%, rgba(229, 211, 179, 0.03) 0%, transparent 50%);
-  border-radius: 32px;
-  border: 1px solid var(--input-border);
   padding: 80px;
 }
 
+/* === Типографика === */
 .textContent {
   max-width: 540px;
+  display: flex;
+  flex-direction: column;
+}
+
+.kicker {
+  font-family: var(--font-sans, monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  display: inline-block;
 }
 
 .title {
-  font-family: var(--font-serif, Georgia, serif);
-  font-size: clamp(2rem, 4vw, 3.5rem); /* Скорректирован нижний порог для мобильных */
+  font-family: var(--font-serif, "Playfair Display", Georgia, serif);
+  font-size: clamp(2.5rem, 4vw, 4rem); 
   font-weight: 400;
   line-height: 1.1;
   letter-spacing: -0.02em;
   margin: 0 0 24px 0;
-  text-wrap: balance; /* Заменяет жесткий тег <br /> для идеальной типографики */
+  color: #ffffff;
+  text-wrap: balance;
 }
 
 .subtitle {
@@ -55,10 +89,10 @@
 /* === Форма === */
 .formWrapper {
   width: 100%;
-  max-width: 480px;
+  max-width: 440px; /* Сделали форму чуть компактнее и элегантнее */
   margin-left: auto;
   position: relative;
-  min-height: 300px;
+  min-height: 320px;
   display: flex;
   align-items: center;
 }
@@ -67,7 +101,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px; /* Уменьшили отступ между инпутами для строгости */
 }
 
 /* Floating Label Inputs */
@@ -81,17 +115,13 @@
   height: 64px;
   background: var(--input-bg);
   border: 1px solid var(--input-border);
-  border-radius: 16px;
+  border-radius: 12px; /* Менее круглые углы выглядят дороже */
   padding: 24px 20px 8px;
-  font-size: 1rem; /* Оставлен 1rem (16px), чтобы предотвратить зум на iOS при фокусе */
+  font-size: 1rem;
   color: var(--text-main);
   outline: none;
-  transition: border-color 0.3s ease, background 0.3s ease;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  /* Отключаем дефолтные стили iOS для инпутов */
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   -webkit-appearance: none;
-  border-radius: 16px;
 }
 
 .label {
@@ -105,11 +135,12 @@
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), font-size 0.3s ease, color 0.3s ease;
 }
 
-/* Анимация Label */
+/* Акцентная анимация фокуса */
 .input:focus,
 .input:not(:placeholder-shown) {
-  border-color: rgba(229, 211, 179, 0.4);
-  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(229, 211, 179, 0.3);
+  background: rgba(229, 211, 179, 0.02);
+  box-shadow: 0 0 0 4px rgba(229, 211, 179, 0.05); /* Легкое внешнее свечение */
 }
 
 .input:focus ~ .label,
@@ -120,35 +151,112 @@
 }
 
 /* Кнопка */
+/* === Кнопка с эффектом Liquid Fill === */
 .submitBtn {
+  position: relative;
+  overflow: hidden; /* Критически важно: обрезает волну по форме кнопки */
   height: 64px;
   width: 100%;
-  background: var(--color-accent);
-  color: #050505;
-  border: none;
-  border-radius: 16px;
+  background: rgba(229, 211, 179, 0.03); /* Почти прозрачная база */
+  border: 1px solid rgba(229, 211, 179, 0.3); /* Изящный контур */
+  border-radius: 12px;
+  color: var(--color-accent); /* Изначально текст золотой */
   font-size: 1rem;
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 8px;
+  margin-top: 12px;
   outline: none;
-  /* Отключаем системное выделение тапом на мобильных */
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Текст должен быть выше слоя с водой */
+.btnText {
+  position: relative;
+  z-index: 2;
+  transition: color 0.4s ease;
+}
+
+/* Физика волны для широкой кнопки */
+.liquid {
+  position: absolute;
+  width: 600px; /* Делаем больше ширины кнопки */
+  height: 600px;
+  bottom: -620px; /* Прячем далеко внизу */
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-accent); /* Цвет наполнения - золото */
+  border-radius: 38%; /* Искривление для эффекта волн */
+  z-index: 1;
+  animation: btnWaveSpin 5s linear infinite;
+  transition: bottom 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes btnWaveSpin {
+  0% { transform: translateX(-50%) rotate(0deg); }
+  100% { transform: translateX(-50%) rotate(360deg); }
+}
+
+/* Эффекты при наведении */
+@media (hover: hover) and (pointer: fine) {
+  .submitBtn:hover:not(:disabled) .liquid {
+    bottom: -200px; /* Волна поднимается и заполняет кнопку */
+  }
+
+  .submitBtn:hover:not(:disabled) .btnText {
+    color: #050505; /* Текст становится черным для читаемости на золотом фоне */
+  }
+}
+
+/* Для мобильных устройств: эффект наполнения при касании */
+.submitBtn:active:not(:disabled) .liquid {
+  bottom: -200px;
+}
+
+.submitBtn:active:not(:disabled) .btnText {
+  color: #050505;
+}
+
 .submitBtn:disabled {
-  opacity: 0.8;
+  opacity: 0.7;
   cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Spinner (Должен быть поверх воды) */
+.loader {
+  position: relative;
+  z-index: 2;
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(229, 211, 179, 0.2);
+  border-bottom-color: var(--color-accent);
+  border-radius: 50%;
+  display: inline-block;
+  animation: rotation 1s linear infinite;
+  transition: border-color 0.4s ease;
+}
+
+.submitBtn:hover:not(:disabled) .loader {
+  border: 2px solid rgba(5, 5, 5, 0.2);
+  border-bottom-color: #050505;
+}
+
+@keyframes rotation {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Spinner */
 .loader {
   width: 24px;
   height: 24px;
-  border: 2px solid rgba(5, 5, 5, 0.3);
+  border: 2px solid rgba(5, 5, 5, 0.2);
   border-bottom-color: #050505;
   border-radius: 50%;
   display: inline-block;
@@ -165,7 +273,7 @@
   color: rgba(255, 255, 255, 0.3);
   text-align: center;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 /* === Состояние успеха === */
@@ -175,8 +283,8 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 40px;
-  background: rgba(229, 211, 179, 0.05);
+  padding: 60px 40px;
+  background: rgba(229, 211, 179, 0.03);
   border: 1px solid rgba(229, 211, 179, 0.1);
   border-radius: 24px;
 }
@@ -191,6 +299,7 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 24px;
+  box-shadow: 0 10px 30px rgba(229, 211, 179, 0.2);
 }
 
 .successIcon svg {
@@ -200,14 +309,16 @@
 
 .successState h3 {
   font-family: var(--font-serif, Georgia, serif);
-  font-size: 1.5rem;
-  color: var(--color-accent);
-  margin: 0 0 8px 0;
+  font-size: 1.75rem;
+  color: #ffffff;
+  margin: 0 0 12px 0;
+  font-weight: 400;
 }
 
 .successState p {
   color: var(--text-muted);
   margin: 0;
+  line-height: 1.6;
 }
 
 /* --- АДАПТИВНЫЙ ДИЗАЙН --- */
@@ -216,9 +327,8 @@
 @media (max-width: 1024px) {
   .grid {
     grid-template-columns: 1fr;
-    gap: 56px;
+    gap: 64px;
     padding: 64px 48px;
-    background: radial-gradient(circle at 50% 100%, rgba(229, 211, 179, 0.03) 0%, transparent 50%);
   }
   
   .textContent {
@@ -232,15 +342,18 @@
   }
 }
 
-/* Смартфоны (вертикальная ориентация) */
+/* Смартфоны */
 @media (max-width: 768px) {
   .section {
     padding: 80px 20px;
   }
 
+  .card {
+    border-radius: 24px;
+  }
+
   .grid {
     padding: 48px 24px;
-    border-radius: 24px;
     gap: 48px;
   }
 
@@ -261,15 +374,13 @@
   }
 
   .grid {
-    /* На маленьких экранах убираем внутренние рамки и отступы у самой карточки, чтобы форма заняла максимум ширины */
-    padding: 0;
-    background: none;
-    border: none;
+    /* На маленьких экранах убираем внутренние отступы, чтобы форма была крупнее */
+    padding: 32px 20px;
     gap: 40px;
   }
 
   .textContent {
-    text-align: left; /* На узком экране центрированный текст читается хуже */
+    text-align: left; 
   }
 
   .title {
@@ -277,7 +388,7 @@
   }
 
   .input {
-    height: 56px; /* Чуть уменьшаем высоту инпутов для компактности */
+    height: 56px; 
     padding: 20px 16px 4px;
   }
 
@@ -287,6 +398,7 @@
 
   .submitBtn {
     height: 56px;
+    font-size: 0.9rem;
   }
 
   .successState {

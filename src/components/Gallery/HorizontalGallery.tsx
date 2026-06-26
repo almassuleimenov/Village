@@ -130,7 +130,8 @@ export function HorizontalGallery() {
             <motion.div 
               key={`${src}-${index}`} 
               className={styles.card}
-              onClick={() => setSelectedImage({ src, index })}
+              // ЗАМЕНИЛИ onClick на onDoubleClick для предотвращения мисскликов при скролле
+              onDoubleClick={() => setSelectedImage({ src, index })}
             >
               <motion.div layoutId={`wrapper-${src}-${index}`} className={styles.imageContainer}>
                 <Image 
@@ -162,7 +163,7 @@ export function HorizontalGallery() {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18M17.25 15.75L21 12m0 0l-3.75-3.75" />
           </svg>
-          Бесконечная галерея
+          Двойной клик для увеличения
         </div>
       </div>
 
