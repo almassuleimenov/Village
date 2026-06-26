@@ -25,7 +25,7 @@ export function Hero() {
     // в отличие от getBoundingClientRect()
     const x = e.clientX / window.innerWidth;
     const y = e.clientY / window.innerHeight;
-    
+
     // Нормализуем координаты в диапазон от -1 до 1
     mouseX.set(x * 2 - 1);
     mouseY.set(y * 2 - 1);
@@ -37,7 +37,7 @@ export function Hero() {
   };
 
   return (
-    <section 
+    <section
       className={styles.hero}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -46,12 +46,12 @@ export function Hero() {
       <div className={styles.vignette} />
 
       {/* 3D-Сцена, которая реагирует на мышь */}
-      <motion.div 
+      <motion.div
         className={styles.scene}
         style={{ rotateX, rotateY }}
       >
         {/* Задний фон (отдален в Z-пространстве) */}
-        <motion.div 
+        <motion.div
           className={styles.background}
           initial={{ scale: 1.2, z: -80 }}
           animate={{ scale: 1.05, z: -80 }}
@@ -81,16 +81,16 @@ export function Hero() {
             style={{ objectFit: "cover" }}
           />
         </motion.div>
-        
+
         {/* Контент (приближен в Z-пространстве) */}
-        <motion.div 
+        <motion.div
           initial="initial"
           animate="animate"
           variants={{
             animate: { transition: { staggerChildren: 0.2 } }
           }}
           className={styles.content}
-          style={{ z: 80 }} 
+          style={{ z: 80 }}
         >
           <motion.div variants={textRevealVariant} className={styles.logoGroup}>
             <h1 className={styles.logo}>V</h1>
@@ -103,13 +103,13 @@ export function Hero() {
         </motion.div>
       </motion.div>
 
-      <motion.div 
+      <motion.div
         className={styles.scrollIndicator}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
       >
-        
+
       </motion.div>
     </section>
   );

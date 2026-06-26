@@ -54,7 +54,7 @@ export function FloatingSocials() {
     >
       <Magnetic strength={0.4}>
         <a 
-          href="https://instagram.com/v_village" 
+          href="https://www.instagram.com/v_clubvillas?igsh=aDJzeW95dDhwY2Fl&utm_source=qr" 
           target="_blank" 
           rel="noopener noreferrer" 
           className={styles.btn}
