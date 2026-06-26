@@ -22,6 +22,11 @@ const baseImages = [
   "/Corona5.jpg.jpeg",
   "/Corona6.jpg",
   "/Corona8.jpeg",
+  "/01 render.png",
+  "/02 render.png",
+  "/03 render.png",
+  "/04 render.png",
+  "/05 render.png",
 ];
 
 // Умножаем массив на 3 для создания бесшовной иллюзии бесконечности
