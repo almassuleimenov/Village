@@ -59,7 +59,7 @@ export function Hero() {
         >
           {/* Десктопное изображение */}
           <Image
-            src="/Corona3.jpg.jpeg"
+            src="/Desktop.jpg"
             alt="Панорама V-Village"
             fill
             priority // Критически важно для LCP — грузит картинку мгновенно
@@ -71,7 +71,7 @@ export function Hero() {
 
           {/* Мобильное изображение */}
           <Image
-            src="/Heromobile.png"
+            src="/Mobile.jpg"
             alt="Панорама V-Village (Мобильная версия)"
             fill
             priority // Также ставим priority для мгновенной загрузки на смартфонах
