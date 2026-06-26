@@ -14,7 +14,6 @@ interface FloorData {
   id: "first" | "second";
   shortName: string;
   title: string;
-  totalArea: string;
   description: string;
   imageSrc: string;
   specs: RoomSpec[];
@@ -25,7 +24,6 @@ const FLOORS_DATA: FloorData[] = [
     id: "first",
     shortName: "01 ЭТАЖ",
     title: "Пространство дневной активности",
-    totalArea: "160.0 м²",
     description: "Первый уровень спроектирован для масштабных сценариев жизни. Центром композиции является просторный зал, гармонично соседствующий с выделенной кухней-столовой и изолированной спальней. Развитая инфраструктура этажа включает вместительную кладовую, прихожую, два санузла и техническое помещение, а внешние террасы обеспечивают бесшовную связь с ландшафтом.",
     imageSrc: "/forsecond/Firstfloor.png",
     specs: [
@@ -45,7 +43,6 @@ const FLOORS_DATA: FloorData[] = [
     id: "second",
     shortName: "02 ЭТАЖ",
     title: "Приватная зона резидентов",
-    totalArea: "125.2 м²",
     description: "Второй уровень полностью изолирован от гостевых маршрутов и представляет собой приватное крыло для отдыха. Здесь расположены три независимые спальни, включая главную мастер-спальню с собственной гардеробной и выделенным санузлом. Пространство объединено центральным холлом, а каждая жилая комната имеет доступ к индивидуальным ванным комнатам.",
     imageSrc: "/forsecond/Secondfloor.png",
     specs: [
@@ -107,7 +104,7 @@ export function FloorPlan() {
             <div className={styles.infoBlock}>
               <div className={styles.metaRow}>
                 <h3 className={styles.floorTitle}>{currentFloor.title}</h3>
-                <span className={styles.areaBadge}>{currentFloor.totalArea}</span>
+                {/* Бейджик с общей площадью удален */}
               </div>
               <p className={styles.floorDescription}>{currentFloor.description}</p>
             </div>
