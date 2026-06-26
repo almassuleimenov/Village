@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Magnetic } from "@/components/Cursor/Magnetic";
 import styles from "./VrJourney.module.css";
 
-const customEasing = [0.16, 1, 0.3, 1] as any;
+// Строгая типизация для кривой Безье вместо 'as any'
+const customEasing: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 export function VrJourney() {
   const [isActive, setIsActive] = useState<boolean>(false);
@@ -113,7 +114,7 @@ export function VrJourney() {
             <div className={styles.vrTarget}>
               <iframe 
                 className={styles.iframe}
-                src="https://theviewer.co/share/theConstruct/d29e6438-74e0-4899-bcea-104754721297?linkType=BehanceEmbedLink" 
+                src="https://theviewer.co/share/d3823cce-b3cf-4d6e-bef4-4fde833679ab/0cc7f2e4-8e14-4e36-937c-8247c9201e8d?linkType=BehanceEmbedLink" 
                 allow="accelerometer; encrypted-media; gyroscope; autoplay;" 
                 allowFullScreen={true}
                 title="VR Tour"

@@ -98,7 +98,7 @@ export function Hero() {
           </motion.div>
 
           <motion.h2 variants={textRevealVariant} className={styles.title}>
-            Архитектура <br /> личной свободы
+            Проект, <br /> который предлагает нам мечтать  <br /> с открытыми глазами.
           </motion.h2>
         </motion.div>
       </motion.div>
@@ -109,12 +109,7 @@ export function Hero() {
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
       >
-        <span>SCROLL</span>
-        <motion.div 
-          className={styles.scrollLine}
-          animate={{ scaleY: [0, 1, 0], translateY: ['0%', '0%', '100%'] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        />
+        
       </motion.div>
     </section>
   );
