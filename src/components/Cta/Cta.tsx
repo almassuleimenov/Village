@@ -23,12 +23,15 @@ const staggerContainer: Variants = {
 
 const springItem: Variants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
-    transition: springTransition 
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: springTransition,
   },
 };
+
+// Целевой номер WhatsApp в международном формате без плюса
+const WHATSAPP_NUMBER = "77760002507";
 
 export function Cta() {
   const [formData, setFormData] = useState({ name: "", phone: "" });
@@ -38,22 +41,37 @@ export function Cta() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.phone) return;
 
     setStatus("loading");
 
-    // Имитация асинхронного запроса
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // Формируем текст сообщения
+    const messageTemplate = `Здравствуйте! Я хочу запланировать индивидуальную презентацию резиденций V Club.\n\nИмя: ${formData.name}\nТелефон: ${formData.phone}`;
     
+    // Кодируем текст для безопасной передачи в URL
+    const encodedMessage = encodeURIComponent(messageTemplate);
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+
+    // Важно: вызываем window.open синхронно, чтобы обойти блокировщики всплывающих окон (Popup Blockers)
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+
+    // Переводим локальный UI в состояние успеха и очищаем форму
     setStatus("success");
+    setFormData({ name: "", phone: "" });
+
+    // Опционально: возвращаем форму в исходное состояние через 5 секунд, 
+    // если пользователь вернется на вкладку с сайтом
+    setTimeout(() => {
+      setStatus("idle");
+    }, 5000);
   };
 
   return (
     <section id="cta-section" className={styles.section}>
       <div className={styles.container}>
-        <motion.div 
+        <motion.div
           className={styles.card}
           variants={staggerContainer}
           initial="hidden"
@@ -85,6 +103,7 @@ export function Cta() {
                     key="success"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
                     transition={springTransition}
                     className={styles.successState}
                   >
@@ -93,8 +112,8 @@ export function Cta() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                       </svg>
                     </div>
-                    <h3>Ваша заявка принята</h3>
-                    <p>Персональный брокер свяжется с вами в ближайшее время.</p>
+                    <h3>Перенаправление в WhatsApp</h3>
+                    <p>Диалог с персональным брокером открыт в новой вкладке.</p>
                   </motion.div>
                 ) : (
                   <motion.form
