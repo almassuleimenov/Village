@@ -108,7 +108,7 @@ export function Footer() {
               <h4 className={styles.columnTitle}>Социальные сети</h4>
               <ul className={styles.linkList}>
                 <li>
-                  <a href="https://instagram.com/v_village" target="_blank" rel="noopener noreferrer" className={styles.link}>
+                  <a href="https://www.instagram.com/v_clubvillas" target="_blank" rel="noopener noreferrer" className={styles.link}>
                     <InstagramIcon />
                     Instagram
                   </a>
