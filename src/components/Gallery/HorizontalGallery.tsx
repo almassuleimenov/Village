@@ -15,18 +15,18 @@ import { Magnetic } from "@/components/Cursor/Magnetic";
 import styles from "./HorizontalGallery.module.css";
 
 const baseImages = [
-  "/Corona1.jpg.jpeg",
-  "/Corona2.jpg.jpeg",
-  "/Corona3.jpg.jpeg",
-  "/Corona4.jpg.jpeg",
-  "/Corona5.jpg.jpeg",
-  "/Corona6.jpg",
-  "/Corona8.jpeg",
-  "/01 render.png",
-  "/02 render.png",
-  "/03 render.png",
-  "/04 render.png",
-  "/05 render.png",
+  "/Corona1.jpg.webp",
+  "/Corona2.jpg.webp",
+  "/Corona3.jpg.webp",
+  "/Corona4.jpg.webp",
+  "/Corona5.jpg.webp",
+  "/Corona6.webp",
+  "/Corona8.webp",
+  "/01 render.webp",
+  "/02 render.webp",
+  "/03 render.webp",
+  "/04 render.webp",
+  "/05 render.webp",
 ];
 
 // Умножаем массив на 3 для создания бесшовной иллюзии бесконечности

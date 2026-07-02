@@ -40,9 +40,9 @@ export function Preloader() {
 
     const FRAMES_TO_LOAD = 91;
     const criticalAssets = [
-      "/image 407.png",
+      "/Desktop.webp", // Кэшируем главный фон Героя
       ...Array.from({ length: FRAMES_TO_LOAD }).map(
-        (_, i) => `/frames/seq1/${String(i + 1).padStart(4, "0")}.webp`
+        (_, i) => `/frames_webp/firstt/frame_${String(i + 1).padStart(4, "0")}.webp`
       ),
     ];
 

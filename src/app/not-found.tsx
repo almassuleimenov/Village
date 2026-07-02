@@ -56,7 +56,7 @@ export default function NotFound() {
         >
           <div className={styles.imageWrapper}>
             <Image
-              src="/404f.png"
+              src="/404f.webp"
               alt="404 - Страница не найдена"
               fill
               priority

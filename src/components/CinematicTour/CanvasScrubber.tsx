@@ -55,7 +55,7 @@ export function CanvasScrubber({
 
       // Сначала загружаем самый первый кадр для мгновенной отрисовки
       const firstImg = new Image();
-      firstImg.src = `/frames/${sequenceName}/frame_0001.jpg`; // Переведи в .webp при возможности
+      firstImg.src = `/frames_webp/${sequenceName}/frame_0001.webp`; // Переведи в .webp при возможности
       firstImg.onload = () => {
         if (isMounted) {
           images[0] = firstImg;
@@ -79,7 +79,7 @@ export function CanvasScrubber({
             const frameStr = i.toString().padStart(4, "0");
             
             img.fetchPriority = priority && i < 15 ? "high" : "low";
-            img.src = `/frames/${sequenceName}/frame_${frameStr}.jpg`;
+            img.src = `/frames_webp/${sequenceName}/frame_${frameStr}.webp`;
             
             img.onload = () => {
               if (isMounted) imagesRef.current[i - 1] = img;
