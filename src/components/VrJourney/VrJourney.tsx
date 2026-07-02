@@ -68,6 +68,7 @@ export function VrJourney() {
   }, [isActive]);
 
   return (
+    <section id="vr-section" className={styles.section}>
     <section className={styles.section}>
       <div className={styles.wrapper}>
         
@@ -163,6 +164,7 @@ export function VrJourney() {
           </motion.div>
         )}
       </AnimatePresence>
+    </section>
     </section>
   );
 }

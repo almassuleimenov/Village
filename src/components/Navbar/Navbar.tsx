@@ -14,6 +14,7 @@ const translations = {
     navAdvantages: "Преимущества",
     navLayout: "Планировки",
     navLocation: "Расположение",
+    navVr: "VR Тур",
     tooltips: {
       concept: { title: "О проекте", desc: "Философия, ценности и наш бескомпромиссный подход к качеству строительства и инженерии." },
       advantages: {
@@ -21,7 +22,8 @@ const translations = {
         arch: { title: "Архитектура", desc: "Монументальный фасад и панорамное остекление." }
       },
       layout: { title: "Резиденции", desc: "Интерактивный план пространств. Продуманная эргономика каждого квадратного метра." },
-      location: { title: "Локация", desc: "Экологически чистый предгорный район с идеальной транспортной доступностью." }
+      location: { title: "Локация", desc: "Экологически чистый предгорный район с идеальной транспортной доступностью." },
+      vr: { title: "360° Панорама", desc: "Погрузитесь в атмосферу резиденции через интерактивный виртуальный тур." }
     },
     aria: {
       contact: "Связаться с нами",
@@ -34,6 +36,7 @@ const translations = {
     navAdvantages: "Advantages",
     navLayout: "Layouts",
     navLocation: "Location",
+    navVr: "VR Tour",
     tooltips: {
       concept: { title: "About the Project", desc: "Philosophy, values, and our uncompromising approach to construction and engineering quality." },
       advantages: {
@@ -41,7 +44,8 @@ const translations = {
         arch: { title: "Architecture", desc: "Monumental facade and panoramic glazing." }
       },
       layout: { title: "Residences", desc: "Interactive spatial plan. Thoughtful ergonomics of every square meter." },
-      location: { title: "Location", desc: "Eco-friendly foothill area with perfect transport accessibility." }
+      location: { title: "Location", desc: "Eco-friendly foothill area with perfect transport accessibility." },
+      vr: { title: "360° Panorama", desc: "Immerse yourself in the residence atmosphere through an interactive virtual tour." }
     },
     aria: {
       contact: "Contact us",
@@ -54,6 +58,7 @@ const translations = {
     navAdvantages: "Артықшылықтар",
     navLayout: "Жоспарлау",
     navLocation: "Орналасуы",
+    navVr: "VR Тур",
     tooltips: {
       concept: { title: "Жоба туралы", desc: "Философия, құндылықтар және құрылыс пен инженерия сапасына біздің ымырасыз көзқарасымыз." },
       advantages: {
@@ -61,7 +66,8 @@ const translations = {
         arch: { title: "Сәулет", desc: "Монументалды қасбет және панорамалық әйнек." }
       },
       layout: { title: "Резиденциялар", desc: "Кеңістіктердің интерактивті жоспары. Әрбір шаршы метрдің ойластырылған эргономикасы." },
-      location: { title: "Орналасуы", desc: "Керемет көлік қатынасы бар экологиялық таза тау бөктері." }
+      location: { title: "Орналасуы", desc: "Керемет көлік қатынасы бар экологиялық таза тау бөктері." },
+      vr: { title: "360° Панорама", desc: "Интерактивті виртуалды тур арқылы резиденция атмосферасына еніңіз." }
     },
     aria: {
       contact: "Бізбен байланысу",
@@ -138,6 +144,17 @@ export function Navbar() {
         <div>
           <h4 className={styles.menuItemTitle}>{t.tooltips.location.title}</h4>
           <p className={styles.menuItemDesc} style={{ maxWidth: "260px" }}>{t.tooltips.location.desc}</p>
+        </div>
+      ) 
+    },
+    { 
+      id: "vr", 
+      title: t.navVr, 
+      targetId: "vr-section", // Целевой ID, который мы добавим в VrJourney.tsx
+      content: (
+        <div>
+          <h4 className={styles.menuItemTitle}>{t.tooltips.vr.title}</h4>
+          <p className={styles.menuItemDesc} style={{ maxWidth: "260px" }}>{t.tooltips.vr.desc}</p>
         </div>
       ) 
     },
