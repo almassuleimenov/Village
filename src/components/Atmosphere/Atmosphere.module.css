@@ -1,50 +1,36 @@
-/* Виньетка: делает центр ярче, а края уводит во мрак */
 .vignette {
   position: fixed;
   inset: 0;
-  z-index: 9998; /* Почти самый верх */
-  pointer-events: none; /* Пропускаем клики сквозь слой */
+  z-index: 9998;
+  pointer-events: none;
   background: radial-gradient(
     circle at center,
     transparent 0%,
     transparent 40%,
     rgba(2, 2, 2, 0.6) 100%
   );
-  /* Аппаратное ускорение */
   transform: translateZ(0); 
   will-change: opacity;
 }
 
-/* Нативный SVG шум */
 .noise {
   position: fixed;
   inset: 0;
-  z-index: 9999; /* Самый верхний слой сайта */
-  pointer-events: none; /* Пропускаем клики сквозь слой */
+  z-index: 9999;
+  pointer-events: none;
   
-  /* 
-    Здесь закодирован SVG: 
-    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <filter id="noiseFilter">
-        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/>
-      </filter>
-      <rect width="100%" height="100%" filter="url(#noiseFilter)"/>
-    </svg> 
-  */
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  /* ИСправлено: Легкий статический Base64 шум вместо тяжелого математического SVG */
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATCewzAAAACHRSTlMAMwAAMwAAMwDrUijxAAAAg0lEQVR42mNgQAKGBgYDCDBxMDDiFaNjoBqHQQIM00wMo+sZmAQYGBwYiIExI5hR2GAYRkM3mZgYGDBMw11lYmDAp5uBEawKru7AwIjPNBODgQHM0ExgQnU3UjA0E0I3j2gGGEMzAWMxIxh5kH0IuxttN3Jg2o2yG2F1I2Mxg2F0IwB8cSFjG/hDpwAAAABJRU5ErkJggg==");
+  background-repeat: repeat;
   
-  /* Идеальные параметры для темной темы */
-  opacity: 0.05; 
-  mix-blend-mode: overlay; 
+  /* Простая прозрачность вместо тяжелого mix-blend-mode: overlay */
+  opacity: 0.04; 
   
-  /* Аппаратное ускорение и изоляция слоя */
+  /* Аппаратное ускорение */
   transform: translateZ(0);
+  will-change: transform;
 }
 
-/* 
-  Отключаем шум на слабых устройствах и для пользователей, 
-  у которых включено снижение анимаций в ОС
-*/
 @media (prefers-reduced-motion: reduce) {
   .noise {
     display: none;
