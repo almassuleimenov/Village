@@ -63,7 +63,6 @@
   width: 180%;
   height: 160%;
   background: radial-gradient(circle at center, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.15) 50%, transparent 70%);
-  filter: blur(20px);
   z-index: -1;
   pointer-events: none;
 }

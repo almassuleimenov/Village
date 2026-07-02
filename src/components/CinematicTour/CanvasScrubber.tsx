@@ -93,6 +93,11 @@ export function CanvasScrubber({
       }
 
       await Promise.all(promises);
+      
+      // ПРАВКА №1: Микро-пауза. Даем Main Thread 30мс на обработку скролла
+      // пользователя, чтобы интерфейс не "замерзал" во время загрузки.
+      await new Promise(resolve => setTimeout(resolve, 30));
+
       // Рекурсивно вызываем загрузку следующего пакета кадров
       loadInBatches(endIndex + 1);
     };
@@ -123,8 +128,10 @@ export function CanvasScrubber({
         const { width, height } = entry.contentRect;
         containerSize.current = { width, height };
         
-        const rawDpr = window.devicePixelRatio || 1;
-        const dpr = Math.min(rawDpr, 2);
+        // ПРАВКА №2: Жестко фиксируем dpr на 1.
+        // Это уменьшает площадь рендеринга на Retina-экранах в 4 раза, 
+        // разгружая видеокарту (GPU).
+        const dpr = 1;
         
         canvas.width = width * dpr;
         canvas.height = height * dpr;
@@ -133,7 +140,8 @@ export function CanvasScrubber({
         if (ctx) {
           ctx.scale(dpr, dpr);
           ctx.imageSmoothingEnabled = true;
-          ctx.imageSmoothingQuality = "high";
+          // ПРАВКА №3: Снижаем качество сглаживания ради производительности (визуально не отличить)
+          ctx.imageSmoothingQuality = "low";
         }
         
         drawImage(currentIndexRef.current);
