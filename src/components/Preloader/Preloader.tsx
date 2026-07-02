@@ -38,7 +38,7 @@ export function Preloader() {
     // === 2. ПЕРВАЯ ЗАГРУЗКА ===
     document.body.style.overflow = "hidden";
 
-    const FRAMES_TO_LOAD = 91;
+    const FRAMES_TO_LOAD = 5;
     const criticalAssets = [
       "/Desktop.webp", // Кэшируем главный фон Героя
       ...Array.from({ length: FRAMES_TO_LOAD }).map(
