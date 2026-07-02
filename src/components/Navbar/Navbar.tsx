@@ -5,56 +5,82 @@ import { motion, AnimatePresence, Transition } from "framer-motion";
 import { useLenis } from "lenis/react";
 import styles from "./Navbar.module.css";
 import { Magnetic } from "../Cursor/Magnetic";
+import { useLanguage, Language } from "@/context/LanguageContext";
 
-// === Контент тултипов (только для Десктопа) ===
-const ConceptMenu = () => (
-  <div>
-    <h4 className={styles.menuItemTitle}>О проекте</h4>
-    <p className={styles.menuItemDesc} style={{ maxWidth: "260px" }}>
-      Философия, ценности и наш бескомпромиссный подход к качеству строительства и инженерии.
-    </p>
-  </div>
-);
+// === ЛОКАЛЬНЫЙ СЛОВАРЬ ПЕРЕВОДОВ ===
+const translations = {
+  ru: {
+    navConcept: "Концепция",
+    navAdvantages: "Преимущества",
+    navLayout: "Планировки",
+    navLocation: "Расположение",
+    tooltips: {
+      concept: { title: "О проекте", desc: "Философия, ценности и наш бескомпромиссный подход к качеству строительства и инженерии." },
+      advantages: {
+        priv: { title: "Приватность", desc: "Скрытые маршруты и интеллектуальный контроль." },
+        arch: { title: "Архитектура", desc: "Монументальный фасад и панорамное остекление." }
+      },
+      layout: { title: "Резиденции", desc: "Интерактивный план пространств. Продуманная эргономика каждого квадратного метра." },
+      location: { title: "Локация", desc: "Экологически чистый предгорный район с идеальной транспортной доступностью." }
+    },
+    aria: {
+      contact: "Связаться с нами",
+      menu: "Меню",
+      goTo: "Перейти к разделу"
+    }
+  },
+  en: {
+    navConcept: "Concept",
+    navAdvantages: "Advantages",
+    navLayout: "Layouts",
+    navLocation: "Location",
+    tooltips: {
+      concept: { title: "About the Project", desc: "Philosophy, values, and our uncompromising approach to construction and engineering quality." },
+      advantages: {
+        priv: { title: "Privacy", desc: "Hidden routes and intelligent access control." },
+        arch: { title: "Architecture", desc: "Monumental facade and panoramic glazing." }
+      },
+      layout: { title: "Residences", desc: "Interactive spatial plan. Thoughtful ergonomics of every square meter." },
+      location: { title: "Location", desc: "Eco-friendly foothill area with perfect transport accessibility." }
+    },
+    aria: {
+      contact: "Contact us",
+      menu: "Menu",
+      goTo: "Go to section"
+    }
+  },
+  kz: {
+    navConcept: "Тұжырымдама",
+    navAdvantages: "Артықшылықтар",
+    navLayout: "Жоспарлау",
+    navLocation: "Орналасуы",
+    tooltips: {
+      concept: { title: "Жоба туралы", desc: "Философия, құндылықтар және құрылыс пен инженерия сапасына біздің ымырасыз көзқарасымыз." },
+      advantages: {
+        priv: { title: "Құпиялылық", desc: "Жасырын бағыттар және интеллектуалды қолжетімділікті басқару." },
+        arch: { title: "Сәулет", desc: "Монументалды қасбет және панорамалық әйнек." }
+      },
+      layout: { title: "Резиденциялар", desc: "Кеңістіктердің интерактивті жоспары. Әрбір шаршы метрдің ойластырылған эргономикасы." },
+      location: { title: "Орналасуы", desc: "Керемет көлік қатынасы бар экологиялық таза тау бөктері." }
+    },
+    aria: {
+      contact: "Бізбен байланысу",
+      menu: "Мәзір",
+      goTo: "Бөлімге өту"
+    }
+  }
+};
 
-const AdvantagesMenu = () => (
-  <div className={styles.menuGrid}>
-    <div>
-      <h4 className={styles.menuItemTitle}>Приватность</h4>
-      <p className={styles.menuItemDesc}>Скрытые маршруты и интеллектуальный контроль.</p>
-    </div>
-    <div>
-      <h4 className={styles.menuItemTitle}>Архитектура</h4>
-      <p className={styles.menuItemDesc}>Монументальный фасад и панорамное остекление.</p>
-    </div>
-  </div>
-);
-
-const LayoutMenu = () => (
-  <div>
-    <h4 className={styles.menuItemTitle}>Резиденции</h4>
-    <p className={styles.menuItemDesc} style={{ maxWidth: "260px" }}>
-      Интерактивный план пространств. Продуманная эргономика каждого квадратного метра.
-    </p>
-  </div>
-);
-
-const LocationMenu = () => (
-  <div>
-    <h4 className={styles.menuItemTitle}>Локация</h4>
-    <p className={styles.menuItemDesc} style={{ maxWidth: "260px" }}>
-      Экологически чистый предгорный район с идеальной транспортной доступностью.
-    </p>
-  </div>
-);
-
-const NAV_ITEMS = [
-  { id: "concept", title: "Концепция", targetId: "about-section", content: <ConceptMenu /> },
-  { id: "advantages", title: "Преимущества", targetId: "advantages-section", content: <AdvantagesMenu /> },
-  { id: "layout", title: "Планировки", targetId: "layout-section", content: <LayoutMenu /> },
-  { id: "location", title: "Расположение", targetId: "location-section", content: <LocationMenu /> },
+const AVAILABLE_LANGUAGES: { id: Language; label: string }[] = [
+  { id: "ru", label: "RU" },
+  { id: "kz", label: "KZ" },
+  { id: "en", label: "EN" },
 ];
 
 export function Navbar() {
+  const { language, setLanguage } = useLanguage();
+  const t = translations[language];
+
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
@@ -62,6 +88,60 @@ export function Navbar() {
   
   const prevMenu = useRef<string | null>(null);
   const lenis = useLenis();
+
+  // === ДИНАМИЧЕСКИЙ МАССИВ НАВИГАЦИИ ===
+  const NAV_ITEMS = [
+    { 
+      id: "concept", 
+      title: t.navConcept, 
+      targetId: "about-section", 
+      content: (
+        <div>
+          <h4 className={styles.menuItemTitle}>{t.tooltips.concept.title}</h4>
+          <p className={styles.menuItemDesc} style={{ maxWidth: "260px" }}>{t.tooltips.concept.desc}</p>
+        </div>
+      ) 
+    },
+    { 
+      id: "advantages", 
+      title: t.navAdvantages, 
+      targetId: "advantages-section", 
+      content: (
+        <div className={styles.menuGrid}>
+          <div>
+            <h4 className={styles.menuItemTitle}>{t.tooltips.advantages.priv.title}</h4>
+            <p className={styles.menuItemDesc}>{t.tooltips.advantages.priv.desc}</p>
+          </div>
+          <div>
+            <h4 className={styles.menuItemTitle}>{t.tooltips.advantages.arch.title}</h4>
+            <p className={styles.menuItemDesc}>{t.tooltips.advantages.arch.desc}</p>
+          </div>
+        </div>
+      ) 
+    },
+    { 
+      id: "layout", 
+      title: t.navLayout, 
+      targetId: "layout-section", 
+      content: (
+        <div>
+          <h4 className={styles.menuItemTitle}>{t.tooltips.layout.title}</h4>
+          <p className={styles.menuItemDesc} style={{ maxWidth: "260px" }}>{t.tooltips.layout.desc}</p>
+        </div>
+      ) 
+    },
+    { 
+      id: "location", 
+      title: t.navLocation, 
+      targetId: "location-section", 
+      content: (
+        <div>
+          <h4 className={styles.menuItemTitle}>{t.tooltips.location.title}</h4>
+          <p className={styles.menuItemDesc} style={{ maxWidth: "260px" }}>{t.tooltips.location.desc}</p>
+        </div>
+      ) 
+    },
+  ];
 
   useEffect(() => {
     prevMenu.current = hoveredMenu;
@@ -74,7 +154,6 @@ export function Navbar() {
       if (isScrolled !== currentScrolled) {
         setIsScrolled(currentScrolled);
       }
-      // Сбрасываем hover только если он активен (избегаем лишних ререндеров)
       setHoveredMenu((prev) => (prev !== null ? null : prev));
     };
 
@@ -111,7 +190,7 @@ export function Navbar() {
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [NAV_ITEMS]);
 
   const scrollToSection = (targetId: string) => {
     setHoveredMenu(null); 
@@ -186,7 +265,7 @@ export function Navbar() {
                     className={styles.navButton} 
                     data-active={isActive}
                     onClick={() => scrollToSection(item.targetId)}
-                    aria-label={`Перейти к разделу ${item.title}`}
+                    aria-label={`${t.aria.goTo} ${item.title}`}
                   >
                     {item.title}
                   </button>
@@ -232,11 +311,43 @@ export function Navbar() {
 
         {/* Правая зона действий */}
         <div className={styles.actionZone}>
+          
+          {/* Глобальный переключатель языков */}
+          <div className={styles.langSwitcher}>
+            {AVAILABLE_LANGUAGES.map((lang) => {
+              const isActive = language === lang.id;
+              return (
+                <button
+                  key={lang.id}
+                  className={styles.langBtn}
+                  onClick={() => setLanguage(lang.id)}
+                  data-active={isActive}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeLangPill"
+                      className={styles.langPill}
+                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    />
+                  )}
+                  {/* Анимация "всплытия" активного текста */}
+                  <motion.span 
+                    className={styles.langLabel}
+                    animate={{ y: isActive ? -1 : 0 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  >
+                    {lang.label}
+                  </motion.span>
+                </button>
+              );
+            })}
+          </div>
+
           <Magnetic strength={0.4}>
             <button 
               className={styles.phoneButton} 
               onClick={scrollToNextSection}
-              aria-label="Связаться с нами"
+              aria-label={t.aria.contact}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={styles.phoneIcon}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
@@ -248,7 +359,7 @@ export function Navbar() {
           <button 
             className={`${styles.hamburgerBtn} ${styles.mobileOnly} ${isMobileMenuOpen ? styles.hamburgerActive : ""}`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Меню"
+            aria-label={t.aria.menu}
           >
             <span className={styles.hamburgerLine}></span>
             <span className={styles.hamburgerLine}></span>

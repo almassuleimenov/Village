@@ -2,20 +2,57 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/context/LanguageContext";
 import styles from "./Footer.module.css";
 // Убедитесь, что путь к вашему Magnetic компоненту указан верно
 import { Magnetic } from "@/components/Cursor/Magnetic"; 
 
-// Контакты (Офис продаж теперь ведет на WhatsApp)
-const FOOTER_COLUMNS = [
-  {
-    title: "Контакты",
-    links: [
-      { label: "Офис продаж", href: "https://wa.me/77760002507" },
-      { label: "8 776 000 25 07", href: "tel:+77760002507" },
-    ],
+// === ЛОКАЛЬНЫЙ СЛОВАРЬ ПЕРЕВОДОВ ===
+const translations: Record<string, {
+  contactsTitle: string;
+  salesOffice: string;
+  socialsTitle: string;
+  address: string;
+  backToTop: string;
+  backToTopAria: string;
+  terms: string;
+  privacy: string;
+  rights: string;
+}> = {
+  ru: {
+    contactsTitle: "Контакты",
+    salesOffice: "Офис продаж",
+    socialsTitle: "Социальные сети",
+    address: "ул. Алатау, 54",
+    backToTop: "Наверх",
+    backToTopAria: "Вернуться наверх",
+    terms: "Пользовательское соглашение",
+    privacy: "Политика конфиденциальности",
+    rights: "Все права защищены."
   },
-];
+  en: {
+    contactsTitle: "Contacts",
+    salesOffice: "Sales Office",
+    socialsTitle: "Social Networks",
+    address: "54 Alatau st.",
+    backToTop: "Top",
+    backToTopAria: "Back to top",
+    terms: "Terms of Use",
+    privacy: "Privacy Policy",
+    rights: "All rights reserved."
+  },
+  kz: {
+    contactsTitle: "Байланыс",
+    salesOffice: "Сату бөлімі",
+    socialsTitle: "Әлеуметтік желілер",
+    address: "Алатау көшесі, 54",
+    backToTop: "Жоғарыға",
+    backToTopAria: "Жоғарыға қайту",
+    terms: "Пайдалану шарттары",
+    privacy: "Құпиялылық саясаты",
+    rights: "Барлық құқықтар қорғалған."
+  }
+};
 
 // Иконки в едином стиле (strokeWidth="1.5")
 const InstagramIcon = () => (
@@ -68,6 +105,9 @@ const columnVariants = {
 };
 
 export function Footer() {
+  const { language } = useLanguage();
+  const t = translations[language];
+
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -89,23 +129,27 @@ export function Footer() {
         >
           {/* Левая группа: Контакты и Соцсети/Адреса */}
           <div className={styles.leftGroup}>
-            {FOOTER_COLUMNS.map((col, idx) => (
-              <motion.div key={idx} variants={columnVariants as any} className={styles.column}>
-                <h4 className={styles.columnTitle}>{col.title}</h4>
-                <ul className={styles.linkList}>
-                  {col.links.map((link, linkIdx) => (
-                    <li key={linkIdx}>
-                      <a href={link.href} className={styles.link} target={link.href.startsWith('http') ? "_blank" : "_self"} rel={link.href.startsWith('http') ? "noopener noreferrer" : ""}>
-                        {link.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-
+            
+            {/* Колонка: Контакты */}
             <motion.div variants={columnVariants as any} className={styles.column}>
-              <h4 className={styles.columnTitle}>Социальные сети</h4>
+              <h4 className={styles.columnTitle}>{t.contactsTitle}</h4>
+              <ul className={styles.linkList}>
+                <li>
+                  <a href="https://wa.me/77760002507" className={styles.link} target="_blank" rel="noopener noreferrer">
+                    {t.salesOffice}
+                  </a>
+                </li>
+                <li>
+                  <a href="tel:+77760002507" className={styles.link}>
+                    8 776 000 25 07
+                  </a>
+                </li>
+              </ul>
+            </motion.div>
+
+            {/* Колонка: Социальные сети */}
+            <motion.div variants={columnVariants as any} className={styles.column}>
+              <h4 className={styles.columnTitle}>{t.socialsTitle}</h4>
               <ul className={styles.linkList}>
                 <li>
                   <a href="https://www.instagram.com/v_clubvillas" target="_blank" rel="noopener noreferrer" className={styles.link}>
@@ -116,7 +160,7 @@ export function Footer() {
                 <li>
                   <a href="https://2gis.kz/almaty/geo/9430047375119615/76.895892,43.150935" target="_blank" rel="noopener noreferrer" className={styles.link}>
                     <MapPinIcon />
-                    Алатау көшесі, 54
+                    {t.address}
                   </a>
                 </li>
                 <li>
@@ -127,13 +171,14 @@ export function Footer() {
                 </li>
               </ul>
             </motion.div>
+
           </div>
 
           {/* Правая группа: Магнитная кнопка "Наверх" */}
           <motion.div variants={columnVariants as any} className={styles.rightGroup}>
             <Magnetic strength={0.4}>
-              <button onClick={scrollToTop} className={styles.backToTopBtn} aria-label="Вернуться наверх">
-                <span className={styles.backToTopText}>Наверх</span>
+              <button onClick={scrollToTop} className={styles.backToTopBtn} aria-label={t.backToTopAria}>
+                <span className={styles.backToTopText}>{t.backToTop}</span>
                 <div className={styles.backToTopCircle}>
                   <ArrowUpIcon />
                 </div>
@@ -148,13 +193,13 @@ export function Footer() {
         {/* Юридический блок (Compliance) */}
         <div className={styles.legalZone}>
           <div className={styles.copyright}>
-            Copyright © {new Date().getFullYear()} V Club Village. All rights reserved.
+            Copyright © {new Date().getFullYear()} V Club Village. {t.rights}
           </div>
           
           <div className={styles.legalLinks}>
-            <a href="/terms-of-use">Terms of Use</a>
+            <a href="/terms-of-use">{t.terms}</a>
             <span className={styles.dot}>&middot;</span>
-            <a href="/privacy-policy">Privacy Policy</a>
+            <a href="/privacy-policy">{t.privacy}</a>
           </div>
         </div>
 

@@ -12,6 +12,7 @@ import {
   useMotionValueEvent
 } from "framer-motion";
 import { Magnetic } from "@/components/Cursor/Magnetic"; 
+import { useLanguage } from "@/context/LanguageContext";
 import styles from "./HorizontalGallery.module.css";
 
 const baseImages = [
@@ -32,7 +33,45 @@ const baseImages = [
 // Умножаем массив на 3 для создания бесшовной иллюзии бесконечности
 const infiniteImages = [...baseImages, ...baseImages, ...baseImages];
 
+// === ЛОКАЛЬНЫЙ СЛОВАРЬ ПЕРЕВОДОВ ===
+const translations: Record<string, {
+  tag: string;
+  title: string;
+  dragHint: string;
+  imgAlt: string;
+  fullscreenAlt: string;
+  closeAria: string;
+}> = {
+  ru: {
+    tag: "[ ВИЗУАЛЬНАЯ ЭСТЕТИКА ]",
+    title: "Архитектура в деталях",
+    dragHint: "Двойной клик для увеличения",
+    imgAlt: "Ракурс виллы V-Village",
+    fullscreenAlt: "Полноэкранный просмотр",
+    closeAria: "Закрыть фото"
+  },
+  en: {
+    tag: "[ VISUAL AESTHETICS ]",
+    title: "Architecture in detail",
+    dragHint: "Double click to enlarge",
+    imgAlt: "V-Village villa view",
+    fullscreenAlt: "Fullscreen view",
+    closeAria: "Close photo"
+  },
+  kz: {
+    tag: "[ ВИЗУАЛДЫ ЭСТЕТИКА ]",
+    title: "Сәулет өнері бөлшектерде",
+    dragHint: "Үлкейту үшін екі рет басыңыз",
+    imgAlt: "V-Village вилласының көрінісі",
+    fullscreenAlt: "Толық экранды көру",
+    closeAria: "Фотоны жабу"
+  }
+};
+
 export function HorizontalGallery() {
+  const { language } = useLanguage();
+  const t = translations[language];
+
   const carouselRef = useRef<HTMLDivElement>(null);
   
   // Храним не только ссылку, но и уникальный индекс, чтобы layoutId работал корректно
@@ -111,8 +150,8 @@ export function HorizontalGallery() {
   return (
     <section className={styles.section}>
       <header className={styles.header}>
-        <span className={styles.tag}>[ ВИЗУАЛЬНАЯ ЭСТЕТИКА ]</span>
-        <h2 className={styles.title}>Архитектура в деталях</h2>
+        <span className={styles.tag}>{t.tag}</span>
+        <h2 className={styles.title}>{t.title}</h2>
       </header>
 
       <div className={styles.carouselWrapper} ref={carouselRef}>
@@ -130,13 +169,12 @@ export function HorizontalGallery() {
             <motion.div 
               key={`${src}-${index}`} 
               className={styles.card}
-              // ЗАМЕНИЛИ onClick на onDoubleClick для предотвращения мисскликов при скролле
               onDoubleClick={() => setSelectedImage({ src, index })}
             >
               <motion.div layoutId={`wrapper-${src}-${index}`} className={styles.imageContainer}>
                 <Image 
                   src={src} 
-                  alt={`Ракурс виллы V-Village ${index + 1}`}
+                  alt={`${t.imgAlt} ${index + 1}`}
                   fill
                   style={{ objectFit: "cover" }}
                   sizes="(max-width: 768px) 85vw, (max-width: 1200px) 70vw, 60vw"
@@ -163,7 +201,7 @@ export function HorizontalGallery() {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18M17.25 15.75L21 12m0 0l-3.75-3.75" />
           </svg>
-          Двойной клик для увеличения
+          {t.dragHint}
         </div>
       </div>
 
@@ -182,7 +220,7 @@ export function HorizontalGallery() {
                 <button 
                   className={styles.closeBtn} 
                   onClick={() => setSelectedImage(null)}
-                  aria-label="Закрыть фото"
+                  aria-label={t.closeAria}
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -201,7 +239,7 @@ export function HorizontalGallery() {
             >
               <Image 
                 src={selectedImage.src}
-                alt="Полноэкранный просмотр"
+                alt={t.fullscreenAlt}
                 fill
                 quality={100}
                 style={{ objectFit: "contain" }}

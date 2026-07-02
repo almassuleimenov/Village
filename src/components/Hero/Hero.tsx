@@ -4,9 +4,42 @@ import { useRef } from "react";
 import Image from "next/image";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { springSlow, textRevealVariant } from "@/lib/motion";
+import { useLanguage } from "@/context/LanguageContext"; // Импортируем наш хук
 import styles from "./Hero.module.css";
 
+// Локальный словарь переводов для Hero
+const translations = {
+  ru: {
+    subtitle: "Club Villas",
+    line1: "Проект,",
+    line2: "который предлагает нам мечтать",
+    line3: "с открытыми глазами.",
+    altDesktop: "Панорама V-Village",
+    altMobile: "Панорама V-Village (Мобильная версия)"
+  },
+  en: {
+    subtitle: "Club Villas",
+    line1: "A project",
+    line2: "that invites us to dream",
+    line3: "with our eyes wide open.",
+    altDesktop: "V-Village Panorama",
+    altMobile: "V-Village Panorama (Mobile)"
+  },
+  kz: {
+    subtitle: "Club Villas",
+    line1: "Көзіміз ашық күйде",
+    line2: "армандауға шақыратын",
+    line3: "жоба.",
+    altDesktop: "V-Village панорамасы",
+    altMobile: "V-Village панорамасы (Мобильді нұсқа)"
+  }
+};
+
 export function Hero() {
+  // Получаем текущий язык из контекста
+  const { language } = useLanguage();
+  const t = translations[language];
+
   // Motion-значения для трекинга сырых координат курсора без ререндера React
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -21,12 +54,10 @@ export function Hero() {
   const rotateY = useTransform(smoothX, [-1, 1], [-8, 8]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
-    // Чтение window.innerWidth/innerHeight не вызывает Layout Thrashing, 
-    // в отличие от getBoundingClientRect()
+    // Чтение window.innerWidth/innerHeight не вызывает Layout Thrashing
     const x = e.clientX / window.innerWidth;
     const y = e.clientY / window.innerHeight;
 
-    // Нормализуем координаты в диапазон от -1 до 1
     mouseX.set(x * 2 - 1);
     mouseY.set(y * 2 - 1);
   };
@@ -42,39 +73,34 @@ export function Hero() {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Статическая виньетка (затемнение по краям) */}
       <div className={styles.vignette} />
 
-      {/* 3D-Сцена, которая реагирует на мышь */}
       <motion.div
         className={styles.scene}
         style={{ rotateX, rotateY }}
       >
-        {/* Задний фон (отдален в Z-пространстве) */}
         <motion.div
           className={styles.background}
           initial={{ scale: 1.2, z: -80 }}
           animate={{ scale: 1.05, z: -80 }}
           transition={springSlow}
         >
-          {/* Десктопное изображение */}
           <Image
             src="/Desktop.webp"
-            alt="Панорама V-Village"
+            alt={t.altDesktop}
             fill
-            priority // Критически важно для LCP — грузит картинку мгновенно
+            priority
             quality={90}
             sizes="100vw"
             className={styles.desktopImage}
             style={{ objectFit: "cover" }}
           />
 
-          {/* Мобильное изображение */}
           <Image
             src="/Mobile.webp"
-            alt="Панорама V-Village (Мобильная версия)"
+            alt={t.altMobile}
             fill
-            priority // Также ставим priority для мгновенной загрузки на смартфонах
+            priority
             quality={90}
             sizes="100vw"
             className={styles.mobileImage}
@@ -82,7 +108,6 @@ export function Hero() {
           />
         </motion.div>
 
-        {/* Контент (приближен в Z-пространстве) */}
         <motion.div
           initial="initial"
           animate="animate"
@@ -94,13 +119,14 @@ export function Hero() {
         >
           <motion.div variants={textRevealVariant} className={styles.logoGroup}>
             <h1 className={styles.logo}>V</h1>
-            <p className={styles.subtitle}>Club Villas</p>
+            <p className={styles.subtitle}>{t.subtitle}</p>
           </motion.div>
 
+          {/* Текст рендерится динамически из словаря */}
           <motion.h2 variants={textRevealVariant} className={styles.title}>
-            Проект, <br className={styles.desktopBreak} /> 
-            который предлагает нам мечтать <br className={styles.desktopBreak} /> 
-            с открытыми глазами.
+            {t.line1} <br className={styles.desktopBreak} /> 
+            {t.line2} <br className={styles.desktopBreak} /> 
+            {t.line3}
           </motion.h2>
         </motion.div>
       </motion.div>
@@ -110,8 +136,7 @@ export function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
-      >
-      </motion.div>
+      />
     </section>
   );
 }

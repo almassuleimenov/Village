@@ -2,13 +2,41 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useLanguage } from "@/context/LanguageContext";
 import styles from './Location.module.css';
 
-// Статические данные для плавающих карточек (O(1) Memory)
+// === ЛОКАЛЬНЫЙ СЛОВАРЬ ПЕРЕВОДОВ ===
+const translations: Record<string, {
+  titleLine1: string;
+  titleLine2: string;
+  subtitle: string;
+  iframeTitle: string;
+}> = {
+  ru: {
+    titleLine1: "Вдали от суеты.",
+    titleLine2: "В центре событий.",
+    subtitle: "Экологически чистый предгорный район с идеальной транспортной доступностью. Воздух, которым хочется дышать, и инфраструктура, к которой вы привыкли.",
+    iframeTitle: "Расположение V Club Village на карте"
+  },
+  en: {
+    titleLine1: "Far from the hustle.",
+    titleLine2: "In the center of events.",
+    subtitle: "An eco-friendly foothill area with perfect transport accessibility. Air you want to breathe, and the infrastructure you are used to.",
+    iframeTitle: "V Club Village location on the map"
+  },
+  kz: {
+    titleLine1: "У-шудан қашық.",
+    titleLine2: "Оқиғалар орталығында.",
+    subtitle: "Керемет көлік қатынасы бар экологиялық таза тау бөктері. Жұтқың келетін таза ауа және өзіңіз үйренген инфрақұрылым.",
+    iframeTitle: "V Club Village картадағы орналасуы"
+  }
+};
 
 export function Location() {
+  const { language } = useLanguage();
+  const t = translations[language];
+
   return (
-    // ДОБАВЛЕН id="location-section"
     <section id="location-section" className={styles.section}>
       <div className={styles.container}>
         
@@ -20,7 +48,7 @@ export function Location() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
-            Вдали от суеты.<br />В центре событий.
+            {t.titleLine1}<br />{t.titleLine2}
           </motion.h2>
           <motion.p 
             className={styles.subtitle}
@@ -29,8 +57,7 @@ export function Location() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           >
-            Экологически чистый предгорный район с идеальной транспортной доступностью. 
-            Воздух, которым хочется дышать, и инфраструктура, к которой вы привыкли.
+            {t.subtitle}
           </motion.p>
         </header>
 
@@ -50,13 +77,13 @@ export function Location() {
               height="100%" 
               frameBorder="0"
               loading="lazy"
-              title="Расположение V Club Village на карте"
+              title={t.iframeTitle}
               className={styles.mapIframe}
             />
           </div>
           
           {/* Рамка-градиент поверх карты для интеграции в фон */}
-          <div className={styles.mapVignette} />
+          <div className={styles.mapVignette} aria-hidden="true" />
         </motion.div>
 
       </div>
