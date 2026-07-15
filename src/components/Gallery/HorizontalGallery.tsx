@@ -30,10 +30,8 @@ const baseImages = [
   "/05 render.webp",
 ];
 
-// Умножаем массив на 3 для создания бесшовной иллюзии бесконечности
 const infiniteImages = [...baseImages, ...baseImages, ...baseImages];
 
-// === ЛОКАЛЬНЫЙ СЛОВАРЬ ПЕРЕВОДОВ ===
 const translations: Record<string, {
   tag: string;
   title: string;
@@ -73,24 +71,21 @@ export function HorizontalGallery() {
   const t = translations[language];
 
   const carouselRef = useRef<HTMLDivElement>(null);
-  
-  // Храним не только ссылку, но и уникальный индекс, чтобы layoutId работал корректно
   const [selectedImage, setSelectedImage] = useState<{src: string, index: number} | null>(null);
   const [isMeasured, setIsMeasured] = useState(false);
   
-  // Координата X
   const x = useMotionValue(0);
   const originalWidthRef = useRef(0);
+  
+  // [ФИКС 1] Изолятор жестов. Предотвращает конфликты координат во время касания экрана.
+  const isDragging = useRef(false);
 
-  // Высчитываем ширину ОДНОГО оригинального сета картинок
   useEffect(() => {
     const calcWidth = () => {
       if (carouselRef.current) {
-        // Делим общую ширину скролла на 3 (количество сетов)
         const oneSetWidth = carouselRef.current.scrollWidth / 3;
         originalWidthRef.current = oneSetWidth;
 
-        // При первой загрузке центрируем галерею на втором сете (чтобы можно было листать влево)
         if (!isMeasured) {
           x.set(-oneSetWidth);
           setIsMeasured(true);
@@ -100,20 +95,31 @@ export function HorizontalGallery() {
     
     calcWidth();
     window.addEventListener("resize", calcWidth);
-    return () => window.removeEventListener("resize", calcWidth);
+    // Дополнительный вызов после парсинга тяжелого DOM для защиты от сбитой верстки
+    const fallbackTimeout = setTimeout(calcWidth, 300);
+    
+    return () => { 
+      window.removeEventListener("resize", calcWidth);
+      clearTimeout(fallbackTimeout);
+    };
   }, [isMeasured, x]);
 
   // === БЕСКОНЕЧНЫЙ ЦИКЛ (WRAPPER) ===
   useMotionValueEvent(x, "change", (latest) => {
     if (!isMeasured) return;
-    const w = originalWidthRef.current;
 
-    // Если ушли слишком далеко вправо (в 1-й сет) -> кидаем обратно во 2-й
+    // [ФИКС 2] Жесткое табу: не мутировать позицию, пока палец на экране
+    if (isDragging.current) return;
+
+    // [ФИКС 3] Делаем wrap только когда инерция почти угасла.
+    // Это предотвращает визуальные "рывки", сохраняя плавность расчетов физического движка.
+    const velocity = x.getVelocity();
+    if (Math.abs(velocity) > 20) return;
+
+    const w = originalWidthRef.current;
     if (latest > 0) {
       x.set(latest - w);
-    } 
-    // Если ушли слишком далеко влево (в 3-й сет) -> кидаем обратно во 2-й
-    else if (latest < -w * 2) {
+    } else if (latest < -w * 2) {
       x.set(latest + w);
     }
   });
@@ -121,12 +127,14 @@ export function HorizontalGallery() {
   // === СВЯЗЬ СО СКРОЛЛОМ МЫШИ ===
   const { scrollY } = useScroll();
   useMotionValueEvent(scrollY, "change", (latest) => {
+    // [ФИКС 4] Мьютекс: если юзер свайпает руками, блокируем влияние вертикального скролла.
+    if (isDragging.current || !isMeasured) return;
+
     const previous = scrollY.getPrevious() ?? latest;
     const delta = latest - previous;
-    x.set(x.get() - delta * 1.5); // Коэффициент 1.5 дает легкое ускорение
+    x.set(x.get() - delta * 1.5);
   });
 
-  // Блокировка скролла страницы при открытии фото
   useEffect(() => {
     if (selectedImage) {
       document.body.style.overflow = "hidden";
@@ -136,12 +144,10 @@ export function HorizontalGallery() {
     return () => { document.body.style.overflow = ""; };
   }, [selectedImage]);
 
-  // Вычисляем бесконечный прогресс-бар через деление по модулю
   const progressSpring = useSpring(x, { stiffness: 400, damping: 40 });
   const progress = useTransform(progressSpring, (latest) => {
     const w = originalWidthRef.current;
     if (!w) return 0;
-    // Нормализуем значение от 0 до 100% в рамках одного сета
     const positiveX = Math.abs(latest);
     const normalized = positiveX % w;
     return (normalized / w) * 100;
@@ -159,10 +165,12 @@ export function HorizontalGallery() {
           className={styles.track}
           drag="x"
           data-cursor="drag"
-          // Огромные лимиты, чтобы свайп не блокировался
           dragConstraints={{ left: -100000, right: 100000 }}
-          dragElastic={0} // Убираем резиновый эффект для идеального цикла
+          dragElastic={0}
           style={{ x }}
+          // Включаем трекинг фаз жеста
+          onDragStart={() => { isDragging.current = true; }}
+          onDragEnd={() => { isDragging.current = false; }}
           whileTap={{ cursor: "grabbing" }}
         >
           {infiniteImages.map((src, index) => (
@@ -178,7 +186,9 @@ export function HorizontalGallery() {
                   fill
                   style={{ objectFit: "cover" }}
                   sizes="(max-width: 768px) 85vw, (max-width: 1200px) 70vw, 60vw"
-                  priority={index > 5 && index < 12} // Приоритет для центрального сета
+                  // [ФИКС 5] При старте x = -oneSetWidth, значит на экране ЦЕНТРАЛЬНЫЙ сет.
+                  // Его индексы от 12 до 23. Выдаем приоритет именно им!
+                  priority={index >= 12 && index < 24} 
                   quality={90}
                   className={styles.image}
                   draggable={false} 
@@ -232,7 +242,6 @@ export function HorizontalGallery() {
 
             <motion.div 
               className={styles.fullscreenImageContainer}
-              // Привязываем layoutId к конкретному индексу, чтобы картинка летела именно туда, куда нажали
               layoutId={`wrapper-${selectedImage.src}-${selectedImage.index}`}
               transition={{ type: "spring", stiffness: 200, damping: 25 }}
               onClick={(e) => e.stopPropagation()} 

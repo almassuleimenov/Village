@@ -37,6 +37,7 @@
 .carouselWrapper {
   width: 100vw;
   overflow: hidden; 
+  /* Примечание архитектора: градиентная маска — тяжелая операция для мобилок. Если на бюджетных Android все еще будут просадки FPS, отключи mask-image */
   mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
   -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
 }
@@ -48,7 +49,8 @@
   padding: 0 5vw;
   cursor: grab;
   will-change: transform;
-  transform: translateZ(0);
+  /* Форсируем аппаратное ускорение */
+  transform: translate3d(0, 0, 0); 
 }
 
 .track:active {
@@ -87,7 +89,6 @@
   transition: opacity 0.4s ease;
 }
 
-/* Отключаем sticky hover на смартфонах */
 @media (hover: hover) and (pointer: fine) {
   .card:hover .image {
     transform: scale(1.03);
@@ -219,18 +220,17 @@
   }
   
   .carouselWrapper {
-    /* На мобилках уменьшаем градиент-маску, чтобы не съедала слишком много пространства */
     mask-image: linear-gradient(to right, transparent, black 2%, black 98%, transparent);
     -webkit-mask-image: linear-gradient(to right, transparent, black 2%, black 98%, transparent);
   }
 
   .track {
-    gap: 16px; /* Чуть сближаем карточки */
+    gap: 16px; 
   }
 
   .card {
-    width: 85vw; /* Оставляем 15vw под превью следующей карточки */
-    aspect-ratio: 4 / 5; /* Вертикальный формат для мобилок (как в Instagram) */
+    width: 85vw; 
+    aspect-ratio: 4 / 5; 
   }
 
   .progressContainer {
@@ -255,8 +255,8 @@
   }
   
   .fullscreenImageContainer {
-    width: 100vw; /* На мобилке даем фото занять всю ширину экрана */
+    width: 100vw; 
     height: 100vh;
-    border-radius: 0; /* Убираем скругления в полноэкранном режиме */
+    border-radius: 0; 
   }
 }
