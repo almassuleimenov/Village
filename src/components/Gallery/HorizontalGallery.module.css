@@ -49,6 +49,8 @@
   cursor: grab;
   will-change: transform;
   transform: translateZ(0);
+  /* КРИТИЧНО: Запрещает конфликты браузера при горизонтальном свайпе */
+  touch-action: pan-y; 
 }
 
 .track:active {

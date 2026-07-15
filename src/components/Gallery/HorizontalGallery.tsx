@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { 
   motion, 
@@ -16,55 +16,32 @@ import { useLanguage } from "@/context/LanguageContext";
 import styles from "./HorizontalGallery.module.css";
 
 const baseImages = [
-  "/Corona1.jpg.webp",
-  "/Corona2.jpg.webp",
-  "/Corona3.jpg.webp",
-  "/Corona4.jpg.webp",
-  "/Corona5.jpg.webp",
-  "/Corona6.webp",
-  "/Corona8.webp",
-  "/01 render.webp",
-  "/02 render.webp",
-  "/03 render.webp",
-  "/04 render.webp",
-  "/05 render.webp",
+  "/Corona1.jpg.webp", "/Corona2.jpg.webp", "/Corona3.jpg.webp",
+  "/Corona4.jpg.webp", "/Corona5.jpg.webp", "/Corona6.webp",
+  "/Corona8.webp", "/01 render.webp", "/02 render.webp",
+  "/03 render.webp", "/04 render.webp", "/05 render.webp",
 ];
 
-// Умножаем массив на 3 для создания бесшовной иллюзии бесконечности
 const infiniteImages = [...baseImages, ...baseImages, ...baseImages];
 
-// === ЛОКАЛЬНЫЙ СЛОВАРЬ ПЕРЕВОДОВ ===
 const translations: Record<string, {
-  tag: string;
-  title: string;
-  dragHint: string;
-  imgAlt: string;
-  fullscreenAlt: string;
-  closeAria: string;
+  tag: string; title: string; dragHint: string;
+  imgAlt: string; fullscreenAlt: string; closeAria: string;
 }> = {
   ru: {
-    tag: "[ ВИЗУАЛЬНАЯ ЭСТЕТИКА ]",
-    title: "Архитектура в деталях",
-    dragHint: "Двойной клик для увеличения",
-    imgAlt: "Ракурс виллы V-Village",
-    fullscreenAlt: "Полноэкранный просмотр",
-    closeAria: "Закрыть фото"
+    tag: "[ ВИЗУАЛЬНАЯ ЭСТЕТИКА ]", title: "Архитектура в деталях",
+    dragHint: "Двойной клик для увеличения", imgAlt: "Ракурс виллы V-Village",
+    fullscreenAlt: "Полноэкранный просмотр", closeAria: "Закрыть фото"
   },
   en: {
-    tag: "[ VISUAL AESTHETICS ]",
-    title: "Architecture in detail",
-    dragHint: "Double click to enlarge",
-    imgAlt: "V-Village villa view",
-    fullscreenAlt: "Fullscreen view",
-    closeAria: "Close photo"
+    tag: "[ VISUAL AESTHETICS ]", title: "Architecture in detail",
+    dragHint: "Double click to enlarge", imgAlt: "V-Village villa view",
+    fullscreenAlt: "Fullscreen view", closeAria: "Close photo"
   },
   kz: {
-    tag: "[ ВИЗУАЛДЫ ЭСТЕТИКА ]",
-    title: "Сәулет өнері бөлшектерде",
-    dragHint: "Үлкейту үшін екі рет басыңыз",
-    imgAlt: "V-Village вилласының көрінісі",
-    fullscreenAlt: "Толық экранды көру",
-    closeAria: "Фотоны жабу"
+    tag: "[ ВИЗУАЛДЫ ЭСТЕТИКА ]", title: "Сәулет өнері бөлшектерде",
+    dragHint: "Үлкейту үшін екі рет басыңыз", imgAlt: "V-Village вилласының көрінісі",
+    fullscreenAlt: "Толық экранды көру", closeAria: "Фотоны жабу"
   }
 };
 
@@ -73,24 +50,21 @@ export function HorizontalGallery() {
   const t = translations[language];
 
   const carouselRef = useRef<HTMLDivElement>(null);
-  
-  // Храним не только ссылку, но и уникальный индекс, чтобы layoutId работал корректно
   const [selectedImage, setSelectedImage] = useState<{src: string, index: number} | null>(null);
   const [isMeasured, setIsMeasured] = useState(false);
   
-  // Координата X
   const x = useMotionValue(0);
   const originalWidthRef = useRef(0);
+  
+  // ФЛАГ СОСТОЯНИЯ: Изолируем логику drag от логики scroll
+  const isDragging = useRef(false);
 
-  // Высчитываем ширину ОДНОГО оригинального сета картинок
   useEffect(() => {
     const calcWidth = () => {
       if (carouselRef.current) {
-        // Делим общую ширину скролла на 3 (количество сетов)
         const oneSetWidth = carouselRef.current.scrollWidth / 3;
         originalWidthRef.current = oneSetWidth;
 
-        // При первой загрузке центрируем галерею на втором сете (чтобы можно было листать влево)
         if (!isMeasured) {
           x.set(-oneSetWidth);
           setIsMeasured(true);
@@ -103,45 +77,49 @@ export function HorizontalGallery() {
     return () => window.removeEventListener("resize", calcWidth);
   }, [isMeasured, x]);
 
-  // === БЕСКОНЕЧНЫЙ ЦИКЛ (WRAPPER) ===
+  // Проверка границ вынесена в отдельную функцию, чтобы использовать и в хуке, и при onDragEnd
+  const checkBounds = useCallback((currentX: number) => {
+    const w = originalWidthRef.current;
+    if (!w) return;
+
+    if (currentX > 0) {
+      x.set(currentX - w);
+    } else if (currentX <= -w * 2) {
+      x.set(currentX + w);
+    }
+  }, [x]);
+
+  // === БЕСКОНЕЧНЫЙ ЦИКЛ ===
   useMotionValueEvent(x, "change", (latest) => {
     if (!isMeasured) return;
-    const w = originalWidthRef.current;
-
-    // Если ушли слишком далеко вправо (в 1-й сет) -> кидаем обратно во 2-й
-    if (latest > 0) {
-      x.set(latest - w);
-    } 
-    // Если ушли слишком далеко влево (в 3-й сет) -> кидаем обратно во 2-й
-    else if (latest < -w * 2) {
-      x.set(latest + w);
-    }
+    
+    // КРИТИЧНО: Запрещаем телепортацию координат, пока палец на экране
+    // Это устраняет резкие рывки при свайпах назад/вперед
+    if (isDragging.current) return;
+    
+    checkBounds(latest);
   });
 
   // === СВЯЗЬ СО СКРОЛЛОМ МЫШИ ===
   const { scrollY } = useScroll();
   useMotionValueEvent(scrollY, "change", (latest) => {
+    // КРИТИЧНО: Блокируем влияние вертикального скролла, если активен свайп
+    if (isDragging.current) return;
+
     const previous = scrollY.getPrevious() ?? latest;
     const delta = latest - previous;
-    x.set(x.get() - delta * 1.5); // Коэффициент 1.5 дает легкое ускорение
+    x.set(x.get() - delta * 1.5);
   });
 
-  // Блокировка скролла страницы при открытии фото
   useEffect(() => {
-    if (selectedImage) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = selectedImage ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [selectedImage]);
 
-  // Вычисляем бесконечный прогресс-бар через деление по модулю
   const progressSpring = useSpring(x, { stiffness: 400, damping: 40 });
   const progress = useTransform(progressSpring, (latest) => {
     const w = originalWidthRef.current;
     if (!w) return 0;
-    // Нормализуем значение от 0 до 100% в рамках одного сета
     const positiveX = Math.abs(latest);
     const normalized = positiveX % w;
     return (normalized / w) * 100;
@@ -159,11 +137,19 @@ export function HorizontalGallery() {
           className={styles.track}
           drag="x"
           data-cursor="drag"
-          // Огромные лимиты, чтобы свайп не блокировался
           dragConstraints={{ left: -100000, right: 100000 }}
-          dragElastic={0} // Убираем резиновый эффект для идеального цикла
+          dragElastic={0}
           style={{ x }}
           whileTap={{ cursor: "grabbing" }}
+          // Включаем и выключаем флаг свайпа
+          onDragStart={() => {
+            isDragging.current = true;
+          }}
+          onDragEnd={() => {
+            isDragging.current = false;
+            // Делаем ручную проверку границ после отпускания пальца
+            checkBounds(x.get());
+          }}
         >
           {infiniteImages.map((src, index) => (
             <motion.div 
@@ -178,7 +164,8 @@ export function HorizontalGallery() {
                   fill
                   style={{ objectFit: "cover" }}
                   sizes="(max-width: 768px) 85vw, (max-width: 1200px) 70vw, 60vw"
-                  priority={index > 5 && index < 12} // Приоритет для центрального сета
+                  // КРИТИЧНО: Мы начинаем со 2-го сета! Поэтому грузим индексы 12-16 в первую очередь.
+                  priority={index >= 12 && index <= 16}
                   quality={90}
                   className={styles.image}
                   draggable={false} 
@@ -232,7 +219,6 @@ export function HorizontalGallery() {
 
             <motion.div 
               className={styles.fullscreenImageContainer}
-              // Привязываем layoutId к конкретному индексу, чтобы картинка летела именно туда, куда нажали
               layoutId={`wrapper-${selectedImage.src}-${selectedImage.index}`}
               transition={{ type: "spring", stiffness: 200, damping: 25 }}
               onClick={(e) => e.stopPropagation()} 
