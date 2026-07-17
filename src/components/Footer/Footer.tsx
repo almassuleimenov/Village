@@ -135,13 +135,13 @@ export function Footer() {
               <h4 className={styles.columnTitle}>{t.contactsTitle}</h4>
               <ul className={styles.linkList}>
                 <li>
-                  <a href="https://wa.me/77760002507" className={styles.link} target="_blank" rel="noopener noreferrer">
+                  <a href="https://wa.me/77015292075" className={styles.link} target="_blank" rel="noopener noreferrer">
                     {t.salesOffice}
                   </a>
                 </li>
                 <li>
-                  <a href="tel:+77760002507" className={styles.link}>
-                    8 776 000 25 07
+                  <a href="tel:+77015292075" className={styles.link}>
+                    7 (701) 529-20-75
                   </a>
                 </li>
               </ul>
@@ -158,13 +158,13 @@ export function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a href="https://2gis.kz/almaty/geo/9430047375119615/76.895892,43.150935" target="_blank" rel="noopener noreferrer" className={styles.link}>
+                  <a href="https://2gis.kz/almaty/firm/70000001057213571" target="_blank" rel="noopener noreferrer" className={styles.link}>
                     <MapPinIcon />
                     {t.address}
                   </a>
                 </li>
                 <li>
-                  <a href="https://wa.me/77760002507" target="_blank" rel="noopener noreferrer" className={styles.link}>
+                  <a href="https://wa.me/77015292075" target="_blank" rel="noopener noreferrer" className={styles.link}>
                     <WhatsAppIcon />
                     WhatsApp
                   </a>

@@ -72,7 +72,7 @@ export function Location() {
           {/* Контейнер Iframe */}
           <div className={styles.iframeContainer}>
             <iframe 
-              src="https://yandex.ru/map-widget/v1/?um=constructor%3Ac759e85da3db113cf8f0d46af16a94a5e9fbd5922378e2b09118c947d221393e&source=constructor" 
+              src="https://yandex.ru/map-widget/v1/?um=constructor%3A9c1fecfaf37e5dbbd57b267beab1ecea2de6f9522a89801cd5ad5275aaebc82f&source=constructor" 
               width="100%" 
               height="100%" 
               frameBorder="0"

@@ -67,7 +67,7 @@ export function FloatingSocials() {
 
       <Magnetic strength={0.4}>
         <a 
-          href="https://wa.me/77760002507" 
+          href="https://wa.me/77015292075" 
           target="_blank" 
           rel="noopener noreferrer" 
           className={styles.btn}
