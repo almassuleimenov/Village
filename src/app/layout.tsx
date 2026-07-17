@@ -13,6 +13,8 @@ import { Preloader } from "@/components/Preloader/Preloader";
 import { Atmosphere } from "@/components/Atmosphere/Atmosphere";
 import { CustomCursor } from "@/components/Cursor/CustomCursor";
 import { LanguageProvider } from "@/context/LanguageContext";
+import CookieBanner from "@/components/CookieBanner/CookieBanner";
+import { Analytics } from "@vercel/analytics/react";
 
 // --- БАЗОВЫЕ ШРИФТЫ (RU) ---
 const serif = Cormorant_Garamond({ 
@@ -90,7 +92,9 @@ export default function RootLayout({
           <SmoothScroll>
             {children}
           </SmoothScroll>
+          <CookieBanner />
         </LanguageProvider>
+        <Analytics />
       </body>
     </html>
   );

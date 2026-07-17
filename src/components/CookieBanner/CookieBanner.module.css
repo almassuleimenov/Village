@@ -1,0 +1,112 @@
+.overlay {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  pointer-events: none; /* Пропускаем клики сквозь контейнер-обертку */
+}
+
+.container {
+  background-color: #050505;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 24px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  max-width: 900px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  pointer-events: auto; /* Возвращаем кликабельность самому баннеру */
+  backdrop-filter: blur(12px);
+}
+
+.textBlock {
+  flex: 1;
+}
+
+.text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #8A8F98;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+}
+
+.link {
+  color: #e5d3b3; /* Твой акцентный цвет из проекта */
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.link:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.buttonDecline, .buttonAccept {
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.buttonDecline {
+  background-color: transparent;
+  color: #8A8F98;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.buttonDecline:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
+.buttonAccept {
+  background-color: #e5d3b3;
+  color: #000000;
+  border: 1px solid #e5d3b3;
+}
+
+.buttonAccept:hover {
+  background-color: #ffffff;
+  border-color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .overlay {
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+  }
+  
+  .container {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+  }
+  
+  .actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+  
+  .buttonDecline, .buttonAccept {
+    flex: 1;
+    text-align: center;
+  }
+}
