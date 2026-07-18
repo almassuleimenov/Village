@@ -14,7 +14,6 @@ import { Atmosphere } from "@/components/Atmosphere/Atmosphere";
 import { CustomCursor } from "@/components/Cursor/CustomCursor";
 import { LanguageProvider } from "@/context/LanguageContext";
 import CookieBanner from "@/components/CookieBanner/CookieBanner";
-import { Analytics } from "@vercel/analytics/react";
 
 // --- БАЗОВЫЕ ШРИФТЫ (RU) ---
 const serif = Cormorant_Garamond({ 
@@ -62,7 +61,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "V Club Village | Жизнь в гармонии с природой",
+  title: "V Club Villas | Жизнь в гармонии с природой",
   description: "Элитный жилой комплекс у подножия гор.",
 };
 
@@ -94,7 +93,6 @@ export default function RootLayout({
           </SmoothScroll>
           <CookieBanner />
         </LanguageProvider>
-        <Analytics />
       </body>
     </html>
   );

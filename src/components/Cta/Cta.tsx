@@ -32,7 +32,7 @@ const springItem: Variants = {
 };
 
 // Целевой номер WhatsApp в международном формате без плюса
-const WHATSAPP_NUMBER = "77015292075";
+const WHATSAPP_NUMBER = "77753159203";
 
 // === ЛОКАЛЬНЫЙ СЛОВАРЬ ПЕРЕВОДОВ ===
 const translations: Record<string, {
