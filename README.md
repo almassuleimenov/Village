@@ -1,6 +1,6 @@
 
 ```
-v-village-brochure
+v-villas-brochure
 ├─ AGENTS.md
 ├─ CLAUDE.md
 ├─ eslint.config.mjs

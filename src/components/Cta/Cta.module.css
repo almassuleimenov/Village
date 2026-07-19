@@ -366,7 +366,43 @@
     font-size: 1rem;
   }
 }
+/* === Согласие (Consent) === */
+.consentGroup {
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
 
+.consentLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.consentCheckbox {
+  margin-top: 4px;
+  min-width: 16px;
+  height: 16px;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.consentText {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.legalLink {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.legalLink:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
 /* Компактные смартфоны */
 @media (max-width: 480px) {
   .section {

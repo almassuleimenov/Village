@@ -31,10 +31,8 @@ const springItem: Variants = {
   },
 };
 
-// Целевой номер WhatsApp в международном формате без плюса
-const WHATSAPP_NUMBER = "77753159203";
+const WHATSAPP_NUMBER = "77015292075";
 
-// === ЛОКАЛЬНЫЙ СЛОВАРЬ ПЕРЕВОДОВ ===
 const translations: Record<string, {
   kicker: string;
   title: string;
@@ -42,47 +40,58 @@ const translations: Record<string, {
   nameLabel: string;
   phoneLabel: string;
   submitBtn: string;
-  disclaimer: string;
+  consentText: React.ReactNode;
   successTitle: string;
   successDesc: string;
-  // Функция для генерации сообщения на нужном языке
   generateMessage: (name: string, phone: string) => string;
 }> = {
   ru: {
     kicker: "[ Закрытый показ ]",
     title: "Индивидуальная презентация",
-    subtitle: "Оставьте контактные данные. Персональный брокер свяжется с вами для организации приватного визита в резиденции V Club.",
+    subtitle: "Оставьте контактные данные. Персональный брокер свяжется с вами для организации приватного визита в резиденции V Club Villas.",
     nameLabel: "Ваше имя",
     phoneLabel: "Номер телефона",
     submitBtn: "Запланировать визит",
-    disclaimer: "Гарантируем абсолютную конфиденциальность ваших данных.",
+    consentText: (
+      <>
+        Я согласен с <a href="/terms-of-use" target="_blank" rel="noopener noreferrer" className={styles.legalLink}>Условиями использования</a> и <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className={styles.legalLink}>Политикой конфиденциальности</a>.
+      </>
+    ),
     successTitle: "Перенаправление в WhatsApp",
     successDesc: "Диалог с персональным брокером открыт в новой вкладке.",
-    generateMessage: (name, phone) => `Здравствуйте! Я хочу запланировать индивидуальную презентацию резиденций V Club.\n\nИмя: ${name}\nТелефон: ${phone}`
+    generateMessage: (name, phone) => `Здравствуйте! Я хочу запланировать индивидуальную презентацию резиденций V Club Villas.\n\nИмя: ${name}\nТелефон: ${phone}`
   },
   en: {
     kicker: "[ Private Viewing ]",
     title: "Individual Presentation",
-    subtitle: "Leave your contact details. A personal broker will contact you to arrange a private visit to the V Club residences.",
+    subtitle: "Leave your contact details. A personal broker will contact you to arrange a private visit to the V Club Villas residences.",
     nameLabel: "Your Name",
     phoneLabel: "Phone Number",
     submitBtn: "Schedule a Visit",
-    disclaimer: "We guarantee absolute confidentiality of your data.",
+    consentText: (
+      <>
+        I agree to the <a href="/terms-of-use" target="_blank" rel="noopener noreferrer" className={styles.legalLink}>Terms of Use</a> and <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className={styles.legalLink}>Privacy Policy</a>.
+      </>
+    ),
     successTitle: "Redirecting to WhatsApp",
     successDesc: "A chat with your personal broker has opened in a new tab.",
-    generateMessage: (name, phone) => `Hello! I would like to schedule an individual presentation of V Club residences.\n\nName: ${name}\nPhone: ${phone}`
+    generateMessage: (name, phone) => `Hello! I would like to schedule an individual presentation of V Club Villas residences.\n\nName: ${name}\nPhone: ${phone}`
   },
   kz: {
     kicker: "[ ЖАБЫҚ КӨРСЕТІЛІМ ]",
     title: "Жеке презентация",
-    subtitle: "Байланыс мәліметтеріңізді қалдырыңыз. Жеке брокер V Club резиденцияларына жеке сапар ұйымдастыру үшін сізбен хабарласады.",
+    subtitle: "Байланыс мәліметтеріңізді қалдырыңыз. Жеке брокер V Club Villas резиденцияларына жеке сапар ұйымдастыру үшін сізбен хабарласады.",
     nameLabel: "Есіміңіз",
     phoneLabel: "Телефон нөмірі",
     submitBtn: "Сапарды жоспарлау",
-    disclaimer: "Деректеріңіздің толық құпиялылығына кепілдік береміз.",
+    consentText: (
+      <>
+        Мен <a href="/terms-of-use" target="_blank" rel="noopener noreferrer" className={styles.legalLink}>Қолдану шарттарымен</a> және <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className={styles.legalLink}>Құпиялылық саясатымен</a> келісемін.
+      </>
+    ),
     successTitle: "WhatsApp-қа өту",
     successDesc: "Жеке брокермен диалог жаңа бетте ашылды.",
-    generateMessage: (name, phone) => `Сәлеметсіз бе! Мен V Club резиденцияларының жеке презентациясын жоспарлағым келеді.\n\nЕсімім: ${name}\nТелефон: ${phone}`
+    generateMessage: (name, phone) => `Сәлеметсіз бе! Мен V Club Villas резиденцияларының жеке презентациясын жоспарлағым келеді.\n\nЕсімім: ${name}\nТелефон: ${phone}`
   }
 };
 
@@ -91,34 +100,33 @@ export function Cta() {
   const t = translations[language];
 
   const [formData, setFormData] = useState({ name: "", phone: "" });
+  const [hasConsent, setHasConsent] = useState<boolean>(false);
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleConsentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setHasConsent(e.target.checked);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.phone) return;
+    if (!formData.name || !formData.phone || !hasConsent) return;
 
     setStatus("loading");
 
-    // Формируем текст сообщения через функцию из словаря
     const messageTemplate = t.generateMessage(formData.name, formData.phone);
-    
-    // Кодируем текст для безопасной передачи в URL
     const encodedMessage = encodeURIComponent(messageTemplate);
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
 
-    // Важно: вызываем window.open синхронно, чтобы обойти блокировщики всплывающих окон (Popup Blockers)
     window.open(whatsappUrl, "_blank", "noopener,noreferrer");
 
-    // Переводим локальный UI в состояние успеха и очищаем форму
     setStatus("success");
     setFormData({ name: "", phone: "" });
+    setHasConsent(false);
 
-    // Опционально: возвращаем форму в исходное состояние через 5 секунд, 
-    // если пользователь вернется на вкладку с сайтом
     setTimeout(() => {
       setStatus("idle");
     }, 5000);
@@ -134,11 +142,9 @@ export function Cta() {
           whileInView="visible"
           viewport={{ once: true, margin: "-10%" }}
         >
-          {/* Декоративное свечение внутри карточки */}
           <div className={styles.cardGlow} aria-hidden="true" />
 
           <div className={styles.grid}>
-            {/* Левая часть: Премиальный Текст */}
             <div className={styles.textContent}>
               <motion.span variants={springItem} className={styles.kicker}>
                 {t.kicker}
@@ -151,7 +157,6 @@ export function Cta() {
               </motion.p>
             </div>
 
-            {/* Правая часть: Элегантная Форма */}
             <motion.div variants={springItem} className={styles.formWrapper}>
               <AnimatePresence mode="wait">
                 {status === "success" ? (
@@ -213,13 +218,28 @@ export function Cta() {
                       <label htmlFor="phone" className={styles.label}>{t.phoneLabel}</label>
                     </div>
 
+                    <div className={styles.consentGroup}>
+                      <label className={styles.consentLabel}>
+                        <input
+                          type="checkbox"
+                          className={styles.consentCheckbox}
+                          checked={hasConsent}
+                          onChange={handleConsentChange}
+                          required
+                        />
+                        <span className={styles.consentText}>
+                          {t.consentText}
+                        </span>
+                      </label>
+                    </div>
+
                     <Magnetic strength={0.1}>
                       <motion.button
                         type="submit"
                         className={styles.submitBtn}
-                        disabled={status === "loading"}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.97 }}
+                        disabled={status === "loading" || !hasConsent}
+                        whileHover={hasConsent ? { scale: 1.02 } : {}}
+                        whileTap={hasConsent ? { scale: 0.97 } : {}}
                         transition={springTransition}
                       >
                         {status === "loading" ? (
@@ -227,14 +247,9 @@ export function Cta() {
                         ) : (
                           <span className={styles.btnText}>{t.submitBtn}</span>
                         )}
-                        {/* Водяной слой для эффекта наполнения */}
                         <div className={styles.liquid} aria-hidden="true" />
                       </motion.button>
                     </Magnetic>
-
-                    <p className={styles.disclaimer}>
-                      {t.disclaimer}
-                    </p>
                   </motion.form>
                 )}
               </AnimatePresence>
