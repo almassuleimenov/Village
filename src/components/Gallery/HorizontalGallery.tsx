@@ -30,17 +30,17 @@ const translations: Record<string, {
 }> = {
   ru: {
     tag: "[ ВИЗУАЛЬНАЯ ЭСТЕТИКА ]", title: "Архитектура в деталях",
-    dragHint: "Двойной клик для увеличения", imgAlt: "Ракурс виллы V-Village",
+    dragHint: "Двойной клик для увеличения", imgAlt: "Ракурс виллы V-Villas",
     fullscreenAlt: "Полноэкранный просмотр", closeAria: "Закрыть фото"
   },
   en: {
     tag: "[ VISUAL AESTHETICS ]", title: "Architecture in detail",
-    dragHint: "Double click to enlarge", imgAlt: "V-Village villa view",
+    dragHint: "Double click to enlarge", imgAlt: "V-Villas villa view",
     fullscreenAlt: "Fullscreen view", closeAria: "Close photo"
   },
   kz: {
     tag: "[ ВИЗУАЛДЫ ЭСТЕТИКА ]", title: "Сәулет өнері бөлшектерде",
-    dragHint: "Үлкейту үшін екі рет басыңыз", imgAlt: "V-Village вилласының көрінісі",
+    dragHint: "Үлкейту үшін екі рет басыңыз", imgAlt: "V-Villas вилласының көрінісі",
     fullscreenAlt: "Толық экранды көру", closeAria: "Фотоны жабу"
   }
 };

@@ -17,7 +17,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   // Избегаем Hydration Mismatch: читаем localStorage только после маунта на клиенте
   useEffect(() => {
-    const saved = localStorage.getItem("v_village_lang") as Language;
+    const saved = localStorage.getItem("v_villas_lang") as Language;
     if (saved && ["ru", "kz", "en"].includes(saved)) {
       setLanguage(saved);
     }
@@ -29,7 +29,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     if (!mounted) return;
     document.documentElement.lang = language;
     document.documentElement.setAttribute("data-lang", language);
-    localStorage.setItem("v_village_lang", language);
+    localStorage.setItem("v_villas_lang", language);
   }, [language, mounted]);
 
   return (

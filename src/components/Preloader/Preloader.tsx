@@ -29,7 +29,7 @@ export function Preloader() {
     // === 1. ПРОВЕРКА СЕССИИ ===
     // Если флаг есть в sessionStorage, значит пользователь уже был на сайте.
     // Скрываем лоадер мгновенно, без анимации.
-    if (sessionStorage.getItem("v_village_preloaded")) {
+    if (sessionStorage.getItem("v_villas_preloaded")) {
       setIsInstantExit(true);
       setShowLoader(false);
       return; 
@@ -74,7 +74,7 @@ export function Preloader() {
       animate(count, 100, { duration: 0.4, ease: "easeOut" }).then(() => {
         setTimeout(() => {
           // Записываем флаг об успешной загрузке в текущей сессии
-          sessionStorage.setItem("v_village_preloaded", "true");
+          sessionStorage.setItem("v_villas_preloaded", "true");
           setShowLoader(false);
           document.body.style.overflow = "";
         }, 600);
@@ -84,7 +84,7 @@ export function Preloader() {
     // Fallback: пускаем пользователя через 8 секунд, если интернет слишком медленный
     const timeout = setTimeout(() => {
       animate(count, 100, { duration: 1 }).then(() => {
-        sessionStorage.setItem("v_village_preloaded", "true");
+        sessionStorage.setItem("v_villas_preloaded", "true");
         setShowLoader(false);
         document.body.style.overflow = "";
       });

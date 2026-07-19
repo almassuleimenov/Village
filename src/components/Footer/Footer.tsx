@@ -193,7 +193,7 @@ export function Footer() {
         {/* Юридический блок (Compliance) */}
         <div className={styles.legalZone}>
           <div className={styles.copyright}>
-            Copyright © {new Date().getFullYear()} V Club Village. {t.rights}
+            Copyright © {new Date().getFullYear()} V Club Villas. {t.rights}
           </div>
           
           <div className={styles.legalLinks}>

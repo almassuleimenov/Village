@@ -16,19 +16,19 @@ const translations: Record<string, {
     titleLine1: "Вдали от суеты.",
     titleLine2: "В центре событий.",
     subtitle: "Экологически чистый предгорный район с идеальной транспортной доступностью. Воздух, которым хочется дышать, и инфраструктура, к которой вы привыкли.",
-    iframeTitle: "Расположение V Club Village на карте"
+    iframeTitle: "Расположение V Club Villas на карте"
   },
   en: {
     titleLine1: "Far from the hustle.",
     titleLine2: "In the center of events.",
     subtitle: "An eco-friendly foothill area with perfect transport accessibility. Air you want to breathe, and the infrastructure you are used to.",
-    iframeTitle: "V Club Village location on the map"
+    iframeTitle: "V Club Villas location on the map"
   },
   kz: {
     titleLine1: "У-шудан қашық.",
     titleLine2: "Оқиғалар орталығында.",
     subtitle: "Керемет көлік қатынасы бар экологиялық таза тау бөктері. Жұтқың келетін таза ауа және өзіңіз үйренген инфрақұрылым.",
-    iframeTitle: "V Club Village картадағы орналасуы"
+    iframeTitle: "V Club Villas картадағы орналасуы"
   }
 };
 

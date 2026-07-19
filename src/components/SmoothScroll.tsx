@@ -1,4 +1,4 @@
-// D:\Project\react_projects\v-village-brochure\src\components\SmoothScroll.tsx
+// D:\Project\react_projects\v-villas-brochure\src\components\SmoothScroll.tsx
 "use client";
 
 import { ReactLenis } from "lenis/react";

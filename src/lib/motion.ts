@@ -1,4 +1,4 @@
-// D:\Project\react_projects\v-village-brochure\src\lib\motion.ts
+// D:\Project\react_projects\v-villas-brochure\src\lib\motion.ts
 "use client"; // Защита от случайного выполнения на стороне сервера
 
 import type { Transition, Variants } from "framer-motion"; // Строгий импорт типов для SWC

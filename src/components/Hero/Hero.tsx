@@ -14,24 +14,24 @@ const translations = {
     line1: "Проект,",
     line2: "который предлагает нам мечтать",
     line3: "с открытыми глазами.",
-    altDesktop: "Панорама V-Village",
-    altMobile: "Панорама V-Village (Мобильная версия)"
+    altDesktop: "Панорама V-Villas",
+    altMobile: "Панорама V-Villas (Мобильная версия)"
   },
   en: {
     subtitle: "Club Villas",
     line1: "A project",
     line2: "that invites us to dream",
     line3: "with our eyes wide open.",
-    altDesktop: "V-Village Panorama",
-    altMobile: "V-Village Panorama (Mobile)"
+    altDesktop: "V-Villas Panorama",
+    altMobile: "V-Villas Panorama (Mobile)"
   },
   kz: {
     subtitle: "Club Villas",
     line1: "Көзіміз ашық күйде",
     line2: "армандауға шақыратын",
     line3: "жоба.",
-    altDesktop: "V-Village панорамасы",
-    altMobile: "V-Village панорамасы (Мобильді нұсқа)"
+    altDesktop: "V-Villas панорамасы",
+    altMobile: "V-Villas панорамасы (Мобильді нұсқа)"
   }
 };
 
